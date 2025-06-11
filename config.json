@@ -1,6 +1,6 @@
 {
 	"head": {
-		"title": "SimonAKing",
+		"title": "啊啊啊啊啊啊啊啊啊啊啊啊",
 		"description": "Author:SimonAKing,Category:Personal Blog",
 		"favicon": "favicon.ico"
 	},
@@ -12,7 +12,7 @@
 		"background": true
 	},
 	"main": {
-		"name": "SimonAKing",
+		"name": "浪漫宇宙",
 		"signature": "Code & Input & Output",
 		"avatar": {
 			"link": "assets/avatar.jpg",
@@ -39,6 +39,16 @@
 				"href": "https://github.com/SimonAKing",
 				"icon": "github",
 				"text": "Github"
+			},
+			"bbbb": {
+				"href": "https://lmyz.1yo.cc",
+				"icon": "github",
+				"text": "lmyz"
+			},
+			"ccc": {
+				"href": "https://i.ysl.monster",
+				"icon": "github",
+				"text": "ysl"
 			}
 		}
 	}
