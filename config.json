@@ -1,11 +1,11 @@
 {
 	"head": {
-		"title": "啊啊啊啊啊啊啊啊啊啊啊啊",
+		"title": "欢迎着陆浪漫宇宙宇宙",
 		"description": "Author:SimonAKing,Category:Personal Blog",
 		"favicon": "favicon.ico"
 	},
 	"intro": {
-		"title": "SimonAKing",
+		"title": "ManYuZO",
 		"subtitle": "Front back left right end engineer",
 		"enter": "enter",
 		"supportAuthor": true,
@@ -15,7 +15,7 @@
 		"name": "浪漫宇宙",
 		"signature": "Code & Input & Output",
 		"avatar": {
-			"link": "assets/avatar.jpg",
+			"link": "https://api.minio.1yo.cc/nebuluxe/halosparkpix/202311092002032.png",
 			"height": "100",
 			"width": "100"
 		},
@@ -31,18 +31,18 @@
 				"text": "About"
 			},
 			"third": {
-				"href": "mailto:hi@simonaking.com",
-				"icon": "email",
-				"text": "Email"
+				"href": "https://nav.1yo.cc",
+				"icon": "fengche",
+				"text": "起飞台"
 			},
 			"fourth": {
 				"href": "https://github.com/SimonAKing",
-				"icon": "github",
-				"text": "Github"
+				"icon": "star",
+				"text": "星际乐章"
 			},
 			"bbbb": {
 				"href": "https://lmyz.1yo.cc",
-				"icon": "github",
+				"icon": "xianxingchonglangban",
 				"text": "lmyz"
 			},
 			"ccc": {
