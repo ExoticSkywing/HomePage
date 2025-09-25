@@ -1,6 +1,8 @@
 script(src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js")
+// 传统 UMD 版本，提供全局 THREE（避免 ESM 导致的 export/require 报错）
 script(src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js")
-script(src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/controls/OrbitControls.min.js")
+script(src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js")
+
 
 script.
 	window.$ = selector => document.querySelector(selector)

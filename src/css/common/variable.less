@@ -3,6 +3,7 @@
 @color-enter: #fff;
 @color-title: #fff;
 @color-content: #222325;
+@color-accent: #5a189a; // 深紫主色
 @font-alt: 200 6vw/1 'Comic Sans MS', 'Helvetica Neue', 'Microsoft Yahei',
 	'Microsoft Yahei', -apple-system, sans-serif;
 
@@ -13,15 +14,16 @@
 	--color-enter: @color-enter;
 	--color-title: @color-title;
 	--color-content: @color-content;
+	--color-accent: @color-accent;
 	--font-alt: @font-alt;
 }
 
 .fade {
-	opacity: 0;
-	transition: all 1s;
-	transform: translateY(200px);
-	&.in {
-		opacity: 1;
-		transform: none;
-	}
+    opacity: 0;
+    transition: all 0.1s ease;
+    transform: translateY(40px);
+    &.in {
+        opacity: 1;
+        transform: none;
+    }
 }

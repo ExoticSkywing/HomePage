@@ -1,489 +1,188 @@
-class GridAnimation {
-	constructor(canvas, options = {}) {
+class GalaxyAnimation {
+	constructor(canvas) {
 		this.canvas = canvas;
-		this.ctx = canvas.getContext("2d");
-		this.options = {
-			direction: options.direction || "right",
-			speed: options.speed || 1,
-			borderColor: options.borderColor || "rgba(255, 255, 255, 0.05)",
-			squareSize: options.squareSize || 40,
-			hoverFillColor: options.hoverFillColor || "rgba(255, 255, 255, 0.6)",
-			hoverShadowColor: options.hoverShadowColor || "rgba(255, 255, 255, 0.3)",
-			transitionDuration: options.transitionDuration || 200, // 过渡时间（毫秒）
-			trailDuration: options.trailDuration || 1000, // 痕迹持续时间（毫秒）
-			specialBlockColor:
-				options.specialBlockColor || "rgba(255, 100, 100, 0.8)",
-			specialHoverColor:
-				options.specialHoverColor || "rgba(100, 255, 100, 0.8)",
-			// 新增颜色渐变相关选项
-			snakeHeadColor: options.snakeHeadColor || "rgba(255, 255, 255, 0.9)",
-			snakeTailColor: options.snakeTailColor || "rgba(100, 100, 255, 0.3)",
-			snakeGradientStops: options.snakeGradientStops || 5, // 渐变过渡的色块数
-			snakeColorDecay: options.snakeColorDecay || 0.7, // 渐变衰减系数，越小衰减越快
-			...options,
-		};
-
-		this.gridOffset = { x: 0, y: 0 };
-		this.hoveredSquare = null;
+		this.scene = null;
+		this.camera = null;
+		this.renderer = null;
+		this.controls = null;
+		this.points = null;
+		this.clock = null;
+		this.gu = { time: { value: 0 } };
 		this.animationFrame = null;
-		this.currentOpacity = 0;
-		this.targetOpacity = 0;
-		this.lastTimestamp = 0;
-		this.hoverRadius = 3;
-		this.trailSquares = new Map(); // 存储痕迹格子的信息
-		this.specialBlock = null;
-		this.specialBlockTimer = null;
-		this.isSpecialBlockHovered = false;
-		this.snakeBody = []; // 存储蛇身的数组
-		this.shouldGrow = false; // 控制蛇身是否增长
+		this.isInitialized = false;
 	}
 
 	init() {
-		this.resizeCanvas();
+		if (this.isInitialized) return;
+		try {
+			// 直接使用全局 THREE 与 OrbitControls（由 scripts.pug 注入）
+			this.setupScene(THREE, THREE.OrbitControls || OrbitControls);
 		this.setupEventListeners();
 		this.animate();
-
-		// 在移动设备上延迟创建食物，确保画布大小计算正确
-		if (isPhone) {
-			setTimeout(() => {
-				this.createSpecialBlock();
-			}, 500);
-		} else {
-			this.createSpecialBlock();
+			this.isInitialized = true;
+		} catch (error) {
+			console.error('Failed to load Three.js:', error);
 		}
-
-		// 添加页面可见性变化监听，在页面不可见时暂停动画
-		document.addEventListener(visibilityChangeEvent, this.handleVisibilityChange.bind(this));
 	}
 
-	resizeCanvas() {
-		// 处理设备像素比，确保在高DPR设备上（如iPhone）清晰渲染
-		const dpr = window.devicePixelRatio || 1;
-		const displayWidth = this.canvas.offsetWidth;
-		const displayHeight = this.canvas.offsetHeight;
+	setupScene(THREE, OrbitControls) {
+		// 创建场景
+		this.scene = new THREE.Scene();
+		this.scene.background = new THREE.Color(0x160016);
 
-		// 设置画布大小为实际像素大小
-		this.canvas.width = Math.floor(displayWidth * dpr);
-		this.canvas.height = Math.floor(displayHeight * dpr);
+		// 创建相机
+		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+		this.camera.position.set(0, 4, 21);
 
-		// 设置CSS尺寸为显示尺寸
-		this.canvas.style.width = `${displayWidth}px`;
-		this.canvas.style.height = `${displayHeight}px`;
+		// 创建渲染器
+		this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+		this.renderer.setSize(this.canvas.clientWidth || window.innerWidth, this.canvas.clientHeight || window.innerHeight);
 
-		// 缩放上下文以匹配设备像素比
-		this.ctx.scale(dpr, dpr);
+		// 创建控制器
+		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+		this.controls.enableDamping = true;
+		this.controls.enablePan = false;
+
+		// 创建时钟（需在导入完成后）
+		this.clock = new THREE.Clock();
+
+		// 创建银河粒子系统
+		this.createGalaxy(THREE);
+	}
+
+	createGalaxy(THREE) {
+		// r128 没有 Vector3.randomDirection，这里手动生成单位随机方向向量
+		const randomDirection = () => {
+			const u = Math.random();
+			const v = Math.random();
+			const theta = 2 * Math.PI * u;
+			const phi = Math.acos(2 * v - 1);
+			const x = Math.sin(phi) * Math.cos(theta);
+			const y = Math.cos(phi);
+			const z = Math.sin(phi) * Math.sin(theta);
+			return new THREE.Vector3(x, y, z);
+		};
+		const sizes = [];
+		const shift = [];
+		
+		const pushShift = () => {
+			shift.push(
+				Math.random() * Math.PI, 
+				Math.random() * Math.PI * 2, 
+				(Math.random() * 0.9 + 0.1) * Math.PI * 0.1,
+				Math.random() * 0.9 + 0.1
+			);
+		}
+
+		// 创建随机分布的粒子
+		const pts = new Array(50000).fill().map(p => {
+			sizes.push(Math.random() * 1.5 + 0.5);
+			pushShift();
+			return randomDirection().multiplyScalar(Math.random() * 0.5 + 9.5);
+		});
+
+		// 创建银河形状的粒子
+		for(let i = 0; i < 100000; i++){
+			let r = 10, R = 40;
+			let rand = Math.pow(Math.random(), 1.5);
+			let radius = Math.sqrt(R * R * rand + (1 - rand) * r * r);
+			pts.push(new THREE.Vector3().setFromCylindricalCoords(radius, Math.random() * 2 * Math.PI, (Math.random() - 0.5) * 2 ));
+			sizes.push(Math.random() * 1.5 + 0.5);
+			pushShift();
+		}
+
+		// 创建几何体和材质
+		const geometry = new THREE.BufferGeometry().setFromPoints(pts);
+		geometry.setAttribute("sizes", new THREE.Float32BufferAttribute(sizes, 1));
+		geometry.setAttribute("shift", new THREE.Float32BufferAttribute(shift, 4));
+
+		const material = new THREE.PointsMaterial({
+			size: 0.125,
+			transparent: true,
+			depthTest: false,
+			blending: THREE.AdditiveBlending,
+			onBeforeCompile: shader => {
+				shader.uniforms.time = this.gu.time;
+				shader.vertexShader = `
+					uniform float time;
+					attribute float sizes;
+					attribute vec4 shift;
+					varying vec3 vColor;
+					${shader.vertexShader}
+				`.replace(
+					`gl_PointSize = size;`,
+					`gl_PointSize = size * sizes;`
+				).replace(
+					`#include <color_vertex>`,
+					`#include <color_vertex>
+						float d = length(abs(position) / vec3(40., 10., 40));
+						d = clamp(d, 0., 1.);
+						vColor = mix(vec3(227., 155., 0.), vec3(100., 50., 255.), d) / 255.;
+					`
+				).replace(
+					`#include <begin_vertex>`,
+					`#include <begin_vertex>
+						float t = time;
+						float moveT = mod(shift.x + shift.z * t, PI2);
+						float moveS = mod(shift.y + shift.z * t, PI2);
+						transformed += vec3(cos(moveS) * sin(moveT), cos(moveT), sin(moveS) * sin(moveT)) * shift.w;
+					`
+				);
+				
+				shader.fragmentShader = `
+					varying vec3 vColor;
+					${shader.fragmentShader}
+				`.replace(
+					`#include <clipping_planes_fragment>`,
+					`#include <clipping_planes_fragment>
+						float d = length(gl_PointCoord.xy - 0.5);
+					`
+				).replace(
+					`vec4 diffuseColor = vec4( diffuse, opacity );`,
+					`vec4 diffuseColor = vec4( vColor, smoothstep(0.5, 0.1, d) );`
+				);
+			}
+		});
+
+		this.points = new THREE.Points(geometry, material);
+		this.points.rotation.order = "ZYX";
+		this.points.rotation.z = 0.2;
+		this.scene.add(this.points);
 	}
 
 	setupEventListeners() {
-		window.addEventListener("resize", () => this.resizeCanvas());
-		this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e));
-		this.canvas.addEventListener("mouseleave", () => this.handleMouseLeave());
-
-		// 监听设备方向变化，重新创建食物
-		if (isPhone && window.orientation !== undefined) {
-			window.addEventListener("orientationchange", () => {
-				setTimeout(() => {
-					this.resizeCanvas();
-					this.createSpecialBlock();
-				}, 300);
-			});
-		}
+		window.addEventListener("resize", () => this.handleResize());
+		// 添加页面可见性变化监听
+		document.addEventListener(visibilityChangeEvent, this.handleVisibilityChange.bind(this));
 	}
 
-	handleMouseMove(event) {
-		const rect = this.canvas.getBoundingClientRect();
-		const mouseX = event.clientX - rect.left;
-		const mouseY = event.clientY - rect.top;
-
-		const startX =
-			Math.floor(this.gridOffset.x / this.options.squareSize) *
-			this.options.squareSize;
-		const startY =
-			Math.floor(this.gridOffset.y / this.options.squareSize) *
-			this.options.squareSize;
-
-		const hoveredSquareX = Math.floor(
-			(mouseX + this.gridOffset.x - startX) / this.options.squareSize
-		);
-		const hoveredSquareY = Math.floor(
-			(mouseY + this.gridOffset.y - startY) / this.options.squareSize
-		);
-
-		if (
-			this.hoveredSquare?.x !== hoveredSquareX ||
-			this.hoveredSquare?.y !== hoveredSquareY
-		) {
-			// 将当前悬停的格子添加到蛇身
-			if (this.hoveredSquare) {
-				this.snakeBody.unshift({
-					x: this.hoveredSquare.x,
-					y: this.hoveredSquare.y,
-				});
-
-				// 如果没有吃到食物，移除蛇尾
-				if (!this.shouldGrow && this.snakeBody.length > 0) {
-					this.snakeBody.pop();
-				}
-				this.shouldGrow = false;
-			}
-
-			this.hoveredSquare = { x: hoveredSquareX, y: hoveredSquareY };
-			this.targetOpacity = 0.6;
-
-			// 检查是否吃到食物
-			if (
-				this.specialBlock &&
-				hoveredSquareX === this.specialBlock.x &&
-				hoveredSquareY === this.specialBlock.y
-			) {
-				this.shouldGrow = true; // 标记蛇身需要增长
-				this.createSpecialBlock(); // 吃到食物时立即生成新的食物
-			}
-		}
-	}
-
-	handleMouseLeave() {
-		if (this.hoveredSquare) {
-			const startX =
-				Math.floor(this.gridOffset.x / this.options.squareSize) *
-				this.options.squareSize;
-			const startY =
-				Math.floor(this.gridOffset.y / this.options.squareSize) *
-				this.options.squareSize;
-			const key = `${this.hoveredSquare.x},${this.hoveredSquare.y}`;
-			this.trailSquares.set(key, {
-				x: this.hoveredSquare.x * this.options.squareSize + startX,
-				y: this.hoveredSquare.y * this.options.squareSize + startY,
-				opacity: 0.6,
-			});
-		}
-		this.hoveredSquare = null;
-		this.targetOpacity = 0;
-	}
-
-	createSpecialBlock() {
-		// 清除之前的定时器
-		if (this.specialBlockTimer) {
-			clearTimeout(this.specialBlockTimer);
-		}
-
-		// 获取设备像素比
-		const dpr = window.devicePixelRatio || 1;
-
-		// 随机生成特殊方块的位置
-		const numSquaresX = Math.ceil((this.canvas.width / dpr) / this.options.squareSize);
-		const numSquaresY = Math.ceil((this.canvas.height / dpr) / this.options.squareSize);
-
-		// 确保食物不会生成在蛇身上和边缘
-		let newX, newY;
-		do {
-			// 避开边缘，留出1格的空间
-			newX = 1 + Math.floor(Math.random() * (numSquaresX - 2));
-			newY = 1 + Math.floor(Math.random() * (numSquaresY - 2));
-		} while (
-			this.snakeBody.some((segment) => segment.x === newX && segment.y === newY)
-		);
-
-		this.specialBlock = {
-			x: newX,
-			y: newY,
-			color: this.options.specialBlockColor,
-			initialOffset: { ...this.gridOffset },
-		};
-	}
-
-	drawGrid() {
-		const dpr = window.devicePixelRatio || 1;
-
-		// 清除前重置变换
-		this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-		// 应用DPR比例
-		this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-		const startX =
-			Math.floor(this.gridOffset.x / this.options.squareSize) *
-			this.options.squareSize;
-		const startY =
-			Math.floor(this.gridOffset.y / this.options.squareSize) *
-			this.options.squareSize;
-
-		// 增加边框线宽度，特别是在iOS设备上
-		this.ctx.lineWidth = isPhone ? 1.0 : 0.5;
-
-		// 为iOS设备优化渲染，避免边框闪烁
-		if (isPhone) {
-			this.ctx.translate(0.5, 0.5); // 在iOS上对齐像素
-		}
-
-		// 绘制蛇身
-		this.snakeBody.forEach((segment, index) => {
-			const squareX =
-				Math.round(segment.x * this.options.squareSize +
-				startX -
-				(this.gridOffset.x % this.options.squareSize));
-			const squareY =
-				Math.round(segment.y * this.options.squareSize +
-				startY -
-				(this.gridOffset.y % this.options.squareSize));
-
-			this.ctx.shadowColor = this.options.hoverShadowColor;
-			this.ctx.shadowBlur = 15;
-			this.ctx.shadowOffsetX = 0;
-			this.ctx.shadowOffsetY = 0;
-
-			// 计算蛇身颜色渐变
-			if (index === 0) {
-				// 蛇头使用特殊颜色
-				this.ctx.fillStyle = this.options.snakeHeadColor;
-			} else {
-				// 计算渐变系数
-				const gradientFactor = Math.pow(this.options.snakeColorDecay, index);
-
-				// 解析头部和尾部颜色
-				const headColorMatch = this.options.snakeHeadColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([.\d]+))?\)/);
-				const tailColorMatch = this.options.snakeTailColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([.\d]+))?\)/);
-
-				if (headColorMatch && tailColorMatch) {
-					const headR = parseInt(headColorMatch[1]);
-					const headG = parseInt(headColorMatch[2]);
-					const headB = parseInt(headColorMatch[3]);
-					const headA = headColorMatch[4] ? parseFloat(headColorMatch[4]) : 1;
-
-					const tailR = parseInt(tailColorMatch[1]);
-					const tailG = parseInt(tailColorMatch[2]);
-					const tailB = parseInt(tailColorMatch[3]);
-					const tailA = tailColorMatch[4] ? parseFloat(tailColorMatch[4]) : 1;
-
-					// 计算中间渐变色
-					const r = Math.round(headR + (tailR - headR) * (1 - gradientFactor));
-					const g = Math.round(headG + (tailG - headG) * (1 - gradientFactor));
-					const b = Math.round(headB + (tailB - headB) * (1 - gradientFactor));
-					const a = headA + (tailA - headA) * (1 - gradientFactor);
-
-					this.ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
-				} else {
-					// 回退到简单透明度渐变
-					const opacity = Math.max(0.2, gradientFactor);
-					this.ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-				}
-			}
-
-			this.ctx.fillRect(
-				squareX,
-				squareY,
-				this.options.squareSize,
-				this.options.squareSize
-			);
-
-			this.ctx.shadowColor = "transparent";
-			this.ctx.shadowBlur = 0;
-		});
-
-		// 绘制当前悬停的格子和食物
-		for (
-			let x = startX;
-			x < this.canvas.width + this.options.squareSize;
-			x += this.options.squareSize
-		) {
-			for (
-				let y = startY;
-				y < this.canvas.height + this.options.squareSize;
-				y += this.options.squareSize
-			) {
-				const squareX = Math.round(x - (this.gridOffset.x % this.options.squareSize));
-				const squareY = Math.round(y - (this.gridOffset.y % this.options.squareSize));
-				const gridX = Math.floor((x - startX) / this.options.squareSize);
-				const gridY = Math.floor((y - startY) / this.options.squareSize);
-
-				// 绘制食物
-				if (
-					this.specialBlock &&
-					gridX === this.specialBlock.x &&
-					gridY === this.specialBlock.y
-				) {
-					this.ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
-					this.ctx.shadowBlur = 20;
-					this.ctx.fillStyle = this.specialBlock.color;
-					this.ctx.fillRect(
-						squareX,
-						squareY,
-						this.options.squareSize,
-						this.options.squareSize
-					);
-					this.ctx.shadowColor = "transparent";
-					this.ctx.shadowBlur = 0;
-				}
-
-				// 绘制当前悬停的格子（蛇头）
-				if (
-					this.hoveredSquare &&
-					gridX === this.hoveredSquare.x &&
-					gridY === this.hoveredSquare.y
-				) {
-					this.ctx.shadowColor = this.options.hoverShadowColor;
-					this.ctx.shadowBlur = 15;
-					this.ctx.shadowOffsetX = 0;
-					this.ctx.shadowOffsetY = 0;
-
-					const color = this.options.hoverFillColor.replace(
-						"0.6",
-						this.currentOpacity.toString()
-					);
-					this.ctx.fillStyle = color;
-					this.ctx.fillRect(
-						squareX,
-						squareY,
-						this.options.squareSize,
-						this.options.squareSize
-					);
-
-					this.ctx.shadowColor = "transparent";
-					this.ctx.shadowBlur = 0;
-				}
-
-				this.ctx.strokeStyle = this.options.borderColor;
-				this.ctx.strokeRect(
-					squareX,
-					squareY,
-					this.options.squareSize,
-					this.options.squareSize
-				);
-			}
-		}
-
-		// 移动设备上重置坐标变换
-		if (isPhone) {
-			this.ctx.translate(-0.5, -0.5);
-		}
-
-		// 创建径向渐变来实现暗角效果
-		const gradient = this.ctx.createRadialGradient(
-			this.canvas.width / dpr / 2,
-			this.canvas.height / dpr / 2,
-			0,
-			this.canvas.width / dpr / 2,
-			this.canvas.height / dpr / 2,
-			Math.sqrt(
-				Math.pow(this.canvas.width / dpr, 2) + Math.pow(this.canvas.height / dpr, 2)
-			) / 2
-		);
-		gradient.addColorStop(0, "rgba(6, 6, 6, 0)");
-		gradient.addColorStop(1, "#060606");
-
-		this.ctx.fillStyle = gradient;
-		this.ctx.fillRect(0, 0, this.canvas.width / dpr, this.canvas.height / dpr);
-	}
-
-	updateAnimation(timestamp) {
-		if (!this.lastTimestamp) {
-			this.lastTimestamp = timestamp;
-		}
-
-		const deltaTime = timestamp - this.lastTimestamp;
-		this.lastTimestamp = timestamp;
-
-		// 更新透明度
-		if (this.currentOpacity !== this.targetOpacity) {
-			const progress = Math.min(deltaTime / this.options.transitionDuration, 1);
-			this.currentOpacity =
-				this.currentOpacity +
-				(this.targetOpacity - this.currentOpacity) * progress;
-		}
-
-		// 更新痕迹格子的透明度
-		for (const [key, square] of this.trailSquares) {
-			square.opacity -= deltaTime / this.options.trailDuration;
-			if (square.opacity <= 0) {
-				this.trailSquares.delete(key);
-			}
-		}
-
-		// 获取设备像素比
-		const dpr = window.devicePixelRatio || 1;
-
-		// 更新网格位置，为移动设备降低速度以减少闪烁
-		const effectiveSpeed = Math.max(
-			isPhone ? this.options.speed * 0.8 : this.options.speed,
-			0
-		);
-
-		// 确保移动位置为整数值来避免子像素渲染导致的闪烁
-		const moveAmount = isPhone ?
-			Math.round(effectiveSpeed * 100) / 100 :
-			effectiveSpeed;
-
-		switch (this.options.direction) {
-			case "right":
-				this.gridOffset.x =
-					(this.gridOffset.x - moveAmount + this.options.squareSize) %
-					this.options.squareSize;
-				break;
-			case "left":
-				this.gridOffset.x =
-					(this.gridOffset.x + moveAmount + this.options.squareSize) %
-					this.options.squareSize;
-				break;
-			case "up":
-				this.gridOffset.y =
-					(this.gridOffset.y + moveAmount + this.options.squareSize) %
-					this.options.squareSize;
-				break;
-			case "down":
-				this.gridOffset.y =
-					(this.gridOffset.y - moveAmount + this.options.squareSize) %
-					this.options.squareSize;
-				break;
-			case "diagonal":
-				this.gridOffset.x =
-					(this.gridOffset.x - moveAmount + this.options.squareSize) %
-					this.options.squareSize;
-				this.gridOffset.y =
-					(this.gridOffset.y - moveAmount + this.options.squareSize) %
-					this.options.squareSize;
-				break;
-		}
-
-		// 检查食物是否移出屏幕
-		if (this.specialBlock) {
-			const startX =
-				Math.floor(this.gridOffset.x / this.options.squareSize) *
-				this.options.squareSize;
-			const startY =
-				Math.floor(this.gridOffset.y / this.options.squareSize) *
-				this.options.squareSize;
-			const foodX =
-				Math.round(this.specialBlock.x * this.options.squareSize +
-				startX -
-				(this.gridOffset.x % this.options.squareSize));
-			const foodY =
-				Math.round(this.specialBlock.y * this.options.squareSize +
-				startY -
-				(this.gridOffset.y % this.options.squareSize));
-
-			// 调整适用于设备像素比的边界检查
-			if (
-				foodX < -this.options.squareSize ||
-				foodX > this.canvas.width / dpr ||
-				foodY < -this.options.squareSize ||
-				foodY > this.canvas.height / dpr
-			) {
-				// 食物移出屏幕时生成新的食物
-				this.createSpecialBlock();
-			}
-		}
-
-		this.drawGrid();
-		this.animationFrame = requestAnimationFrame((timestamp) =>
-			this.updateAnimation(timestamp)
-		);
+	handleResize() {
+		if (!this.camera || !this.renderer) return;
+		
+		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.updateProjectionMatrix();
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
 	animate() {
-		this.animationFrame = requestAnimationFrame((timestamp) =>
-			this.updateAnimation(timestamp)
-		);
+		if (!this.scene || !this.camera || !this.renderer) return;
+		
+		this.animationFrame = requestAnimationFrame(() => this.animate());
+		
+		// 更新控制器
+		this.controls.update();
+		
+		// 更新时间
+		const t = this.clock.getElapsedTime() * 0.5;
+		this.gu.time.value = t * Math.PI;
+		
+		// 旋转银河
+		if (this.points) {
+			this.points.rotation.y = t * 0.05;
+		}
+		
+		// 渲染场景
+		this.renderer.render(this.scene, this.camera);
 	}
 
 	handleVisibilityChange() {
@@ -495,8 +194,7 @@ class GridAnimation {
 			}
 		} else {
 			// 页面重新可见时恢复动画
-			if (!this.animationFrame) {
-				this.lastTimestamp = 0; // 重置时间戳以防止大幅度更新
+			if (!this.animationFrame && this.isInitialized) {
 				this.animate();
 			}
 		}
@@ -505,21 +203,21 @@ class GridAnimation {
 	destroy() {
 		if (this.animationFrame) {
 			cancelAnimationFrame(this.animationFrame);
+			this.animationFrame = null;
 		}
-		window.removeEventListener("resize", () => this.resizeCanvas());
-		this.canvas.removeEventListener("mousemove", (e) =>
-			this.handleMouseMove(e)
-		);
-		this.canvas.removeEventListener("mouseleave", () =>
-			this.handleMouseLeave()
-		);
+		
+		window.removeEventListener("resize", () => this.handleResize());
 		document.removeEventListener(visibilityChangeEvent, this.handleVisibilityChange.bind(this));
 
-		// 移除方向变化监听
-		if (isPhone && window.orientation !== undefined) {
-			window.removeEventListener("orientationchange", () => {});
+		// 清理Three.js资源
+		if (this.renderer) {
+			this.renderer.dispose();
+		}
+		if (this.scene) {
+			this.scene.clear();
 		}
 	}
+
 }
 
 window.hiddenProperty =
@@ -629,11 +327,7 @@ function switchPage() {
 		easing: "easeOutQuad",
 		d: DOM.path.getAttribute("pathdata:id"),
 		complete: function (anim) {
-			if (canvas) {
-				cancelAnimationFrame(animationID);
-				canvas.parentElement.removeChild(canvas);
-				canvas = null;
-			}
+			// 银河动效会在页面切换时自动清理
 		},
 	});
 
@@ -646,29 +340,12 @@ function loadMain() {
 	}
 	setTimeout(() => {
 		$(".card-inner").classList.add("in");
-		setTimeout(() => {
-			const canvas = document.getElementById("gridCanvas");
+        const canvas = document.getElementById("galaxyCanvas");
 			if (canvas) {
-				const gridAnimation = new GridAnimation(canvas, {
-					direction: "diagonal",
-					speed: isPhone ? 0.03 : 0.05,
-					borderColor: isPhone ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.1)",
-					squareSize: isPhone ? 50 : 40,
-					hoverFillColor: "rgba(255, 255, 255, 0.8)",
-					hoverShadowColor: "rgba(255, 255, 255, 0.8)",
-					transitionDuration: 200,
-					trailDuration: 1500,
-					specialBlockColor: "rgba(100, 255, 152, 0.8)",
-					specialHoverColor: "rgba(29, 202, 29, 0.8)",
-					// 蛇身颜色渐变配置
-					snakeHeadColor: "rgba(255, 255, 255, 0.95)",
-					snakeTailColor: "rgba(218, 231, 255, 0.25)",
-					snakeColorDecay: 0.85, // 颜色衰减系数
-				});
-				gridAnimation.init();
-			}
-		}, 1100);
-	}, 400);
+            const galaxyAnimation = new GalaxyAnimation(canvas);
+            galaxyAnimation.init();
+        }
+    }, 0);
 	loadMain.loaded = true;
 }
 
