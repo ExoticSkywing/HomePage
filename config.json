@@ -8,12 +8,12 @@
 		"title": "ManYuZO",
 		"subtitle": "碰撞出你的浪漫宇宙",
 		"enter": "点击或滑动",
-		"supportAuthor": true,
+		"supportAuthor": false,
 		"background": true
 	},
 	"main": {
 		"name": "浪漫宇宙",
-		"signature": "Code & Input & Output",
+		"signature": "Ethereal & Liberty & Grace",
 		"avatar": {
 			"link": "https://api.minio.1yo.cc/nebuluxe/halosparkpix/202311092002032.png",
 			"height": "100",
@@ -21,34 +21,19 @@
 		},
 		"ul": {
 			"first": {
-				"href": "https://elysium.thebenezer.com",
-				"icon": "liuxing",
-				"text": "沉思冥想"
-			},
-			"second": {
-				"href": "https://nz.1yo.cc",
-				"icon": "niudan",
-				"text": "舰桥"
-			},
-			"third": {
-				"href": "https://nav.1yo.cc",
-				"icon": "fengche",
-				"text": "起飞台"
-			},
-			"fourth": {
 				"href": "https://yue.1yo.cc",
 				"icon": "star",
 				"text": "星际乐章"
 			},
-			"bbbb": {
+			"second": {
+				"href": "https://nav.1yo.cc",
+				"icon": "fengche",
+				"text": "起飞台"
+			},
+			"third": {
 				"href": "https://bruno-simon.com",
 				"icon": "xianxingchonglangban",
 				"text": "驾驶舱"
-			},
-			"ccc": {
-				"href": "https://file.tsmoe.com",
-				"icon": "huiyuan",
-				"text": "ysl"
 			}
 		}
 	}

@@ -59,7 +59,14 @@ gulp.task('assets', function () {
 		.pipe(gulp.dest('./dist/assets'));
 })
 
-gulp.task('build', gulp.series('clean', 'assets', 'pug', 'css', 'js', 'html'))
+gulp.task('favicon', function () {
+	// 如果根目录有favicon.ico，从根目录复制；否则从dist目录复制
+	return gulp
+		.src(['./favicon.ico'], { allowEmpty: true })
+		.pipe(gulp.dest('./dist'));
+})
+
+gulp.task('build', gulp.series('clean', 'assets', 'favicon', 'pug', 'css', 'js', 'html'))
 gulp.task('default', gulp.series('build'))
 
 gulp.task('watch', function () {
