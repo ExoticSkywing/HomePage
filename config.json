@@ -1,13 +1,13 @@
 {
 	"head": {
-		"title": "欢迎着陆浪漫宇宙宇宙",
+		"title": "欢迎着陆浪漫宇宙",
 		"description": "Author:SimonAKing,Category:Personal Blog",
 		"favicon": "favicon.ico"
 	},
 	"intro": {
 		"title": "ManYuZO",
-		"subtitle": "Front back left right end engineer",
-		"enter": "向下滑动",
+		"subtitle": "碰撞出你的浪漫宇宙",
+		"enter": "点击或滑动",
 		"supportAuthor": true,
 		"background": true
 	},
@@ -21,14 +21,14 @@
 		},
 		"ul": {
 			"first": {
-				"href": "blog/",
-				"icon": "bokeyuan",
-				"text": "Blog"
+				"href": "https://elysium.thebenezer.com",
+				"icon": "liuxing",
+				"text": "沉思冥想"
 			},
 			"second": {
-				"href": "about/",
-				"icon": "xiaolian",
-				"text": "About"
+				"href": "https://nz.1yo.cc",
+				"icon": "niudan",
+				"text": "舰桥"
 			},
 			"third": {
 				"href": "https://nav.1yo.cc",
@@ -36,18 +36,18 @@
 				"text": "起飞台"
 			},
 			"fourth": {
-				"href": "https://github.com/SimonAKing",
+				"href": "https://yue.1yo.cc",
 				"icon": "star",
 				"text": "星际乐章"
 			},
 			"bbbb": {
-				"href": "https://lmyz.1yo.cc",
+				"href": "https://bruno-simon.com",
 				"icon": "xianxingchonglangban",
-				"text": "lmyz"
+				"text": "驾驶舱"
 			},
 			"ccc": {
-				"href": "https://i.ysl.monster",
-				"icon": "github",
+				"href": "https://file.tsmoe.com",
+				"icon": "huiyuan",
 				"text": "ysl"
 			}
 		}
