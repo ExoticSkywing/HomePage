@@ -367,33 +367,37 @@ window.addEventListener("DOMContentLoaded", loadIntro);
 
 const enterEl = $(".enter");
 enterEl.addEventListener("click", loadAll);
-enterEl.addEventListener("touchenter", loadAll);
+enterEl.addEventListener("touchend", loadAll);
 
-document.body.addEventListener("mousewheel", loadAll, { passive: true });
-$(".arrow").addEventListener("mouseenter", loadAll);
-
-if (isPhone) {
-	document.addEventListener(
-		"touchstart",
-		function (e) {
-			window.startx = e.touches[0].pageX;
-			window.starty = e.touches[0].pageY;
-		},
-		{ passive: true }
-	);
-	document.addEventListener(
-		"touchend",
-		function (e) {
-			let endx, endy;
-			endx = e.changedTouches[0].pageX;
-			endy = e.changedTouches[0].pageY;
-
-			const direction = getMoveDirection(startx, starty, endx, endy);
-			if (direction !== DIRECTIONS.UP) {
-				return;
-			}
-			loadAll();
-		},
-		{ passive: true }
-	);
+// PC端保留滚轮和箭头悬停触发
+if (!isPhone) {
+	document.body.addEventListener("mousewheel", loadAll, { passive: true });
+	$(".arrow").addEventListener("mouseenter", loadAll);
 }
+
+// 移动端禁用滑动触发，只能点击按钮进入
+// if (isPhone) {
+// 	document.addEventListener(
+// 		"touchstart",
+// 		function (e) {
+// 			window.startx = e.touches[0].pageX;
+// 			window.starty = e.touches[0].pageY;
+// 		},
+// 		{ passive: true }
+// 	);
+// 	document.addEventListener(
+// 		"touchend",
+// 		function (e) {
+// 			let endx, endy;
+// 			endx = e.changedTouches[0].pageX;
+// 			endy = e.changedTouches[0].pageY;
+
+// 			const direction = getMoveDirection(startx, starty, endx, endy);
+// 			if (direction !== DIRECTIONS.UP) {
+// 				return;
+// 			}
+// 			loadAll();
+// 		},
+// 		{ passive: true }
+// 	);
+// }
