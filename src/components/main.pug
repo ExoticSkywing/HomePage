@@ -6,31 +6,34 @@
             h1.text-custom(data-translate="name") #{main.name}
             h2#signature(data-translate="signature") #{main.signature}
 
-          - const { first, second, third } = main.ul
+          - const { first, second, third } = main.ul || {}
           ul
-            li
-              a(href=`${first.href}` aria-label=`${first.text}`)
-                if first.icon.startsWith('http')
-                  img.icon-img(src=`${first.icon}` alt=`${first.text}`)
-                else
-                  i(class=`icon icon-${first.icon}`)
-                span.text-custom(data-translate=`${first.text}`) #{first.text}
+            if first
+              li
+                a(href=`${first.href}` aria-label=`${first.text}`)
+                  if first.icon.startsWith('http')
+                    img.icon-img(src=`${first.icon}` alt=`${first.text}`)
+                  else
+                    i(class=`icon icon-${first.icon}`)
+                  span.text-custom(data-translate=`${first.text}`) #{first.text}
 
-            li
-              a(href=`${second.href}` aria-label=`${second.text}`)
-                if second.icon.startsWith('http')
-                  img.icon-img(src=`${second.icon}` alt=`${second.text}`)
-                else
-                  i(class=`icon icon-${second.icon}`)
-                span.text-custom(data-translate=`${second.text}`) #{second.text}
+            if second
+              li
+                a(href=`${second.href}` aria-label=`${second.text}`)
+                  if second.icon.startsWith('http')
+                    img.icon-img(src=`${second.icon}` alt=`${second.text}`)
+                  else
+                    i(class=`icon icon-${second.icon}`)
+                  span.text-custom(data-translate=`${second.text}`) #{second.text}
 
-            li
-              a(href=`${third.href}` aria-label=`${third.text}` target="_blank")
-                if third.icon.startsWith('http')
-                  img.icon-img(src=`${third.icon}` alt=`${third.text}`)
-                else
-                  i(class=`icon icon-${third.icon}`)
-                span.text-custom(data-translate=`${third.text}`) #{third.text}
+            if third
+              li
+                a(href=`${third.href}` aria-label=`${third.text}` target="_blank")
+                  if third.icon.startsWith('http')
+                    img.icon-img(src=`${third.icon}` alt=`${third.text}`)
+                  else
+                    i(class=`icon icon-${third.icon}`)
+                  span.text-custom(data-translate=`${third.text}`) #{third.text}
 
             //- li
             //-   a(href=`${fourth.href}` aria-label=`${fourth.text}` target="_blank")
