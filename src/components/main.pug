@@ -19,7 +19,7 @@
 
             if second
               li
-                a(href=`${second.href}` aria-label=`${second.text}`)
+                a(href=`${second.href}` aria-label=`${second.text}` data-entry="second")
                   if second.icon.startsWith('http')
                     img.icon-img(src=`${second.icon}` alt=`${second.text}`)
                   else

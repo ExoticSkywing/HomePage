@@ -241,6 +241,12 @@ window.isPhone =
 		navigator.userAgent
 	);
 
+function updateSecondEntryHref() {
+	const secondEntryLink = document.querySelector('a[data-entry="second"]');
+	if (!secondEntryLink) return;
+	secondEntryLink.href = isPhone ? "https://lmyz.1yo.cc" : "https://nav.1yo.cc";
+}
+
 function getMoveDirection(startx, starty, endx, endy) {
 	if (!isPhone) {
 		return;
@@ -364,6 +370,7 @@ window.visibilityChangeEvent = hiddenProperty.replace(
 );
 window.addEventListener(visibilityChangeEvent, loadIntro);
 window.addEventListener("DOMContentLoaded", loadIntro);
+window.addEventListener("DOMContentLoaded", updateSecondEntryHref);
 
 const enterEl = $(".enter");
 enterEl.addEventListener("click", loadAll);
