@@ -244,7 +244,7 @@ window.isPhone =
 function updateSecondEntryHref() {
 	const secondEntryLink = document.querySelector('a[data-entry="second"]');
 	if (!secondEntryLink) return;
-	secondEntryLink.href = isPhone ? "https://lmyz.1yo.cc" : "https://nav.1yo.cc";
+	secondEntryLink.href = isPhone ? "https://nav.1yo.cc" : "https://nav.1yo.cc";
 }
 
 function getMoveDirection(startx, starty, endx, endy) {

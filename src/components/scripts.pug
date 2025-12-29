@@ -1,3 +1,6 @@
+if intro.background
+	script(src='js/background.js' defer)
+
 // 本地优先加载，失败再回退到 CDN；统一使用 defer 以避免阻塞渲染
 script(
   src="assets/vendor/anime.min.js"
@@ -51,9 +54,6 @@ script.
 	}
 
 script(src='js/main.js' defer)
-
-if intro.background
-	script(src='js/background.js' defer)
 
 if intro.supportAuthor
 	script(src="assets/vendor/log.min.js" defer onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/SimonAKing/js/log.min.js';s.defer=true;document.head.appendChild(s)})()")

@@ -957,11 +957,7 @@ window.addEventListener(visibilityChangeEvent, initBackground)
 // 尽量晚一点初始化：空闲时或页面载入后，或首次用户交互
 const scheduleInitBackground = () => {
 	if (initBackground.loaded) return
-	if ('requestIdleCallback' in window) {
-		requestIdleCallback(() => initBackground())
-	} else {
-		setTimeout(() => initBackground(), 800)
-	}
+	initBackground()
 }
 // 页面结构可用即安排（比 load 更早），并在 load 时再次兜底
 document.addEventListener('DOMContentLoaded', scheduleInitBackground)
