@@ -10,25 +10,25 @@
 	transition: width ease 0.5s, height ease 0.5s;
 	background: #160016;
 
-		.card-inner {
-			padding: clamp(20px, 3vw, 32px) clamp(24px, 4vw, 32px);
-			border: 1px solid rgba(123, 44, 191, 0.4);
-			border-radius: 50%;
-			background: rgba(26, 8, 40, 0.12);
-			-webkit-backdrop-filter: blur(1.8px) saturate(148%);
-			backdrop-filter: blur(1.8px) saturate(148%);
-			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18), 0 0 50px rgba(123, 44, 191, 0.25), 0 0 100px rgba(123, 44, 191, 0.15), 0 0 150px rgba(123, 44, 191, 0.08);
-			position: relative;
-			z-index: 2;
-			color: #f0f0f2;
-			width: clamp(600px, 50vmin, 1020px);
-			aspect-ratio: 1 / 1;
-			overflow: hidden;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			min-height: 0;
+	.card-inner {
+		padding: clamp(20px, 3vw, 32px) clamp(24px, 4vw, 32px);
+		border: 1px solid rgba(123, 44, 191, 0.4);
+		border-radius: 50%;
+		background: rgba(26, 8, 40, 0.12);
+		-webkit-backdrop-filter: blur(1.8px) saturate(148%);
+		backdrop-filter: blur(1.8px) saturate(148%);
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18), 0 0 50px rgba(123, 44, 191, 0.25), 0 0 100px rgba(123, 44, 191, 0.15), 0 0 150px rgba(123, 44, 191, 0.08);
+		position: relative;
+		z-index: 2;
+		color: #f0f0f2;
+		width: clamp(600px, 50vmin, 1020px);
+		aspect-ratio: 1 / 1;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 0;
 
 		// 多层边缘羽化过渡
 		&::before {
@@ -37,7 +37,7 @@
 			inset: -8px;
 			border-radius: 50%;
 			pointer-events: none;
-			background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0) 70%);
+			background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%);
 			z-index: -1;
 		}
 
@@ -47,7 +47,7 @@
 			inset: 0;
 			border-radius: 50%;
 			pointer-events: none;
-			background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0) 85%);
+			background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 60%, rgba(255, 255, 255, 0) 85%);
 		}
 
 		@media screen and (max-width: 540px) {
@@ -65,13 +65,13 @@
 			// 移动端增强羽化效果
 			&::before {
 				inset: -100px;
-				background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.02) 65%, rgba(255,255,255,0) 85%);
+				background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0.02) 65%, rgba(255, 255, 255, 0) 85%);
 			}
 
 			&::after {
-				background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.03) 60%, rgba(255,255,255,0.01) 80%, rgba(255,255,255,0) 95%);
+				background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.01) 80%, rgba(255, 255, 255, 0) 95%);
 			}
-			
+
 			header {
 				h1 {
 					font-size: clamp(1rem, 4vw, 1.4rem) !important;
@@ -91,33 +91,33 @@
 			ul {
 				flex-wrap: wrap;
 				gap: clamp(8px, 2vw, 12px);
-				
+
 				li {
 					font-size: clamp(0.8rem, 2vw, 1rem) !important;
 					flex: 1 1 calc(50% - 6px);
 					min-width: calc(50% - 6px);
-					
+
 					a {
 						font-size: clamp(0.7rem, 2vw, 0.9rem) !important;
 						color: #ffffff !important;
 						text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-						
+
 						i {
 							font-size: clamp(1.2rem, 3vw, 1.5rem) !important;
 							color: #ffffff !important;
 							text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 						}
-						
-					.icon-img {
-						width: clamp(3.24rem, 7.2vw, 3.96rem) !important;
-						height: clamp(3.24rem, 7.2vw, 3.96rem) !important;
-						max-width: 3.96rem !important;
-						max-height: 3.96rem !important;
-						object-fit: contain;
-						display: block;
-						filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
-					}
-						
+
+						.icon-img {
+							width: clamp(3.24rem, 7.2vw, 3.96rem) !important;
+							height: clamp(3.24rem, 7.2vw, 3.96rem) !important;
+							max-width: 3.96rem !important;
+							max-height: 3.96rem !important;
+							object-fit: contain;
+							display: block;
+							filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+						}
+
 						span {
 							font-size: clamp(0.6rem, 1.5vw, 0.8rem) !important;
 							color: #ffffff !important;
@@ -128,7 +128,7 @@
 			}
 		}
 
-			header {
+		header {
 			// border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 			margin-bottom: clamp(20px, 4vw, 40px);
 
@@ -139,83 +139,83 @@
 				transition: 0.4s ease-in-out;
 				width: clamp(60px, 8vw, 100px);
 				height: clamp(60px, 8vw, 100px);
-					z-index: 2;
-					position: relative;
+				z-index: 2;
+				position: relative;
 			}
 
-				h1 {
+			h1 {
 				margin: clamp(8px, 2vw, 15px) clamp(8px, 2vw, 15px) 0px;
 				color: #fff;
 				font-size: clamp(1.2rem, 3vw, 2rem);
 				line-height: 1.2em;
 				font-weight: 300;
-					z-index: 2;
-					position: relative;
-					text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6), 0 0 8px rgba(122, 64, 196, 0.35);
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					max-width: 100%;
+				z-index: 2;
+				position: relative;
+				text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6), 0 0 8px rgba(122, 64, 196, 0.35);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 100%;
 			}
 
-				h2 {
-					color: #e7e7e9;
+			h2 {
+				color: #e7e7e9;
 				letter-spacing: clamp(1px, 0.4vw, 3px);
 				font-size: clamp(0.6rem, 1.2vw, 0.8rem);
 				font-weight: lighter;
-					z-index: 2;
-					position: relative;
-					text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55), 0 0 6px rgba(122, 64, 196, 0.25);
+				z-index: 2;
+				position: relative;
+				text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55), 0 0 6px rgba(122, 64, 196, 0.25);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 100%;
+			}
+		}
+
+		ul {
+			position: relative;
+			margin: 0;
+			list-style-type: none;
+			display: flex;
+			width: 100%;
+			justify-content: space-around;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: clamp(4px, 1vw, 8px);
+			// border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
+			padding-bottom: clamp(20px, 4vw, 40px);
+
+			li {
+				z-index: 2;
+				position: relative;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: all 0.2s;
+				flex: 1;
+				min-width: 0;
+				// border-left: solid 0.1px hsla(0, 0%, 100%, 0.1);
+				// border-right: solid 0.1px hsla(0, 0%, 100%, 0.1);
+
+				a {
+					color: #f0f0f2;
+					text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+					transition: all 0.2s;
 					white-space: nowrap;
 					overflow: hidden;
 					text-overflow: ellipsis;
 					max-width: 100%;
-			}
-		}
-
-			ul {
-				position: relative;
-				margin: 0;
-				list-style-type: none;
-				display: flex;
-				width: 100%;
-				justify-content: space-around;
-				align-items: center;
-				flex-wrap: wrap;
-				gap: clamp(4px, 1vw, 8px);
-				// border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
-				padding-bottom: clamp(20px, 4vw, 40px);
-
-				li {
-					z-index: 2;
-					position: relative;
 					display: flex;
+					flex-direction: column;
 					align-items: center;
-					justify-content: center;
-					transition: all 0.2s;
-					flex: 1;
-					min-width: 0;
-					// border-left: solid 0.1px hsla(0, 0%, 100%, 0.1);
-					// border-right: solid 0.1px hsla(0, 0%, 100%, 0.1);
+					gap: clamp(2px, 0.5vw, 4px);
+					font-size: clamp(0.7rem, 1.5vw, 1rem);
 
-					a {
-						color: #f0f0f2;
-						text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
-						transition: all 0.2s;
-						white-space: nowrap;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						max-width: 100%;
-						display: flex;
-						flex-direction: column;
-						align-items: center;
-						gap: clamp(2px, 0.5vw, 4px);
-						font-size: clamp(0.7rem, 1.5vw, 1rem);
-
-						i {
-							flex-shrink: 0;
-							font-size: clamp(1rem, 2vw, 1.5rem);
-						}
+					i {
+						flex-shrink: 0;
+						font-size: clamp(1rem, 2vw, 1.5rem);
+					}
 
 					.icon-img {
 						flex-shrink: 0;
@@ -228,17 +228,17 @@
 						filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.3));
 					}
 
-						span {
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							max-width: 100%;
-							font-size: clamp(0.6rem, 1.2vw, 0.8rem);
-						}
+					span {
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						max-width: 100%;
+						font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+					}
 
 					&:hover {
-							color: #ffffff;
-							text-shadow: 0 0 4px #ffffff, 0 0 10px rgba(122, 64, 196, 0.4);
+						color: #ffffff;
+						text-shadow: 0 0 4px #ffffff, 0 0 10px rgba(122, 64, 196, 0.4);
 					}
 				}
 			}

@@ -1,22 +1,15 @@
-if intro.background
-	script(src='js/background.js' defer)
-
-// 本地优先加载，失败再回退到 CDN；统一使用 defer 以避免阻塞渲染
+//- 本地优先加载，失败时回退 CDN
 script(
   src="assets/vendor/anime.min.js"
-  defer
-  onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js';s.defer=true;document.head.appendChild(s)})()"
+  onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js';document.head.appendChild(s)})()"
 )
-// 传统 UMD 版本，提供全局 THREE（避免 ESM 导致的 export/require 报错）
 script(
   src="assets/vendor/three.min.js"
-  defer
-  onerror="(function(){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.defer=true;document.head.appendChild(s)})()"
+  onerror="(function(){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';document.head.appendChild(s)})()"
 )
 script(
   src="assets/vendor/OrbitControls.min.js"
-  defer
-  onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js';s.defer=true;document.head.appendChild(s)})()"
+  onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js';document.head.appendChild(s)})()"
 )
 
 
@@ -53,7 +46,10 @@ script.
 		SUNRAYS_WEIGHT: 1.0,
 	}
 
-script(src='js/main.js' defer)
+script(src='js/main.js')
+
+if intro.background
+	script(src='js/background.js')
 
 if intro.supportAuthor
-	script(src="assets/vendor/log.min.js" defer onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/SimonAKing/js/log.min.js';s.defer=true;document.head.appendChild(s)})()")
+	script(src="https://cdn.jsdelivr.net/gh/SimonAKing/js/log.min.js")

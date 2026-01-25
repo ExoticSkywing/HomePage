@@ -14,14 +14,19 @@ class GalaxyAnimation {
 
 	init() {
 		if (this.isInitialized) return;
+		// 检查 THREE 库是否已加载
+		if (typeof THREE === 'undefined') {
+			console.warn('Three.js not loaded, skipping galaxy animation');
+			return;
+		}
 		try {
 			// 直接使用全局 THREE 与 OrbitControls（由 scripts.pug 注入）
 			this.setupScene(THREE, THREE.OrbitControls || OrbitControls);
-		this.setupEventListeners();
-		this.animate();
+			this.setupEventListeners();
+			this.animate();
 			this.isInitialized = true;
 		} catch (error) {
-			console.error('Failed to load Three.js:', error);
+			console.error('Failed to initialize galaxy animation:', error);
 		}
 	}
 
@@ -64,11 +69,11 @@ class GalaxyAnimation {
 		};
 		const sizes = [];
 		const shift = [];
-		
+
 		const pushShift = () => {
 			shift.push(
-				Math.random() * Math.PI, 
-				Math.random() * Math.PI * 2, 
+				Math.random() * Math.PI,
+				Math.random() * Math.PI * 2,
 				(Math.random() * 0.9 + 0.1) * Math.PI * 0.1,
 				Math.random() * 0.9 + 0.1
 			);
@@ -82,11 +87,11 @@ class GalaxyAnimation {
 		});
 
 		// 创建银河形状的粒子
-		for(let i = 0; i < 100000; i++){
+		for (let i = 0; i < 100000; i++) {
 			let r = 10, R = 40;
 			let rand = Math.pow(Math.random(), 1.5);
 			let radius = Math.sqrt(R * R * rand + (1 - rand) * r * r);
-			pts.push(new THREE.Vector3().setFromCylindricalCoords(radius, Math.random() * 2 * Math.PI, (Math.random() - 0.5) * 2 ));
+			pts.push(new THREE.Vector3().setFromCylindricalCoords(radius, Math.random() * 2 * Math.PI, (Math.random() - 0.5) * 2));
 			sizes.push(Math.random() * 1.5 + 0.5);
 			pushShift();
 		}
@@ -128,7 +133,7 @@ class GalaxyAnimation {
 						transformed += vec3(cos(moveS) * sin(moveT), cos(moveT), sin(moveS) * sin(moveT)) * shift.w;
 					`
 				);
-				
+
 				shader.fragmentShader = `
 					varying vec3 vColor;
 					${shader.fragmentShader}
@@ -158,7 +163,7 @@ class GalaxyAnimation {
 
 	handleResize() {
 		if (!this.camera || !this.renderer) return;
-		
+
 		this.camera.aspect = window.innerWidth / window.innerHeight;
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -166,21 +171,21 @@ class GalaxyAnimation {
 
 	animate() {
 		if (!this.scene || !this.camera || !this.renderer) return;
-		
+
 		this.animationFrame = requestAnimationFrame(() => this.animate());
-		
+
 		// 更新控制器
 		this.controls.update();
-		
+
 		// 更新时间
 		const t = this.clock.getElapsedTime() * 0.5;
 		this.gu.time.value = t * Math.PI;
-		
+
 		// 旋转银河
 		if (this.points) {
 			this.points.rotation.y = t * 0.05;
 		}
-		
+
 		// 渲染场景
 		this.renderer.render(this.scene, this.camera);
 	}
@@ -205,7 +210,7 @@ class GalaxyAnimation {
 			cancelAnimationFrame(this.animationFrame);
 			this.animationFrame = null;
 		}
-		
+
 		window.removeEventListener("resize", () => this.handleResize());
 		document.removeEventListener(visibilityChangeEvent, this.handleVisibilityChange.bind(this));
 
@@ -224,10 +229,10 @@ window.hiddenProperty =
 	"hidden" in document
 		? "hidden"
 		: "webkitHidden" in document
-		? "webkitHidden"
-		: "mozHidden" in document
-		? "mozHidden"
-		: null;
+			? "webkitHidden"
+			: "mozHidden" in document
+				? "mozHidden"
+				: null;
 
 window.DIRECTIONS = {
 	UP: "UP",
@@ -346,12 +351,12 @@ function loadMain() {
 	}
 	setTimeout(() => {
 		$(".card-inner").classList.add("in");
-        const canvas = document.getElementById("galaxyCanvas");
-			if (canvas) {
-            const galaxyAnimation = new GalaxyAnimation(canvas);
-            galaxyAnimation.init();
-        }
-    }, 0);
+		const canvas = document.getElementById("galaxyCanvas");
+		if (canvas) {
+			const galaxyAnimation = new GalaxyAnimation(canvas);
+			galaxyAnimation.init();
+		}
+	}, 0);
 	loadMain.loaded = true;
 }
 

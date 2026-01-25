@@ -954,17 +954,7 @@ const initBackground = () => {
 }
 
 window.addEventListener(visibilityChangeEvent, initBackground)
-// 尽量晚一点初始化：空闲时或页面载入后，或首次用户交互
-const scheduleInitBackground = () => {
-	if (initBackground.loaded) return
-	initBackground()
-}
-// 页面结构可用即安排（比 load 更早），并在 load 时再次兜底
-document.addEventListener('DOMContentLoaded', scheduleInitBackground)
-window.addEventListener('load', scheduleInitBackground)
-document.addEventListener('pointerdown', scheduleInitBackground, { once: true })
-// 兜底：脚本执行后立即安排一次，以防上述事件错过
-scheduleInitBackground()
+window.addEventListener('DOMContentLoaded', initBackground)
 let animationID = null
 
 function update(first) {
