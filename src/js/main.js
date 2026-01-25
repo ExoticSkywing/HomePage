@@ -14,13 +14,11 @@ class GalaxyAnimation {
 
 	init() {
 		if (this.isInitialized) return;
-		// 检查 THREE 库是否已加载
 		if (typeof THREE === 'undefined') {
 			console.warn('Three.js not loaded, skipping galaxy animation');
 			return;
 		}
 		try {
-			// 直接使用全局 THREE 与 OrbitControls（由 scripts.pug 注入）
 			this.setupScene(THREE, THREE.OrbitControls || OrbitControls);
 			this.setupEventListeners();
 			this.animate();
@@ -31,38 +29,21 @@ class GalaxyAnimation {
 	}
 
 	setupScene(THREE, OrbitControls) {
-		// 创建场景
 		this.scene = new THREE.Scene();
 		this.scene.background = new THREE.Color(0x160016);
-
-		// 创建相机
-		// 修复黑屏：增加远剪裁面到 2000，确保能看到远处粒子
 		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
-		// 初始位置设在 800，确保在视锥体内
 		this.camera.position.set(0, 4, 800);
-
-		// 创建渲染器
 		this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
 		this.renderer.setSize(this.canvas.clientWidth || window.innerWidth, this.canvas.clientHeight || window.innerHeight);
-
-		// 创建控制器
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.controls.enableDamping = true;
 		this.controls.enablePan = false;
-
-		// 创建时钟（需在导入完成后）
 		this.clock = new THREE.Clock();
-
-		// 创建银河粒子系统
 		this.createGalaxy(THREE);
-
-		// 启动飞入动画
 		this.flyIn();
 	}
 
 	flyIn() {
-		// 虫洞穿越效果：相机从 z=120 (银河全景) 极速拉近到 z=21
-		// 修正：银河半径约 40，z=120 足够产生深空感且可见
 		if (typeof anime !== 'undefined') {
 			anime({
 				targets: this.camera.position,
@@ -74,8 +55,6 @@ class GalaxyAnimation {
 					this.camera.lookAt(0, 0, 0);
 				}
 			});
-
-			// 旋转速度动画保持不变
 			this.initialRotationSpeed = 20.0;
 			anime({
 				targets: this,
@@ -84,13 +63,11 @@ class GalaxyAnimation {
 				easing: 'easeOutExpo'
 			});
 		} else {
-			// 回退
 			this.camera.position.set(0, 4, 21);
 		}
 	}
 
 	createGalaxy(THREE) {
-		// r128 没有 Vector3.randomDirection，这里手动生成单位随机方向向量
 		const randomDirection = () => {
 			const u = Math.random();
 			const v = Math.random();
@@ -113,14 +90,12 @@ class GalaxyAnimation {
 			);
 		}
 
-		// 创建随机分布的粒子
 		const pts = new Array(50000).fill().map(p => {
 			sizes.push(Math.random() * 1.5 + 0.5);
 			pushShift();
 			return randomDirection().multiplyScalar(Math.random() * 0.5 + 9.5);
 		});
 
-		// 创建银河形状的粒子
 		for (let i = 0; i < 100000; i++) {
 			let r = 10, R = 40;
 			let rand = Math.pow(Math.random(), 1.5);
@@ -130,7 +105,6 @@ class GalaxyAnimation {
 			pushShift();
 		}
 
-		// 创建几何体和材质
 		const geometry = new THREE.BufferGeometry().setFromPoints(pts);
 		geometry.setAttribute("sizes", new THREE.Float32BufferAttribute(sizes, 1));
 		geometry.setAttribute("shift", new THREE.Float32BufferAttribute(shift, 4));
@@ -142,13 +116,12 @@ class GalaxyAnimation {
 			blending: THREE.AdditiveBlending,
 			onBeforeCompile: shader => {
 				shader.uniforms.time = this.gu.time;
-				// 添加交互相关的 uniforms
 				shader.uniforms.uMouse = { value: new THREE.Vector3(0, 0, 0) };
-				this.gu.uMouse = shader.uniforms.uMouse; // 引用以便在 update 中更新
+				this.gu.uMouse = shader.uniforms.uMouse;
 
 				shader.vertexShader = `
 					uniform float time;
-					uniform vec3 uMouse; // 鼠标在模型坐标系中的位置
+					uniform vec3 uMouse;
 					attribute float sizes;
 					attribute vec4 shift;
 					varying vec3 vColor;
@@ -171,16 +144,12 @@ class GalaxyAnimation {
 						float moveS = mod(shift.y + shift.z * t, PI2);
 						transformed += vec3(cos(moveS) * sin(moveT), cos(moveT), sin(moveS) * sin(moveT)) * shift.w;
 
-						// --- 粒子力场交互 (Repulsion) ---
-						// 计算鼠标与粒子的距离 (在同一局部坐标系)
 						float dist = distance(transformed, uMouse);
-						float radius = 6.0; // 交互半径
+						float radius = 6.0;
 						if (dist < radius) {
-							// 计算排斥力（越近越强）
 							float force = (1.0 - dist / radius);
-							force = force * force; // 指数衰减，更自然
+							force = force * force;
 							vec3 dir = normalize(transformed - uMouse);
-							// 沿垂直方向和径向推开，模拟水波纹
 							transformed += dir * force * 3.0; 
 						}
 					`
@@ -206,24 +175,18 @@ class GalaxyAnimation {
 		this.points.rotation.z = 0.2;
 		this.scene.add(this.points);
 
-		// 初始化交互所需的 Raycaster
 		this.raycaster = new THREE.Raycaster();
-		this.mouse = new THREE.Vector2(-1000, -1000); // 初始移出屏幕
-		this.interactionPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // XZ 平面
+		this.mouse = new THREE.Vector2(-1000, -1000);
+		this.interactionPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 	}
 
 	setupEventListeners() {
 		window.addEventListener("resize", () => this.handleResize());
-		// 添加页面可见性变化监听
 		document.addEventListener(visibilityChangeEvent, this.handleVisibilityChange.bind(this));
-
-		// 监听鼠标移动
 		window.addEventListener('mousemove', (event) => {
 			this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 			this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 		});
-
-		// 移动端触摸
 		window.addEventListener('touchmove', (event) => {
 			if (event.touches.length > 0) {
 				this.mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
@@ -231,58 +194,45 @@ class GalaxyAnimation {
 			}
 		});
 	}
-	// ...
+
+	handleResize() {
+		if (this.camera && this.renderer) {
+			this.camera.aspect = window.innerWidth / window.innerHeight;
+			this.camera.updateProjectionMatrix();
+			this.renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+	}
+
 	animate() {
 		if (!this.scene || !this.camera || !this.renderer) return;
 
 		this.animationFrame = requestAnimationFrame(() => this.animate());
-
-		// 更新控制器
 		this.controls.update();
-
-		// 计算 delta time，用于平滑累加旋转
 		const delta = this.clock.getDelta();
 		const t = this.clock.getElapsedTime() * 0.5;
 		this.gu.time.value = t * Math.PI;
 
-		// 旋转银河
 		if (this.points) {
-			// 使用动态速度（flyIn期间快，之后慢）进行累加
 			const speed = this.initialRotationSpeed !== undefined ? this.initialRotationSpeed : 0.05;
 			this.points.rotation.y += speed * delta;
-
-			// --- 计算交互投影 ---
-			// 1. 设置 Raycaster
 			this.raycaster.setFromCamera(this.mouse, this.camera);
-
-			// 2. 计算与 XZ 平面的交点
 			const target = new THREE.Vector3();
 			this.raycaster.ray.intersectPlane(this.interactionPlane, target);
-
 			if (target && this.gu.uMouse) {
-				// 3. 将世界坐标转为银河的局部坐标
-				// 这样即使银河在旋转，力场也会跟随鼠标位置下的星星
 				this.points.worldToLocal(target);
-
-				// 4. 更新 Shader 中的鼠标位置
-				// 使用 lerp 平滑移动，避免瞬移跳变
 				this.gu.uMouse.value.lerp(target, 0.1);
 			}
 		}
-
-		// 渲染场景
 		this.renderer.render(this.scene, this.camera);
 	}
 
 	handleVisibilityChange() {
 		if (document[hiddenProperty]) {
-			// 页面不可见时暂停动画
 			if (this.animationFrame) {
 				cancelAnimationFrame(this.animationFrame);
 				this.animationFrame = null;
 			}
 		} else {
-			// 页面重新可见时恢复动画
 			if (!this.animationFrame && this.isInitialized) {
 				this.animate();
 			}
@@ -294,41 +244,16 @@ class GalaxyAnimation {
 			cancelAnimationFrame(this.animationFrame);
 			this.animationFrame = null;
 		}
-
 		window.removeEventListener("resize", () => this.handleResize());
 		document.removeEventListener(visibilityChangeEvent, this.handleVisibilityChange.bind(this));
-
-		// 清理Three.js资源
-		if (this.renderer) {
-			this.renderer.dispose();
-		}
-		if (this.scene) {
-			this.scene.clear();
-		}
+		if (this.renderer) this.renderer.dispose();
+		if (this.scene) this.scene.clear();
 	}
-
 }
 
-window.hiddenProperty =
-	"hidden" in document
-		? "hidden"
-		: "webkitHidden" in document
-			? "webkitHidden"
-			: "mozHidden" in document
-				? "mozHidden"
-				: null;
-
-window.DIRECTIONS = {
-	UP: "UP",
-	DOWN: "DOWN",
-	LEFT: "LEFT",
-	RIGHT: "RIGHT",
-	UNDIRECTED: "UNDIRECTED",
-};
-window.isPhone =
-	/Mobile|Android|iOS|iPhone|iPad|iPod|Windows Phone|KFAPWI/i.test(
-		navigator.userAgent
-	);
+window.hiddenProperty = "hidden" in document ? "hidden" : "webkitHidden" in document ? "webkitHidden" : "mozHidden" in document ? "mozHidden" : null;
+window.DIRECTIONS = { UP: "UP", DOWN: "DOWN", LEFT: "LEFT", RIGHT: "RIGHT", UNDIRECTED: "UNDIRECTED" };
+window.isPhone = /Mobile|Android|iOS|iPhone|iPad|iPod|Windows Phone|KFAPWI/i.test(navigator.userAgent);
 
 function updateSecondEntryHref() {
 	const secondEntryLink = document.querySelector('a[data-entry="second"]');
@@ -337,87 +262,42 @@ function updateSecondEntryHref() {
 }
 
 function getMoveDirection(startx, starty, endx, endy) {
-	if (!isPhone) {
-		return;
-	}
-
+	if (!isPhone) return;
 	const angx = endx - startx;
 	const angy = endy - starty;
-
-	if (Math.abs(angx) < 2 && Math.abs(angy) < 2) {
-		return DIRECTIONS.UNDIRECTED;
-	}
-
+	if (Math.abs(angx) < 2 && Math.abs(angy) < 2) return DIRECTIONS.UNDIRECTED;
 	const getAngle = (angx, angy) => (Math.atan2(angy, angx) * 180) / Math.PI;
-
 	const angle = getAngle(angx, angy);
-	if (angle >= -135 && angle <= -45) {
-		return DIRECTIONS.UP;
-	} else if (angle > 45 && angle < 135) {
-		return DIRECTIONS.DOWN;
-	} else if (
-		(angle >= 135 && angle <= 180) ||
-		(angle >= -180 && angle < -135)
-	) {
-		return DIRECTIONS.LEFT;
-	} else if (angle >= -45 && angle <= 45) {
-		return DIRECTIONS.RIGHT;
-	}
-
+	if (angle >= -135 && angle <= -45) return DIRECTIONS.UP;
+	else if (angle > 45 && angle < 135) return DIRECTIONS.DOWN;
+	else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) return DIRECTIONS.LEFT;
+	else if (angle >= -45 && angle <= 45) return DIRECTIONS.RIGHT;
 	return DIRECTIONS.UNDIRECTED;
 }
 
 function loadIntro() {
-	if (document[hiddenProperty] || loadIntro.loaded) {
-		return;
-	}
-
+	if (document[hiddenProperty] || loadIntro.loaded) return;
 	setTimeout(() => {
 		$(".wrap").classList.add("in");
 		setTimeout(() => {
-			$(".content-subtitle").innerHTML = `<span>${[...subtitle].join(
-				"</span><span>"
-			)}</span>`;
+			$(".content-subtitle").innerHTML = `<span>${[...subtitle].join("</span><span>")}</span>`;
 		}, 270);
 	}, 0);
 	loadIntro.loaded = true;
 }
 
 function switchPage() {
-	if (switchPage.switched) {
-		return;
-	}
-	const DOM = {
-		intro: $(".content-intro"),
-		path: $(".shape-wrap path"),
-		shape: $("svg.shape"),
-	};
+	if (switchPage.switched) return;
+	const DOM = { intro: $(".content-intro"), path: $(".shape-wrap path"), shape: $("svg.shape") };
 	DOM.shape.style.transformOrigin = "50% 0%";
-
-	anime({
-		targets: DOM.intro,
-		duration: 1100,
-		easing: "easeInOutSine",
-		translateY: "-200vh",
-	});
-
-	// 触发 Big Bang 闪光，掩盖后台加载
+	anime({ targets: DOM.intro, duration: 1100, easing: "easeInOutSine", translateY: "-200vh" });
 	const flash = $("#flash-overlay");
 	if (flash) flash.classList.add("bang");
-
 	anime({
 		targets: DOM.shape,
 		scaleY: [
-			{
-				value: [0.8, 1.8],
-				duration: 550,
-				easing: "easeInQuad",
-			},
-			{
-				value: 1,
-				duration: 550,
-				easing: "easeOutQuad",
-			},
+			{ value: [0.8, 1.8], duration: 550, easing: "easeInQuad" },
+			{ value: 1, duration: 550, easing: "easeOutQuad" },
 		],
 	});
 	anime({
@@ -425,44 +305,31 @@ function switchPage() {
 		duration: 1100,
 		easing: "easeOutQuad",
 		d: DOM.path.getAttribute("pathdata:id"),
-		complete: function (anim) {
-			// 银河动效会在页面切换时自动清理
-		},
+		complete: function (anim) { },
 	});
-
 	switchPage.switched = true;
-	// 切换到 Main 页面后，尽快显示交互提示，不依赖 Galaxy 初始化
 	showInteractionHint();
 }
 
 const showInteractionHint = () => {
 	const hint = document.getElementById("interaction-hint");
 	if (!hint) return;
-
-	// 稍微延迟，等待页面切换动画（550ms）基本完成
 	setTimeout(() => {
 		hint.classList.add("in");
 	}, 800);
-
 	const hideHint = () => {
 		hint.classList.remove("in");
-		// 移除后就不再显示了
 		document.removeEventListener("mousedown", hideHint);
 		document.removeEventListener("touchstart", hideHint);
 		document.removeEventListener("wheel", hideHint);
 	};
-
 	document.addEventListener("mousedown", hideHint);
 	document.addEventListener("touchstart", hideHint);
 	document.addEventListener("wheel", hideHint);
 };
 
 function loadMain() {
-	if (loadMain.loaded) {
-		return;
-	}
-	// 延迟卡片显示，配合虫洞穿越动画 (Fly-in)
-	// 虫洞动画约 2.5s，这里设置为 3.0s，让卡片在着陆后才开始凝聚
+	if (loadMain.loaded) return;
 	setTimeout(() => {
 		$(".card-inner").classList.add("in");
 		const canvas = document.getElementById("galaxyCanvas");
@@ -475,25 +342,18 @@ function loadMain() {
 }
 
 function loadAll() {
-	if (loadAll.loaded) {
-		return;
-	}
+	if (loadAll.loaded) return;
 	switchPage();
 	loadMain();
 	loadAll.loaded = true;
 }
 
-window.visibilityChangeEvent = hiddenProperty.replace(
-	/hidden/i,
-	"visibilitychange"
-);
+window.visibilityChangeEvent = hiddenProperty.replace(/hidden/i, "visibilitychange");
 window.addEventListener(visibilityChangeEvent, loadIntro);
 window.addEventListener("DOMContentLoaded", loadIntro);
-// Stargate Terminal Logic
-const LAUNCH_CODES = {
-	"pxkjvip": "https://mobile-landing-1zi.pages.dev",
-	// Add more codes here
-};
+
+// Stargate Terminal Logic (v2.3: Placeholder Mode)
+const LAUNCH_CODES = { "pxkjvip": "https://mobile-landing-1zi.pages.dev" };
 
 const Stargate = {
 	isOpen: false,
@@ -513,28 +373,32 @@ const Stargate = {
 		if (!this.dom.terminal) return;
 
 		// Input Handling
-		this.dom.input.addEventListener('input', (e) => this.handleInput(e));
+		this.dom.input.addEventListener('input', (e) => {
+			this.handleInput(e);
+			// 输入时隐藏引导文案，给用户纯净视野
+			this.dom.status.style.opacity = '0';
+		});
+
 		this.dom.input.addEventListener('keydown', (e) => {
 			if (e.key === 'Enter') this.checkCode();
 			if (e.key === 'Escape') this.close();
 		});
 
-		// Focus/Blur Monitoring for Interactive Text
+
+		// Focus Management for Placeholder Effect
 		this.dom.input.addEventListener('focus', () => {
-			if (!this.dom.display.classList.contains('error') && !this.dom.display.classList.contains('success')) {
-				this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
-				this.dom.status.style.color = 'rgba(255,255,255,0.7)';
-			}
+			// 聚焦时不隐藏引导，允许光标和引导共存
+			// this.dom.status.style.opacity = '0';
 		});
 
 		this.dom.input.addEventListener('blur', () => {
-			if (!this.dom.display.classList.contains('error') && !this.dom.display.classList.contains('success') && this.isOpen) {
-				this.dom.status.textContent = 'SYSTEM STANDBY · 点击接入';
-				this.dom.status.style.color = 'rgba(255,255,255,0.5)';
+			// 失焦且无内容时，恢复显示引导
+			if (this.dom.input.value.trim() === '') {
+				this.dom.status.style.opacity = '1';
 			}
 		});
 
-		// Focus Management
+		// Click to Focus
 		this.dom.terminal.addEventListener('click', (e) => {
 			if (e.target === this.dom.terminal || e.target.classList.contains('overlay')) {
 				this.close();
@@ -544,23 +408,31 @@ const Stargate = {
 		});
 	},
 
+	// 辅助方法：获取端侧差异化文案
+	getPrompt() {
+		return window.isPhone ? '点击输入跃迁坐标' : '输入跃迁坐标';
+	},
+
 	open() {
 		if (this.isOpen) return;
 		this.isOpen = true;
 		this.dom.terminal.classList.remove('hidden');
-		// Force reflow
 		void this.dom.terminal.offsetWidth;
 		this.dom.terminal.classList.add('open');
 
 		this.dom.input.value = '';
 		this.dom.display.textContent = '';
-		this.dom.display.className = 'code-display'; // Reset classes
-		// Default state: Standby (Expect user to tap)
-		this.dom.status.textContent = 'SYSTEM STANDBY · 点击接入';
-		this.dom.status.style.color = 'rgba(255,255,255,0.5)';
+		this.dom.display.className = 'code-display';
 
-		// Try auto-focus, but if blocked by browser, status remains STANDBY
-		setTimeout(() => this.dom.input.focus(), 100);
+		// 初始状态：显示引导文案 (端侧自适应)
+		this.dom.status.textContent = this.getPrompt();
+		this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+		this.dom.status.style.opacity = '1';
+
+		// 仅在 PC 端自动聚焦，移动端等待用户点击以展示引导
+		if (!window.isPhone) {
+			setTimeout(() => this.dom.input.focus(), 100);
+		}
 	},
 
 	close() {
@@ -579,14 +451,17 @@ const Stargate = {
 		// Reset error state on input
 		if (this.dom.display.classList.contains('error')) {
 			this.dom.display.classList.remove('error');
-			this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
-			this.dom.status.style.color = 'rgba(255,255,255,0.7)';
+			this.dom.status.textContent = this.getPrompt();
+			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 		}
 	},
 
 	checkCode() {
 		const code = this.dom.input.value.toLowerCase().trim();
 		const targetUrl = LAUNCH_CODES[code];
+
+		// 提交时强制显示结果状态
+		this.dom.status.style.opacity = '1';
 
 		if (targetUrl) {
 			this.grantAccess(targetUrl);
@@ -601,17 +476,14 @@ const Stargate = {
 		this.dom.status.style.color = '#00ffaa';
 		this.dom.input.blur();
 
-		// Trigger Big Bang Visuals
 		setTimeout(() => {
 			const flash = document.getElementById("flash-overlay");
-			if (flash) flash.classList.remove("bang"); // Reset first
+			if (flash) flash.classList.remove("bang");
 			void flash.offsetWidth;
 			flash.classList.add("bang");
-
-			// Actual redirection
 			setTimeout(() => {
 				window.location.href = url;
-			}, 300); // 配合 Big Bang 闪白瞬间跳转
+			}, 300);
 		}, 800);
 	},
 
@@ -620,66 +492,35 @@ const Stargate = {
 		this.dom.status.textContent = 'COORDINATES INVALID · 坐标无效';
 		this.dom.status.style.color = '#ff3333';
 
-		// Auto clear after shake
 		setTimeout(() => {
 			this.dom.display.classList.remove('error');
 			this.dom.input.value = '';
 			this.dom.display.textContent = '';
-			this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
-			this.dom.status.style.color = 'rgba(255,255,255,0.7)';
+			this.dom.status.textContent = this.getPrompt();
+			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+			// 恢复引导显示
+			this.dom.status.style.opacity = '1';
 		}, 1000);
 	}
 };
 
 window.addEventListener('DOMContentLoaded', () => {
 	Stargate.init();
-
-	// Bind Rocket/Second Entry Click
 	const secondEntryLink = document.querySelector('a[data-entry="second"]');
 	if (secondEntryLink) {
 		secondEntryLink.addEventListener('click', (e) => {
-			e.preventDefault(); // Stop default navigation
+			e.preventDefault();
 			Stargate.open();
 		});
-		// Remove href to prevent hover preview, or keep it for SEO but intercept click
 		secondEntryLink.setAttribute('href', 'javascript:void(0)');
 	}
 });
-// window.addEventListener("DOMContentLoaded", updateSecondEntryHref);
 
 const enterEl = $(".enter");
 enterEl.addEventListener("click", loadAll);
 enterEl.addEventListener("touchend", loadAll);
 
-// PC端保留滚轮和箭头悬停触发
 if (!isPhone) {
 	document.body.addEventListener("mousewheel", loadAll, { passive: true });
 	$(".arrow").addEventListener("mouseenter", loadAll);
 }
-
-// 移动端禁用滑动触发，只能点击按钮进入
-// if (isPhone) {
-// 	document.addEventListener(
-// 		"touchstart",
-// 		function (e) {
-// 			window.startx = e.touches[0].pageX;
-// 			window.starty = e.touches[0].pageY;
-// 		},
-// 		{ passive: true }
-// 	);
-// 	document.addEventListener(
-// 		"touchend",
-// 		function (e) {
-// 			let endx, endy;
-// 			endx = e.changedTouches[0].pageX;
-// 			endy = e.changedTouches[0].pageY;
-
-// 			const direction = getMoveDirection(startx, starty, endx, endy);
-// 			if (direction !== DIRECTIONS.UP) {
-// 				return;
-// 			}
-// 			loadAll();
-// 		},
-// 		{ passive: true }
-// 	);
-// }

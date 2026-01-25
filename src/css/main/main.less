@@ -693,6 +693,11 @@
             width: 1px;
             height: 1px;
         }
+
+        // --- v2.2 新增：点击引导提示 ---
+        .tap-hint {
+            display: none; // PC 默认隐藏
+        }
     }
 
     // 移动端优化
@@ -728,6 +733,26 @@
                 font-size: 0.65rem;
                 color: rgba(255, 255, 255, 0.9);
                 text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+                // 增加过渡，配合 JS 实现输入时隐藏
+                transition: opacity 0.3s ease;
+            }
+
+            // --- v2.2 新增：移动端引导提示样式 ---
+            .tap-hint {
+                display: block; // 移动端显示
+                margin-top: 20px;
+                font-size: 0.6rem;
+                letter-spacing: 2px;
+                color: rgba(255, 255, 255, 0.8);
+                text-transform: uppercase;
+                opacity: 0; // 默认不可见，通过 .visible 类控制
+                transition: opacity 0.3s;
+                pointer-events: none; // 不拦截点击
+
+                &.visible {
+                    opacity: 1;
+                    animation: blink 1s infinite alternate; // 闪烁提醒
+                }
             }
         }
     }
