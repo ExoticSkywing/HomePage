@@ -345,6 +345,28 @@ function switchPage() {
 	switchPage.switched = true;
 }
 
+const showInteractionHint = () => {
+	const hint = document.getElementById("interaction-hint");
+	if (!hint) return;
+
+	// 延迟一点显示，给银河动画一点加载时间
+	setTimeout(() => {
+		hint.classList.add("in");
+	}, 1500);
+
+	const hideHint = () => {
+		hint.classList.remove("in");
+		// 移除后就不再显示了
+		document.removeEventListener("mousedown", hideHint);
+		document.removeEventListener("touchstart", hideHint);
+		document.removeEventListener("wheel", hideHint);
+	};
+
+	document.addEventListener("mousedown", hideHint);
+	document.addEventListener("touchstart", hideHint);
+	document.addEventListener("wheel", hideHint);
+};
+
 function loadMain() {
 	if (loadMain.loaded) {
 		return;
@@ -355,6 +377,7 @@ function loadMain() {
 		if (canvas) {
 			const galaxyAnimation = new GalaxyAnimation(canvas);
 			galaxyAnimation.init();
+			showInteractionHint(); // 显示交互提示
 		}
 	}, 0);
 	loadMain.loaded = true;

@@ -251,3 +251,74 @@
 		}
 	}
 }
+
+// 交互引导提示
+// 交互引导提示
+// 交互引导提示
+// 交互引导提示
+#interaction-hint {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 180px; // 足够的高度来容纳渐变
+	z-index: 99;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end; // 内容靠下
+	align-items: center;
+	padding-bottom: 50px; // 底部留白
+
+	// 若隐若现的底部阴影（渐变遮罩）
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 1.5s ease-in-out; // 更慢的过渡
+
+	&.in {
+		opacity: 1;
+		animation: hintBreathe 4s infinite ease-in-out; // 更悠长的呼吸
+	}
+
+	.icon {
+		font-size: 2rem;
+		margin-bottom: 12px;
+		color: rgba(255, 255, 255, 0.9);
+		text-shadow: 0 0 20px rgba(255, 255, 255, 0.4); // 柔和发光
+		animation: hintFloat 3s infinite ease-in-out; // 慢速浮动
+	}
+
+	span {
+		font-family: "Megrim", "Helvetica Neue", Arial, sans-serif; // 尝试使用已有艺术字体或优雅字体
+		color: rgba(255, 255, 255, 0.85);
+		font-size: 1.2rem;
+		font-weight: 300;
+		letter-spacing: 4px; // 极宽字间距，营造空灵感
+		text-transform: uppercase;
+		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+	}
+}
+
+@keyframes hintBreathe {
+
+	0%,
+	100% {
+		opacity: 0.8;
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+@keyframes hintFloat {
+
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-5px);
+	}
+}
