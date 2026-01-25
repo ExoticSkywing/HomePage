@@ -354,6 +354,10 @@ function switchPage() {
 		translateY: "-200vh",
 	});
 
+	// 触发 Big Bang 闪光，掩盖后台加载
+	const flash = $("#flash-overlay");
+	if (flash) flash.classList.add("bang");
+
 	anime({
 		targets: DOM.shape,
 		scaleY: [

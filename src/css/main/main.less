@@ -517,3 +517,41 @@
 		transform: translateY(-5px);
 	}
 }
+
+// Big Bang 闪光遮罩
+#flash-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: #fff; // 纯白光
+	z-index: 10000; // 确保覆盖一切
+	pointer-events: none;
+	opacity: 0;
+	mix-blend-mode: hard-light; // 使用强光模式，让白色更猛烈
+
+	&.bang {
+		animation: bigBang 2.5s ease-out forwards;
+	}
+}
+
+@keyframes bigBang {
+	0% {
+		opacity: 1;
+	}
+
+	// 点击即亮，毫秒级响应
+	60% {
+		opacity: 1;
+		filter: blur(2px);
+	}
+
+	// 保持高亮
+	100% {
+		opacity: 0;
+		filter: blur(10px);
+	}
+
+	// 缓慢消散
+}
