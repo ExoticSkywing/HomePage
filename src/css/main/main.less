@@ -1,721 +1,764 @@
 #card {
-	position: relative;
-	width: 100vw;
-	height: 100vh;
-	color: #93979e;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
-	transition: width ease 0.5s, height ease 0.5s;
-	background: #160016;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    color: #93979e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: width ease 0.5s, height ease 0.5s;
+    background: #160016;
 
-	.card-inner {
-		// ... existing attributes ...
-		// 初始状态：隐藏且微缩，为入场“凝聚”动画做准备
-		opacity: 0;
-		transform: scale(0.9);
-		filter: blur(10px); // 初始带一点模糊，更有科幻感
-		transition: opacity 2s ease-out, transform 2s ease-out, filter 2s ease-out;
+    .card-inner {
+        // ... existing attributes ...
+        // 初始状态：隐藏且微缩，为入场“凝聚”动画做准备
+        opacity: 0;
+        transform: scale(0.9);
+        filter: blur(10px); // 初始带一点模糊，更有科幻感
+        transition: opacity 2s ease-out, transform 2s ease-out, filter 2s ease-out;
 
-		&.in {
-			opacity: 1;
-			transform: scale(1);
-			filter: blur(0); // 最终清晰
-		}
+        &.in {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0); // 最终清晰
+        }
 
-		// 保持原有的样式
-		padding: clamp(20px, 3vw, 32px) clamp(24px, 4vw, 32px);
-		border: 1px solid rgba(123, 44, 191, 0.4);
-		border-radius: 50%;
-		background: rgba(26, 8, 40, 0.12);
-		// ... rest of styles
+        // 保持原有的样式
+        padding: clamp(20px, 3vw, 32px) clamp(24px, 4vw, 32px);
+        border: 1px solid rgba(123, 44, 191, 0.4);
+        border-radius: 50%;
+        background: rgba(26, 8, 40, 0.12);
+        // ... rest of styles
 
-		-webkit-backdrop-filter: blur(1.8px) saturate(148%);
-		backdrop-filter: blur(1.8px) saturate(148%);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18),
-		0 0 50px rgba(123, 44, 191, 0.25),
-		0 0 100px rgba(123, 44, 191, 0.15),
-		0 0 150px rgba(123, 44, 191, 0.08);
-		position: relative;
-		z-index: 2;
-		color: #f0f0f2;
-		width: clamp(600px, 50vmin, 1020px);
-		aspect-ratio: 1 / 1;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 0;
+        -webkit-backdrop-filter: blur(1.8px) saturate(148%);
+        backdrop-filter: blur(1.8px) saturate(148%);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18),
+        0 0 50px rgba(123, 44, 191, 0.25),
+        0 0 100px rgba(123, 44, 191, 0.15),
+        0 0 150px rgba(123, 44, 191, 0.08);
+        position: relative;
+        z-index: 2;
+        color: #f0f0f2;
+        width: clamp(600px, 50vmin, 1020px);
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
 
-		// 核心优化：允许鼠标事件穿透卡片背景，直达银河 Canvas
-		pointer-events: none;
+        // 核心优化：允许鼠标事件穿透卡片背景，直达银河 Canvas
+        pointer-events: none;
 
-		// 但恢复内部交互元素的事件响应
-		a {
-			pointer-events: auto;
-			cursor: pointer;
-		}
+        // 但恢复内部交互元素的事件响应
+        a {
+            pointer-events: auto;
+            cursor: pointer;
+        }
 
-		// 多层边缘羽化过渡
-		&::before {
-			content: "";
-			position: absolute;
-			inset: -8px;
-			border-radius: 50%;
-			pointer-events: none;
-			background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%);
-			z-index: -1;
-		}
+        // 多层边缘羽化过渡
+        &::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%);
+            z-index: -1;
+        }
 
-		&::after {
-			content: "";
-			position: absolute;
-			inset: 0;
-			border-radius: 50%;
-			pointer-events: none;
-			background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 60%, rgba(255, 255, 255, 0) 85%);
-		}
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 60%, rgba(255, 255, 255, 0) 85%);
+        }
 
-		@media screen and (max-width: 540px) {
-			padding: clamp(32px, 6vw, 48px) clamp(36px, 7vw, 44px);
-			width: clamp(600px, 85vw, 900px);
-			// 优化：更通透的玻璃质感
-			background: rgba(255, 255, 255, 0.05); // 降低不透明度 (0.1 -> 0.05)
-			backdrop-filter: blur(2.4px) saturate(120%) brightness(1.1); // 减小模糊 (4.8px -> 2.4px)，减少厚重感
-			-webkit-backdrop-filter: blur(2.4px) saturate(120%) brightness(1.1);
-			border: 1px solid rgba(255, 255, 255, 0.15); // 边框更淡
-			box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        @media screen and (max-width: 540px) {
+            padding: clamp(32px, 6vw, 48px) clamp(36px, 7vw, 44px);
+            width: clamp(600px, 85vw, 900px);
+            // 优化：更通透的玻璃质感
+            background: rgba(255, 255, 255, 0.05); // 降低不透明度 (0.1 -> 0.05)
+            backdrop-filter: blur(2.4px) saturate(120%) brightness(1.1); // 减小模糊 (4.8px -> 2.4px)，减少厚重感
+            -webkit-backdrop-filter: blur(2.4px) saturate(120%) brightness(1.1);
+            border: 1px solid rgba(255, 255, 255, 0.15); // 边框更淡
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 
-			// 移动端增强羽化效果
-			&::before {
-				inset: -100px;
-				background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0.02) 65%, rgba(255, 255, 255, 0) 85%);
-			}
+            // 移动端增强羽化效果
+            &::before {
+                inset: -100px;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0.02) 65%, rgba(255, 255, 255, 0) 85%);
+            }
 
-			&::after {
-				background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.01) 80%, rgba(255, 255, 255, 0) 95%);
-			}
+            &::after {
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.01) 80%, rgba(255, 255, 255, 0) 95%);
+            }
 
-			header {
-				h1 {
-					font-size: clamp(1rem, 4vw, 1.4rem) !important;
-					white-space: nowrap;
-					color: #ffffff !important;
-					// 核心优化：极强阴影，多层叠加模拟“描边+发光”
-					text-shadow:
-						0 1px 2px #000000, // 贴边硬阴影（模拟描边）
-						0 2px 4px rgba(0, 0, 0, 0.8), // 中层软阴影
-						0 4px 12px rgba(0, 0, 0, 0.6), // 远距离扩散
-						0 0 20px rgba(0, 0, 0, 0.4); // 氛围光晕
-					font-weight: 600 !important; // 显著加粗，必须醒目
-					letter-spacing: 1px;
-				}
+            header {
+                h1 {
+                    font-size: clamp(1rem, 4vw, 1.4rem) !important;
+                    white-space: nowrap;
+                    color: #ffffff !important;
+                    // 核心优化：极强阴影，多层叠加模拟“描边+发光”
+                    text-shadow:
+                        0 1px 2px #000000, // 贴边硬阴影（模拟描边）
+                        0 2px 4px rgba(0, 0, 0, 0.8), // 中层软阴影
+                        0 4px 12px rgba(0, 0, 0, 0.6), // 远距离扩散
+                        0 0 20px rgba(0, 0, 0, 0.4); // 氛围光晕
+                    font-weight: 600 !important; // 显著加粗，必须醒目
+                    letter-spacing: 1px;
+                }
 
-				h2 {
-					font-size: clamp(0.7rem, 2.5vw, 1rem) !important;
-					white-space: nowrap;
-					color: #ffffff !important;
-					// 同理增强副标题
-					text-shadow:
-						0 1px 2px #000000,
-						0 2px 5px rgba(0, 0, 0, 0.8);
-					font-weight: 500 !important;
-					opacity: 1 !important; // 确保不透明
-				}
-			}
+                h2 {
+                    font-size: clamp(0.7rem, 2.5vw, 1rem) !important;
+                    white-space: nowrap;
+                    color: #ffffff !important;
+                    // 同理增强副标题
+                    text-shadow:
+                        0 1px 2px #000000,
+                        0 2px 5px rgba(0, 0, 0, 0.8);
+                    font-weight: 500 !important;
+                    opacity: 1 !important; // 确保不透明
+                }
+            }
 
-			ul {
-				flex-wrap: wrap;
-				gap: clamp(8px, 2vw, 12px);
+            ul {
+                flex-wrap: wrap;
+                gap: clamp(8px, 2vw, 12px);
 
-				li {
-					font-size: clamp(0.8rem, 2vw, 1rem) !important;
-					flex: 1 1 calc(50% - 6px);
-					min-width: calc(50% - 6px);
+                li {
+                    font-size: clamp(0.8rem, 2vw, 1rem) !important;
+                    flex: 1 1 calc(50% - 6px);
+                    min-width: calc(50% - 6px);
 
-					a {
-						font-size: clamp(0.7rem, 2vw, 0.9rem) !important;
-						color: #ffffff !important;
-						text-shadow: 0 1px 2px rgba(0, 0, 0, 1), 0 0 5px rgba(0, 0, 0, 0.8);
-						font-weight: 500; // 链接文字也加粗
+                    a {
+                        font-size: clamp(0.7rem, 2vw, 0.9rem) !important;
+                        color: #ffffff !important;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 1), 0 0 5px rgba(0, 0, 0, 0.8);
+                        font-weight: 500; // 链接文字也加粗
 
-						i {
-							font-size: clamp(1.2rem, 3vw, 1.5rem) !important;
-							color: #ffffff !important;
-							text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
-						}
+                        i {
+                            font-size: clamp(1.2rem, 3vw, 1.5rem) !important;
+                            color: #ffffff !important;
+                            text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+                        }
 
-						.icon-img {
-							width: clamp(3.24rem, 7.2vw, 3.96rem) !important;
-							height: clamp(3.24rem, 7.2vw, 3.96rem) !important;
-							max-width: 3.96rem !important;
-							max-height: 3.96rem !important;
-							object-fit: contain;
-							display: block;
-							// 增强图标投影，甚至加一点描边感
-							filter: drop-shadow(0 0 1px rgba(0, 0, 0, 1)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
-						}
+                        .icon-img {
+                            width: clamp(3.24rem, 7.2vw, 3.96rem) !important;
+                            height: clamp(3.24rem, 7.2vw, 3.96rem) !important;
+                            max-width: 3.96rem !important;
+                            max-height: 3.96rem !important;
+                            object-fit: contain;
+                            display: block;
+                            // 增强图标投影，甚至加一点描边感
+                            filter: drop-shadow(0 0 1px rgba(0, 0, 0, 1)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+                        }
 
-						span {
-							font-size: clamp(0.6rem, 1.5vw, 0.8rem) !important;
-							color: #ffffff !important;
-							text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
-							font-weight: 500;
-						}
-					}
-				}
-			}
-		}
+                        span {
+                            font-size: clamp(0.6rem, 1.5vw, 0.8rem) !important;
+                            color: #ffffff !important;
+                            text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
+                            font-weight: 500;
+                        }
+                    }
+                }
+            }
+        }
 
-		header {
-			// border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-			margin-bottom: clamp(20px, 4vw, 40px);
+        header {
+            // border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: clamp(20px, 4vw, 40px);
 
-			img {
-				border: clamp(2px, 0.3vw, 3px) solid #fff;
-				border-radius: 50%;
-				box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3);
-				transition: 0.4s ease-in-out;
-				width: clamp(60px, 8vw, 100px);
-				height: clamp(60px, 8vw, 100px);
-				z-index: 2;
-				position: relative;
-			}
+            img {
+                border: clamp(2px, 0.3vw, 3px) solid #fff;
+                border-radius: 50%;
+                box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3);
+                transition: 0.4s ease-in-out;
+                width: clamp(60px, 8vw, 100px);
+                height: clamp(60px, 8vw, 100px);
+                z-index: 2;
+                position: relative;
+            }
 
-			h1 {
-				margin: clamp(8px, 2vw, 15px) clamp(8px, 2vw, 15px) 0px;
-				color: #fff;
-				font-size: clamp(1.2rem, 3vw, 2rem);
-				line-height: 1.2em;
-				font-weight: 300;
-				z-index: 2;
-				position: relative;
-				text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6), 0 0 8px rgba(122, 64, 196, 0.35);
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				max-width: 100%;
-			}
+            h1 {
+                margin: clamp(8px, 2vw, 15px) clamp(8px, 2vw, 15px) 0px;
+                color: #fff;
+                font-size: clamp(1.2rem, 3vw, 2rem);
+                line-height: 1.2em;
+                font-weight: 300;
+                z-index: 2;
+                position: relative;
+                text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6), 0 0 8px rgba(122, 64, 196, 0.35);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
 
-			h2 {
-				color: #e7e7e9;
-				letter-spacing: clamp(1px, 0.4vw, 3px);
-				font-size: clamp(0.6rem, 1.2vw, 0.8rem);
-				font-weight: lighter;
-				z-index: 2;
-				position: relative;
-				text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55), 0 0 6px rgba(122, 64, 196, 0.25);
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				max-width: 100%;
-			}
-		}
+            h2 {
+                color: #e7e7e9;
+                letter-spacing: clamp(1px, 0.4vw, 3px);
+                font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+                font-weight: lighter;
+                z-index: 2;
+                position: relative;
+                text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55), 0 0 6px rgba(122, 64, 196, 0.25);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
+        }
 
-		ul {
-			position: relative;
-			margin: 0;
-			list-style-type: none;
-			display: flex;
-			width: 100%;
-			justify-content: space-around;
-			align-items: center;
-			flex-wrap: wrap;
-			gap: clamp(4px, 1vw, 8px);
-			// border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
-			padding-bottom: clamp(20px, 4vw, 40px);
+        ul {
+            position: relative;
+            margin: 0;
+            list-style-type: none;
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: clamp(4px, 1vw, 8px);
+            // border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
+            padding-bottom: clamp(20px, 4vw, 40px);
 
-			li {
-				z-index: 2;
-				position: relative;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				transition: all 0.2s;
-				flex: 1;
-				min-width: 0;
-				// border-left: solid 0.1px hsla(0, 0%, 100%, 0.1);
-				// border-right: solid 0.1px hsla(0, 0%, 100%, 0.1);
+            li {
+                z-index: 2;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                flex: 1;
+                min-width: 0;
+                // border-left: solid 0.1px hsla(0, 0%, 100%, 0.1);
+                // border-right: solid 0.1px hsla(0, 0%, 100%, 0.1);
 
-				a {
-					color: #f0f0f2;
-					text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
-					transition: all 0.2s;
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					max-width: 100%;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					gap: clamp(2px, 0.5vw, 4px);
-					font-size: clamp(0.7rem, 1.5vw, 1rem);
+                a {
+                    color: #f0f0f2;
+                    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+                    transition: all 0.2s;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: clamp(2px, 0.5vw, 4px);
+                    font-size: clamp(0.7rem, 1.5vw, 1rem);
 
-					i {
-						flex-shrink: 0;
-						font-size: clamp(1rem, 2vw, 1.5rem);
-					}
+                    i {
+                        flex-shrink: 0;
+                        font-size: clamp(1rem, 2vw, 1.5rem);
+                    }
 
-					.icon-img {
-						flex-shrink: 0;
-						width: clamp(1.8rem, 3vw, 2.5rem) !important;
-						height: clamp(1.8rem, 3vw, 2.5rem) !important;
-						max-width: 2.3rem !important;
-						max-height: 2.3rem !important;
-						object-fit: contain;
-						display: block;
-						filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.3));
-					}
+                    .icon-img {
+                        flex-shrink: 0;
+                        width: clamp(1.8rem, 3vw, 2.5rem) !important;
+                        height: clamp(1.8rem, 3vw, 2.5rem) !important;
+                        max-width: 2.3rem !important;
+                        max-height: 2.3rem !important;
+                        object-fit: contain;
+                        display: block;
+                        filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.3));
+                    }
 
-					span {
-						white-space: nowrap;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						max-width: 100%;
-						font-size: clamp(0.6rem, 1.2vw, 0.8rem);
-					}
+                    span {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 100%;
+                        font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+                    }
 
-					&:hover {
-						color: #ffffff;
-						text-shadow: 0 0 4px #ffffff, 0 0 10px rgba(122, 64, 196, 0.4);
-					}
-				}
-			}
-		}
-	}
+                    &:hover {
+                        color: #ffffff;
+                        text-shadow: 0 0 4px #ffffff, 0 0 10px rgba(122, 64, 196, 0.4);
+                    }
+                }
+            }
+        }
+    }
 
-	@media screen and (max-width: 540px) {
-		.card-inner {
-			// 移动端保持圆形，移除重复的样式覆盖
-		}
-	}
+    @media screen and (max-width: 540px) {
+        .card-inner {
+            // 移动端保持圆形，移除重复的样式覆盖
+        }
+    }
 }
 
 // 交互引导提示
 #interaction-hint {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	height: 180px; // 足够的高度来容纳渐变
-	z-index: 99;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end; // 内容靠下
-	align-items: center;
-	padding-bottom: 50px; // 底部留白
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 180px; // 足够的高度来容纳渐变
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; // 内容靠下
+    align-items: center;
+    padding-bottom: 50px; // 底部留白
 
-	// 若隐若现的底部阴影（渐变遮罩）
-	background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
-	pointer-events: none;
+    // 若隐若现的底部阴影（渐变遮罩）
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
+    pointer-events: none;
 
-	// 初始状态：透明且下沉
-	opacity: 0;
-	transform: translateY(30px);
-	// 优化后的过渡效果：同时过渡透明度和位移，使用自然的缓动曲线
-	transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1), transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    // 初始状态：透明且下沉
+    opacity: 0;
+    transform: translateY(30px);
+    // 优化后的过渡效果：同时过渡透明度和位移，使用自然的缓动曲线
+    transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1), transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 
-	&.in {
-		opacity: 1;
-		transform: translateY(0); // 浮起到正常位置
-		// 延迟执行呼吸动画，避免打断入场动画
-		animation: hintBreathe 4s infinite ease-in-out 1.5s;
-	}
+    &.in {
+        opacity: 1;
+        transform: translateY(0); // 浮起到正常位置
+        // 延迟执行呼吸动画，避免打断入场动画
+        animation: hintBreathe 4s infinite ease-in-out 1.5s;
+    }
 
-	.hand-icon {
-		margin-bottom: 28px; // 增加间距，分离视觉
-		width: 140px; // 加宽滑动范围
-		height: 40px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		position: relative;
+    .hand-icon {
+        margin-bottom: 28px; // 增加间距，分离视觉
+        width: 140px; // 加宽滑动范围
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
 
-		// 两个指尖：before 和 after
-		&::before,
-		&::after {
-			content: "";
-			position: absolute;
-			width: 14px; // 增大光点
-			height: 14px;
-			background: #fff;
-			border-radius: 50%;
-			box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4); // 增强光晕
-			opacity: 0;
-		}
+        // 两个指尖：before 和 after
+        &::before,
+        &::after {
+            content: "";
+            position: absolute;
+            width: 14px; // 增大光点
+            height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4); // 增强光晕
+            opacity: 0;
+        }
 
-		// 动画编排：总时长 6s (加速)
-		// 0s-3s: 单指滑动 (只用 after)
-		// 3s-6s: 双指缩放 (before 和 after 配合)
+        // 动画编排：总时长 6s (加速)
+        // 0s-3s: 单指滑动 (只用 after)
+        // 3s-6s: 双指缩放 (before 和 after 配合)
 
-		&::after {
-			animation: gestureSequenceAfter 6s infinite ease-in-out;
-		}
+        &::after {
+            animation: gestureSequenceAfter 6s infinite ease-in-out;
+        }
 
-		&::before {
-			animation: gestureSequenceBefore 6s infinite ease-in-out;
-		}
+        &::before {
+            animation: gestureSequenceBefore 6s infinite ease-in-out;
+        }
 
-		.icon {
-			display: none;
-		}
-	}
+        .icon {
+            display: none;
+        }
+    }
 
-	span {
-		// 优先使用细黑体，营造现代优雅感
-		font-family: "Megrim", "MiSans", "PingFang SC", "Heiti SC", "Microsoft YaHei", sans-serif;
-		color: rgba(255, 255, 255, 0.85);
-		font-size: 1.1rem;
-		font-weight: 300;
-		letter-spacing: 0.25em;
-		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-	}
+    span {
+        // 优先使用细黑体，营造现代优雅感
+        font-family: "Megrim", "MiSans", "PingFang SC", "Heiti SC", "Microsoft YaHei", sans-serif;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 1.1rem;
+        font-weight: 300;
+        letter-spacing: 0.25em;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
 
-	@media screen and (max-width: 540px) {
-		height: 140px;
-		padding-bottom: 30px;
+    @media screen and (max-width: 540px) {
+        height: 140px;
+        padding-bottom: 30px;
 
-		.hand-icon .icon {
-			font-size: 1.6rem;
-		}
+        .hand-icon .icon {
+            font-size: 1.6rem;
+        }
 
-		.hand-icon {
-			margin-bottom: 16px; // 移动端稍微紧凑一点
-			width: 100px;
+        .hand-icon {
+            margin-bottom: 16px; // 移动端稍微紧凑一点
+            width: 100px;
 
-			&::before,
-			&::after {
-				width: 10px;
-				height: 10px;
-			}
-		}
+            &::before,
+            &::after {
+                width: 10px;
+                height: 10px;
+            }
+        }
 
-		span {
-			font-size: 0.9rem;
-			letter-spacing: 2px;
-		}
-	}
+        span {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+    }
 }
 
 @keyframes hintBreathe {
 
-	0%,
-	100% {
-		opacity: 0.8;
-	}
+    0%,
+    100% {
+        opacity: 0.8;
+    }
 
-	50% {
-		opacity: 1;
-	}
+    50% {
+        opacity: 1;
+    }
 }
 
 // 动画序列 - 右侧指尖 (主手指)
 @keyframes gestureSequenceAfter {
 
-	// --- 阶段1: 单指滑动 (0-50%) ---加大滑动幅度
-	0% {
-		transform: translateX(-35px) scale(0.8);
-		opacity: 0;
-	}
+    // --- 阶段1: 单指滑动 (0-50%) ---加大滑动幅度
+    0% {
+        transform: translateX(-35px) scale(0.8);
+        opacity: 0;
+    }
 
-	5% {
-		transform: translateX(-35px) scale(1.2);
-		opacity: 1;
-	}
+    5% {
+        transform: translateX(-35px) scale(1.2);
+        opacity: 1;
+    }
 
-	// 按下
-	25% {
-		transform: translateX(35px) scale(1.1);
-		opacity: 1;
-	}
+    // 按下
+    25% {
+        transform: translateX(35px) scale(1.1);
+        opacity: 1;
+    }
 
-	// 拖动
-	30% {
-		transform: translateX(35px) scale(0.8);
-		opacity: 0;
-	}
+    // 拖动
+    30% {
+        transform: translateX(35px) scale(0.8);
+        opacity: 0;
+    }
 
-	// 抬起
+    // 抬起
 
-	// --- 阶段2: 双指缩放 (50-100%) ---加大缩放幅度
-	50% {
-		transform: translateX(-10px) scale(0.8);
-		opacity: 0;
-	}
+    // --- 阶段2: 双指缩放 (50-100%) ---加大缩放幅度
+    50% {
+        transform: translateX(-10px) scale(0.8);
+        opacity: 0;
+    }
 
-	55% {
-		transform: translateX(-10px) scale(1.2);
-		opacity: 1;
-	}
+    55% {
+        transform: translateX(-10px) scale(1.2);
+        opacity: 1;
+    }
 
-	// 按下(中心)
-	75% {
-		transform: translateX(45px) scale(1.1);
-		opacity: 1;
-	}
+    // 按下(中心)
+    75% {
+        transform: translateX(45px) scale(1.1);
+        opacity: 1;
+    }
 
-	// 向右张开
-	80% {
-		transform: translateX(45px) scale(0.8);
-		opacity: 0;
-	}
+    // 向右张开
+    80% {
+        transform: translateX(45px) scale(0.8);
+        opacity: 0;
+    }
 
-	// 抬起
-	100% {
-		opacity: 0;
-	}
+    // 抬起
+    100% {
+        opacity: 0;
+    }
 }
 
 // 动画序列 - 左侧指尖 (副手指，只在缩放阶段出现)
 @keyframes gestureSequenceBefore {
 
-	// --- 阶段1: 隐藏 (0-50%) ---
-	0%,
-	49% {
-		opacity: 0;
-	}
+    // --- 阶段1: 隐藏 (0-50%) ---
+    0%,
+    49% {
+        opacity: 0;
+    }
 
-	// --- 阶段2: 双指缩放 (50-100%) ---加大缩放幅度
-	50% {
-		transform: translateX(10px) scale(0.8);
-		opacity: 0;
-	}
+    // --- 阶段2: 双指缩放 (50-100%) ---加大缩放幅度
+    50% {
+        transform: translateX(10px) scale(0.8);
+        opacity: 0;
+    }
 
-	55% {
-		transform: translateX(10px) scale(1.2);
-		opacity: 1;
-	}
+    55% {
+        transform: translateX(10px) scale(1.2);
+        opacity: 1;
+    }
 
-	// 按下(中心)
-	75% {
-		transform: translateX(-45px) scale(1.1);
-		opacity: 1;
-	}
+    // 按下(中心)
+    75% {
+        transform: translateX(-45px) scale(1.1);
+        opacity: 1;
+    }
 
-	// 向左张开
-	80% {
-		transform: translateX(-45px) scale(0.8);
-		opacity: 0;
-	}
+    // 向左张开
+    80% {
+        transform: translateX(-45px) scale(0.8);
+        opacity: 0;
+    }
 
-	// 抬起
-	100% {
-		opacity: 0;
-	}
+    // 抬起
+    100% {
+        opacity: 0;
+    }
 }
 
 @keyframes hintFloat {
 
-	0%,
-	100% {
-		transform: translateY(0);
-	}
+    0%,
+    100% {
+        transform: translateY(0);
+    }
 
-	50% {
-		transform: translateY(-5px);
-	}
+    50% {
+        transform: translateY(-5px);
+    }
 }
 
 // Big Bang 闪光遮罩
 #flash-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background: #fff; // 纯白光
-	z-index: 10000; // 确保覆盖一切
-	pointer-events: none;
-	opacity: 0;
-	mix-blend-mode: hard-light; // 使用强光模式，让白色更猛烈
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #fff; // 纯白光
+    z-index: 10000; // 确保覆盖一切
+    pointer-events: none;
+    opacity: 0;
+    mix-blend-mode: hard-light; // 使用强光模式，让白色更猛烈
 
-	&.bang {
-		animation: bigBang 2.5s ease-out forwards;
-	}
+    &.bang {
+        animation: bigBang 2.5s ease-out forwards;
+    }
 }
 
 @keyframes bigBang {
-	0% {
-		opacity: 1;
-	}
+    0% {
+        opacity: 1;
+    }
 
-	// 点击即亮
-	60% {
-		opacity: 1;
-		filter: blur(2px);
-	}
+    // 点击即亮
+    60% {
+        opacity: 1;
+        filter: blur(2px);
+    }
 
-	// 保持高亮
-	100% {
-		opacity: 0;
-		filter: blur(10px);
-	}
+    // 保持高亮
+    100% {
+        opacity: 0;
+        filter: blur(10px);
+    }
 
-	// 缓慢消散
+    // 缓慢消散
 }
 
 // 星门终端 (Stargate Terminal) - 最终丝滑版
 #stargate-terminal {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: 9000;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 0.6s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
 
-	&.open {
-		opacity: 1;
-		pointer-events: auto;
+    &.open {
+        opacity: 1;
+        pointer-events: auto;
 
-		.overlay {
-			opacity: 1;
-			transform: scale(1);
-			// 只有在打开时才应用模糊，为了性能
-		}
+        .overlay {
+            opacity: 1;
+            // transform: scale(1);
+        }
 
-		.terminal-content {
-			transform: scale(1) translateY(0);
-			opacity: 1;
-			filter: blur(0);
-			transition-delay: 0.1s; // 错落出现
-		}
-	}
+        .terminal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            filter: blur(0);
+            transition-delay: 0.1s; // 错落出现
+        }
+    }
 
-	.overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		// 径向渐变：中心微亮（聚焦），四周微暗（沉浸），绝不是死黑
-		background: radial-gradient(circle at center, rgba(120, 80, 255, 0.08) 0%, rgba(10, 5, 20, 0.4) 90%);
-		backdrop-filter: blur(30px) brightness(1.1);
-		opacity: 0;
-		transform: scale(1.1); // 微缩放效果
-		transition: opacity 0.8s ease, transform 0.8s ease;
-		will-change: opacity, transform;
-	}
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        // 径向渐变：中心微亮（聚焦），四周微暗（沉浸），绝不是死黑
+        background: radial-gradient(circle at center, rgba(120, 80, 255, 0.08) 0%, rgba(10, 5, 20, 0.4) 90%);
+        // 核心优化：始终保持模糊，只做 Opacity 动画
+        backdrop-filter: blur(30px) brightness(1.1);
+        opacity: 0;
+        transition: opacity 0.6s ease;
+        will-change: opacity;
+    }
 
-	.terminal-content {
-		position: relative;
-		z-index: 2;
-		text-align: center;
-		color: #fff;
-		transform: scale(0.95) translateY(10px); // 初始略微下沉
-		opacity: 0;
-		filter: blur(10px);
-		transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); // 极其平滑的贝塞尔曲线
-		will-change: opacity, transform, filter;
+    .terminal-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: #fff;
+        transform: scale(0.95) translateY(10px); // 初始略微下沉
+        opacity: 0;
+        filter: blur(10px);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); // 极其平滑的贝塞尔曲线
+        will-change: opacity, transform, filter;
 
-		.terminal-header {
-			font-family: -apple-system, sans-serif;
-			font-size: 0.6rem;
-			font-weight: 300;
-			letter-spacing: 6px;
-			color: rgba(255, 255, 255, 0.5);
-			margin-bottom: 40px;
-			text-transform: uppercase;
-			text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-		}
+        .terminal-header {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 0.6rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            // 优化：提升可见性
+            color: rgba(255, 255, 255, 0.85); // 0.5 -> 0.85
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            // 优化：增强发光，使其在任何背景下更清晰
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
 
-		.input-wrapper {
-			font-family: 'Courier New', monospace;
-			font-size: clamp(2.5rem, 6vw, 5rem);
-			font-weight: 200;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 8px;
+        .input-wrapper {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
 
-			.prefix {
-				display: none;
-			}
+            .prefix {
+                display: none;
+            }
 
-			.code-display {
-				min-height: 1.2em;
-				min-width: 20px;
-				text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4);
-				letter-spacing: 4px;
-				text-transform: uppercase;
+            .code-display {
+                min-height: 1.2em;
+                min-width: 20px;
+                // 优化：增强发光
+                text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 50px rgba(255, 255, 255, 0.6);
+                letter-spacing: 4px;
+                text-transform: uppercase;
 
-				&.success {
-					color: #aaffdd;
-					text-shadow: 0 0 20px #55ffaa, 0 0 50px #55ffaa;
-					transition: all 0.3s ease;
-				}
+                &.success {
+                    color: #aaffdd;
+                    text-shadow: 0 0 20px #55ffaa, 0 0 50px #55ffaa;
+                    transition: all 0.3s ease;
+                }
 
-				&.error {
-					color: #ffaaaa;
-					text-shadow: 0 0 20px #ff3333, 0 0 50px #ff3333;
-					animation: shake 0.4s ease-in-out;
-				}
-			}
+                &.error {
+                    color: #ffaaaa;
+                    text-shadow: 0 0 20px #ff3333, 0 0 50px #ff3333;
+                    animation: shake 0.4s ease-in-out;
+                }
+            }
 
-			.cursor {
-				width: 2px; // 改为细竖线
-				height: 1em; // 高度撑满
-				background: #fff;
-				border-radius: 2px;
-				box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-				animation: blink 1.2s ease-in-out infinite;
-				opacity: 0.8;
-				margin-top: 4px; // 微调位置
-			}
-		}
+            .cursor {
+                width: 2px;
+                height: 1.0em;
+                background: #fff;
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+                animation: blink 1.2s ease-in-out infinite;
+                opacity: 0.8;
+                margin-top: 4px;
+                display: inline-block;
+                border: none; // 强制移除可能的边框
+            }
+        }
 
-		.status-text {
-			margin-top: 40px;
-			font-family: -apple-system, sans-serif;
-			font-size: 0.75rem;
-			font-weight: 300;
-			letter-spacing: 3px;
-			color: rgba(255, 255, 255, 0.3);
-			text-transform: uppercase;
-		}
+        .status-text {
+            margin-top: 40px;
+            font-family: -apple-system, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            // 优化：提升可见性
+            color: rgba(255, 255, 255, 0.7); // 0.3 -> 0.7
+            text-transform: uppercase;
+            // 优化：增加微弱发光
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
 
-		input#launch-code {
-			position: absolute;
-			opacity: 0;
-			width: 1px;
-			height: 1px;
-		}
-	}
+        input#launch-code {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+        }
+    }
+
+    // 移动端优化
+    @media screen and (max-width: 540px) {
+        align-items: flex-start;
+        padding-top: 15vh; // 顶置内容，避开键盘
+
+        .overlay {
+            // v2.1 视觉回调：通透感回归
+            // 降低遮罩浓度，加入紫色水晶微光
+            background: radial-gradient(circle at center, rgba(40, 20, 60, 0.4) 0%, rgba(10, 5, 20, 0.85) 90%); // 中心更透，四周暗
+            // 增强磨砂感与饱和度，让透过的星光更绚丽
+            backdrop-filter: blur(20px) saturate(180%);
+        }
+
+        .terminal-content {
+            .terminal-header {
+                margin-bottom: 30px;
+                font-weight: 400; // 稍粗一点
+                color: #fff; // 纯白，确保对比度
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); // 强光补偿
+            }
+
+            .input-wrapper {
+                font-size: clamp(1.8rem, 8vw, 2.5rem);
+                font-weight: 400;
+                // 强力发光补偿
+                text-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(160, 100, 255, 0.5);
+            }
+
+            .status-text {
+                margin-top: 30px;
+                font-size: 0.65rem;
+                color: rgba(255, 255, 255, 0.9);
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            }
+        }
+    }
 }
 
 @keyframes blink {
 
-	0%,
-	100% {
-		opacity: 0.3;
-	}
+    0%,
+    100% {
+        opacity: 0.3;
+    }
 
-	50% {
-		opacity: 1;
-	}
+    50% {
+        opacity: 1;
+    }
 }
 
 @keyframes shake {
 
-	0%,
-	100% {
-		transform: translateX(0);
-	}
+    0%,
+    100% {
+        transform: translateX(0);
+    }
 
-	20%,
-	60% {
-		transform: translateX(-4px);
-	}
+    20%,
+    60% {
+        transform: translateX(-4px);
+    }
 
-	40%,
-	80% {
-		transform: translateX(4px);
-	}
+    40%,
+    80% {
+        transform: translateX(4px);
+    }
 }

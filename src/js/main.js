@@ -519,6 +519,21 @@ const Stargate = {
 			if (e.key === 'Escape') this.close();
 		});
 
+		// Focus/Blur Monitoring for Interactive Text
+		this.dom.input.addEventListener('focus', () => {
+			if (!this.dom.display.classList.contains('error') && !this.dom.display.classList.contains('success')) {
+				this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
+				this.dom.status.style.color = 'rgba(255,255,255,0.7)';
+			}
+		});
+
+		this.dom.input.addEventListener('blur', () => {
+			if (!this.dom.display.classList.contains('error') && !this.dom.display.classList.contains('success') && this.isOpen) {
+				this.dom.status.textContent = 'SYSTEM STANDBY · 点击接入';
+				this.dom.status.style.color = 'rgba(255,255,255,0.5)';
+			}
+		});
+
 		// Focus Management
 		this.dom.terminal.addEventListener('click', (e) => {
 			if (e.target === this.dom.terminal || e.target.classList.contains('overlay')) {
@@ -540,9 +555,11 @@ const Stargate = {
 		this.dom.input.value = '';
 		this.dom.display.textContent = '';
 		this.dom.display.className = 'code-display'; // Reset classes
-		this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
-		this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+		// Default state: Standby (Expect user to tap)
+		this.dom.status.textContent = 'SYSTEM STANDBY · 点击接入';
+		this.dom.status.style.color = 'rgba(255,255,255,0.5)';
 
+		// Try auto-focus, but if blocked by browser, status remains STANDBY
 		setTimeout(() => this.dom.input.focus(), 100);
 	},
 
@@ -563,7 +580,7 @@ const Stargate = {
 		if (this.dom.display.classList.contains('error')) {
 			this.dom.display.classList.remove('error');
 			this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
-			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+			this.dom.status.style.color = 'rgba(255,255,255,0.7)';
 		}
 	},
 
@@ -609,7 +626,7 @@ const Stargate = {
 			this.dom.input.value = '';
 			this.dom.display.textContent = '';
 			this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
-			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+			this.dom.status.style.color = 'rgba(255,255,255,0.7)';
 		}, 1000);
 	}
 };
