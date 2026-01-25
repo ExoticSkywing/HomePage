@@ -343,16 +343,18 @@ function switchPage() {
 	});
 
 	switchPage.switched = true;
+	// 切换到 Main 页面后，尽快显示交互提示，不依赖 Galaxy 初始化
+	showInteractionHint();
 }
 
 const showInteractionHint = () => {
 	const hint = document.getElementById("interaction-hint");
 	if (!hint) return;
 
-	// 延迟一点显示，给银河动画一点加载时间
+	// 稍微延迟，等待页面切换动画（550ms）基本完成
 	setTimeout(() => {
 		hint.classList.add("in");
-	}, 1500);
+	}, 800);
 
 	const hideHint = () => {
 		hint.classList.remove("in");
@@ -377,7 +379,6 @@ function loadMain() {
 		if (canvas) {
 			const galaxyAnimation = new GalaxyAnimation(canvas);
 			galaxyAnimation.init();
-			showInteractionHint(); // 显示交互提示
 		}
 	}, 0);
 	loadMain.loaded = true;
