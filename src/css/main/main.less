@@ -11,13 +11,32 @@
 	background: #160016;
 
 	.card-inner {
+		// ... existing attributes ...
+		// 初始状态：隐藏且微缩，为入场“凝聚”动画做准备
+		opacity: 0;
+		transform: scale(0.9);
+		filter: blur(10px); // 初始带一点模糊，更有科幻感
+		transition: opacity 2s ease-out, transform 2s ease-out, filter 2s ease-out;
+
+		&.in {
+			opacity: 1;
+			transform: scale(1);
+			filter: blur(0); // 最终清晰
+		}
+
+		// 保持原有的样式
 		padding: clamp(20px, 3vw, 32px) clamp(24px, 4vw, 32px);
 		border: 1px solid rgba(123, 44, 191, 0.4);
 		border-radius: 50%;
 		background: rgba(26, 8, 40, 0.12);
+		// ... rest of styles
+
 		-webkit-backdrop-filter: blur(1.8px) saturate(148%);
 		backdrop-filter: blur(1.8px) saturate(148%);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18), 0 0 50px rgba(123, 44, 191, 0.25), 0 0 100px rgba(123, 44, 191, 0.15), 0 0 150px rgba(123, 44, 191, 0.08);
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18),
+		0 0 50px rgba(123, 44, 191, 0.25),
+		0 0 100px rgba(123, 44, 191, 0.15),
+		0 0 150px rgba(123, 44, 191, 0.08);
 		position: relative;
 		z-index: 2;
 		color: #f0f0f2;

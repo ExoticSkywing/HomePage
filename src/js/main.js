@@ -36,8 +36,10 @@ class GalaxyAnimation {
 		this.scene.background = new THREE.Color(0x160016);
 
 		// 创建相机
-		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-		this.camera.position.set(0, 4, 21);
+		// 修复黑屏：增加远剪裁面到 2000，确保能看到远处粒子
+		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
+		// 初始位置设在 800，确保在视锥体内
+		this.camera.position.set(0, 4, 800);
 
 		// 创建渲染器
 		this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
@@ -53,6 +55,38 @@ class GalaxyAnimation {
 
 		// 创建银河粒子系统
 		this.createGalaxy(THREE);
+
+		// 启动飞入动画
+		this.flyIn();
+	}
+
+	flyIn() {
+		// 虫洞穿越效果：相机从 z=120 (银河全景) 极速拉近到 z=21
+		// 修正：银河半径约 40，z=120 足够产生深空感且可见
+		if (typeof anime !== 'undefined') {
+			anime({
+				targets: this.camera.position,
+				z: [120, 21],
+				y: [20, 4],
+				duration: 2500,
+				easing: 'easeOutExpo',
+				update: () => {
+					this.camera.lookAt(0, 0, 0);
+				}
+			});
+
+			// 旋转速度动画保持不变
+			this.initialRotationSpeed = 20.0;
+			anime({
+				targets: this,
+				initialRotationSpeed: 0.05,
+				duration: 2500,
+				easing: 'easeOutExpo'
+			});
+		} else {
+			// 回退
+			this.camera.position.set(0, 4, 21);
+		}
 	}
 
 	createGalaxy(THREE) {
@@ -177,13 +211,16 @@ class GalaxyAnimation {
 		// 更新控制器
 		this.controls.update();
 
-		// 更新时间
+		// 计算 delta time，用于平滑累加旋转
+		const delta = this.clock.getDelta();
 		const t = this.clock.getElapsedTime() * 0.5;
 		this.gu.time.value = t * Math.PI;
 
 		// 旋转银河
 		if (this.points) {
-			this.points.rotation.y = t * 0.05;
+			// 使用动态速度（flyIn期间快，之后慢）进行累加
+			const speed = this.initialRotationSpeed !== undefined ? this.initialRotationSpeed : 0.05;
+			this.points.rotation.y += speed * delta;
 		}
 
 		// 渲染场景
@@ -373,6 +410,8 @@ function loadMain() {
 	if (loadMain.loaded) {
 		return;
 	}
+	// 延迟卡片显示，配合虫洞穿越动画 (Fly-in)
+	// 虫洞动画约 2.5s，这里设置为 3.0s，让卡片在着陆后才开始凝聚
 	setTimeout(() => {
 		$(".card-inner").classList.add("in");
 		const canvas = document.getElementById("galaxyCanvas");
@@ -380,7 +419,7 @@ function loadMain() {
 			const galaxyAnimation = new GalaxyAnimation(canvas);
 			galaxyAnimation.init();
 		}
-	}, 0);
+	}, 3000);
 	loadMain.loaded = true;
 }
 
