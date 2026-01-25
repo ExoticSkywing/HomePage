@@ -62,4 +62,15 @@
     
     #flash-overlay
 
+    #stargate-terminal.hidden
+        .overlay
+        .terminal-content
+            .terminal-header ORBITAL COMMAND
+            .input-wrapper
+                span.prefix >
+                span#code-display.code-display
+                span.cursor _
+            input#launch-code(type="text", autocomplete="off", maxlength="20")
+            .status-text AWAITING INPUT
+
     canvas#galaxyCanvas

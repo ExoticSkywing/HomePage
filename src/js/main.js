@@ -489,7 +489,146 @@ window.visibilityChangeEvent = hiddenProperty.replace(
 );
 window.addEventListener(visibilityChangeEvent, loadIntro);
 window.addEventListener("DOMContentLoaded", loadIntro);
-window.addEventListener("DOMContentLoaded", updateSecondEntryHref);
+// Stargate Terminal Logic
+const LAUNCH_CODES = {
+	"pxkjvip": "https://mobile-landing-1zi.pages.dev",
+	// Add more codes here
+};
+
+const Stargate = {
+	isOpen: false,
+	dom: {
+		terminal: null,
+		input: null,
+		display: null,
+		status: null
+	},
+
+	init() {
+		this.dom.terminal = document.getElementById('stargate-terminal');
+		this.dom.input = document.getElementById('launch-code');
+		this.dom.display = document.getElementById('code-display');
+		this.dom.status = document.querySelector('.status-text');
+
+		if (!this.dom.terminal) return;
+
+		// Input Handling
+		this.dom.input.addEventListener('input', (e) => this.handleInput(e));
+		this.dom.input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') this.checkCode();
+			if (e.key === 'Escape') this.close();
+		});
+
+		// Focus Management
+		this.dom.terminal.addEventListener('click', (e) => {
+			if (e.target === this.dom.terminal || e.target.classList.contains('overlay')) {
+				this.close();
+			} else {
+				this.dom.input.focus();
+			}
+		});
+	},
+
+	open() {
+		if (this.isOpen) return;
+		this.isOpen = true;
+		this.dom.terminal.classList.remove('hidden');
+		// Force reflow
+		void this.dom.terminal.offsetWidth;
+		this.dom.terminal.classList.add('open');
+
+		this.dom.input.value = '';
+		this.dom.display.textContent = '';
+		this.dom.display.className = 'code-display'; // Reset classes
+		this.dom.status.textContent = 'AWAITING INPUT...';
+		this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+
+		setTimeout(() => this.dom.input.focus(), 100);
+	},
+
+	close() {
+		if (!this.isOpen) return;
+		this.isOpen = false;
+		this.dom.terminal.classList.remove('open');
+		setTimeout(() => {
+			this.dom.terminal.classList.add('hidden');
+		}, 400);
+	},
+
+	handleInput(e) {
+		const val = e.target.value.toUpperCase();
+		this.dom.display.textContent = val;
+
+		// Reset error state on input
+		if (this.dom.display.classList.contains('error')) {
+			this.dom.display.classList.remove('error');
+			this.dom.status.textContent = 'AWAITING INPUT...';
+			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+		}
+	},
+
+	checkCode() {
+		const code = this.dom.input.value.toLowerCase().trim();
+		const targetUrl = LAUNCH_CODES[code];
+
+		if (targetUrl) {
+			this.grantAccess(targetUrl);
+		} else {
+			this.denyAccess();
+		}
+	},
+
+	grantAccess(url) {
+		this.dom.display.classList.add('success');
+		this.dom.status.textContent = 'ACCESS GRANTED - INITIATING JUMP';
+		this.dom.status.style.color = '#00ffaa';
+		this.dom.input.blur();
+
+		// Trigger Big Bang Visuals
+		setTimeout(() => {
+			const flash = document.getElementById("flash-overlay");
+			if (flash) flash.classList.remove("bang"); // Reset first
+			void flash.offsetWidth;
+			flash.classList.add("bang");
+
+			// Actual redirection
+			setTimeout(() => {
+				window.location.href = url;
+			}, 300); // 配合 Big Bang 闪白瞬间跳转
+		}, 800);
+	},
+
+	denyAccess() {
+		this.dom.display.classList.add('error');
+		this.dom.status.textContent = 'ACCESS DENIED - INVALID CODE';
+		this.dom.status.style.color = '#ff3333';
+
+		// Auto clear after shake
+		setTimeout(() => {
+			this.dom.display.classList.remove('error');
+			this.dom.input.value = '';
+			this.dom.display.textContent = '';
+			this.dom.status.textContent = 'AWAITING INPUT...';
+			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+		}, 1000);
+	}
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+	Stargate.init();
+
+	// Bind Rocket/Second Entry Click
+	const secondEntryLink = document.querySelector('a[data-entry="second"]');
+	if (secondEntryLink) {
+		secondEntryLink.addEventListener('click', (e) => {
+			e.preventDefault(); // Stop default navigation
+			Stargate.open();
+		});
+		// Remove href to prevent hover preview, or keep it for SEO but intercept click
+		secondEntryLink.setAttribute('href', 'javascript:void(0)');
+	}
+});
+// window.addEventListener("DOMContentLoaded", updateSecondEntryHref);
 
 const enterEl = $(".enter");
 enterEl.addEventListener("click", loadAll);
