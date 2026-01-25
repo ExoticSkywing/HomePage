@@ -142,8 +142,13 @@ class GalaxyAnimation {
 			blending: THREE.AdditiveBlending,
 			onBeforeCompile: shader => {
 				shader.uniforms.time = this.gu.time;
+				// 添加交互相关的 uniforms
+				shader.uniforms.uMouse = { value: new THREE.Vector3(0, 0, 0) };
+				this.gu.uMouse = shader.uniforms.uMouse; // 引用以便在 update 中更新
+
 				shader.vertexShader = `
 					uniform float time;
+					uniform vec3 uMouse; // 鼠标在模型坐标系中的位置
 					attribute float sizes;
 					attribute vec4 shift;
 					varying vec3 vColor;
@@ -165,6 +170,19 @@ class GalaxyAnimation {
 						float moveT = mod(shift.x + shift.z * t, PI2);
 						float moveS = mod(shift.y + shift.z * t, PI2);
 						transformed += vec3(cos(moveS) * sin(moveT), cos(moveT), sin(moveS) * sin(moveT)) * shift.w;
+
+						// --- 粒子力场交互 (Repulsion) ---
+						// 计算鼠标与粒子的距离 (在同一局部坐标系)
+						float dist = distance(transformed, uMouse);
+						float radius = 6.0; // 交互半径
+						if (dist < radius) {
+							// 计算排斥力（越近越强）
+							float force = (1.0 - dist / radius);
+							force = force * force; // 指数衰减，更自然
+							vec3 dir = normalize(transformed - uMouse);
+							// 沿垂直方向和径向推开，模拟水波纹
+							transformed += dir * force * 3.0; 
+						}
 					`
 				);
 
@@ -187,22 +205,33 @@ class GalaxyAnimation {
 		this.points.rotation.order = "ZYX";
 		this.points.rotation.z = 0.2;
 		this.scene.add(this.points);
+
+		// 初始化交互所需的 Raycaster
+		this.raycaster = new THREE.Raycaster();
+		this.mouse = new THREE.Vector2(-1000, -1000); // 初始移出屏幕
+		this.interactionPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // XZ 平面
 	}
 
 	setupEventListeners() {
 		window.addEventListener("resize", () => this.handleResize());
 		// 添加页面可见性变化监听
 		document.addEventListener(visibilityChangeEvent, this.handleVisibilityChange.bind(this));
+
+		// 监听鼠标移动
+		window.addEventListener('mousemove', (event) => {
+			this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+			this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+		});
+
+		// 移动端触摸
+		window.addEventListener('touchmove', (event) => {
+			if (event.touches.length > 0) {
+				this.mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+				this.mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+			}
+		});
 	}
-
-	handleResize() {
-		if (!this.camera || !this.renderer) return;
-
-		this.camera.aspect = window.innerWidth / window.innerHeight;
-		this.camera.updateProjectionMatrix();
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
-	}
-
+	// ...
 	animate() {
 		if (!this.scene || !this.camera || !this.renderer) return;
 
@@ -221,6 +250,24 @@ class GalaxyAnimation {
 			// 使用动态速度（flyIn期间快，之后慢）进行累加
 			const speed = this.initialRotationSpeed !== undefined ? this.initialRotationSpeed : 0.05;
 			this.points.rotation.y += speed * delta;
+
+			// --- 计算交互投影 ---
+			// 1. 设置 Raycaster
+			this.raycaster.setFromCamera(this.mouse, this.camera);
+
+			// 2. 计算与 XZ 平面的交点
+			const target = new THREE.Vector3();
+			this.raycaster.ray.intersectPlane(this.interactionPlane, target);
+
+			if (target && this.gu.uMouse) {
+				// 3. 将世界坐标转为银河的局部坐标
+				// 这样即使银河在旋转，力场也会跟随鼠标位置下的星星
+				this.points.worldToLocal(target);
+
+				// 4. 更新 Shader 中的鼠标位置
+				// 使用 lerp 平滑移动，避免瞬移跳变
+				this.gu.uMouse.value.lerp(target, 0.1);
+			}
 		}
 
 		// 渲染场景
