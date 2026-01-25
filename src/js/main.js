@@ -540,7 +540,7 @@ const Stargate = {
 		this.dom.input.value = '';
 		this.dom.display.textContent = '';
 		this.dom.display.className = 'code-display'; // Reset classes
-		this.dom.status.textContent = 'AWAITING INPUT...';
+		this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
 		this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 
 		setTimeout(() => this.dom.input.focus(), 100);
@@ -562,7 +562,7 @@ const Stargate = {
 		// Reset error state on input
 		if (this.dom.display.classList.contains('error')) {
 			this.dom.display.classList.remove('error');
-			this.dom.status.textContent = 'AWAITING INPUT...';
+			this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
 			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 		}
 	},
@@ -580,7 +580,7 @@ const Stargate = {
 
 	grantAccess(url) {
 		this.dom.display.classList.add('success');
-		this.dom.status.textContent = 'ACCESS GRANTED - INITIATING JUMP';
+		this.dom.status.textContent = 'COORDINATES LOCKED · 跃迁启动';
 		this.dom.status.style.color = '#00ffaa';
 		this.dom.input.blur();
 
@@ -600,7 +600,7 @@ const Stargate = {
 
 	denyAccess() {
 		this.dom.display.classList.add('error');
-		this.dom.status.textContent = 'ACCESS DENIED - INVALID CODE';
+		this.dom.status.textContent = 'COORDINATES INVALID · 坐标无效';
 		this.dom.status.style.color = '#ff3333';
 
 		// Auto clear after shake
@@ -608,7 +608,7 @@ const Stargate = {
 			this.dom.display.classList.remove('error');
 			this.dom.input.value = '';
 			this.dom.display.textContent = '';
-			this.dom.status.textContent = 'AWAITING INPUT...';
+			this.dom.status.textContent = 'ENTER COORDINATES · 输入跃迁坐标';
 			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 		}, 1000);
 	}
