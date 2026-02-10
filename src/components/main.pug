@@ -51,14 +51,30 @@
             //-     span.text-custom(data-translate=`${ccc.text}`) #{ccc.text}
 
     #interaction-hint.fade
-        .hand-icon
-            i.icon.icon-hand-up
-        span 指尖漫游 · 探索星河
-
-    #interaction-hint.fade
-        .hand-icon
-            i.icon.icon-hand-up
-        span 指尖漫游 · 探索星河
+        //- PC 端提示：指尖拖拽 / 鼠标滚轮 (交替显示)
+        .hand-icon-pc
+            //- 状态1: 指尖 (演示拖拽)
+            svg.icon-pointer(viewBox="0 0 24 24" width="36" height="36" fill="currentColor")
+                path(d="M9,11.24V7.5C9,6.12 10.12,5 11.5,5S14,6.12 14,7.5v3.74c1.21-0.81 2-2.18 2-3.74C16,5.01 13.99,3 11.5,3S7,5.01 7,7.5 c0,1.56 0.79,2.93 2,3.74z M18.84,15.87l-4.54-2.26c-0.17-0.07-0.35-0.11-0.54-0.11H13v-6C13,6.67 12.33,6 11.5,6 S10,6.67 10,7.5v10.74l-3.43-0.72c-0.08-0.01-0.15-0.03-0.24-0.03c-0.31,0-0.59,0.13-0.79,0.33l-0.79,0.8l4.94,4.94 C9.96,23.83 10.34,24 10.75,24h6.79c0.75,0 1.33-0.55 1.44-1.28l0.75-5.27c0.01-0.07 0.02-0.14 0.02-0.2 C19.75,16.63 19.37,16.09 18.84,15.87z")
+            
+            //- 状态2: 鼠标 (演示滚轮) - 更换为现代化圆润风格
+            svg.icon-mouse(viewBox="0 0 24 24" width="36" height="36" fill="currentColor")
+                //- 鼠标外壳：圆润胶囊形
+                path(d="M12,2C8.13,2 5,5.13 5,9v6c0,3.87 3.13,7 7,7s7-3.13 7-7V9C19,5.13 15.87,2 12,2z M12,20c-2.76,0-5-2.24-5-5V9c0-2.76 2.24-5 5-5s5,2.24 5,5v6C17,17.76 14.76,20 12,20z")
+                //- 滚轮：实心胶囊，位置调整
+                rect.wheel(x="11" y="6" width="2" height="5" rx="1")
+        
+        //- 移动端提示：手势光点 (CSS 动画)
+        .hand-icon-mobile
+            .finger.finger-1
+            .finger.finger-2
+            //- 新增：紧贴图标的手势说明
+            .mobile-gesture-text
+                span.text-swipe 单指旋转
+                span.text-pinch 双指缩放
+            
+        //- 底部通用文案 (恢复)
+        span.main-hint-text 指尖漫游 · 探索星河
     
     #flash-overlay
 

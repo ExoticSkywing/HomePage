@@ -347,18 +347,45 @@ function switchPage() {
 const showInteractionHint = () => {
 	const hint = document.getElementById("interaction-hint");
 	if (!hint) return;
+
 	setTimeout(() => {
 		hint.classList.add("in");
 	}, 800);
-	const hideHint = () => {
-		hint.classList.remove("in");
-		document.removeEventListener("mousedown", hideHint);
-		document.removeEventListener("touchstart", hideHint);
-		document.removeEventListener("wheel", hideHint);
+
+	let hideTimer = null;
+
+	const dimHint = () => {
+		// 交互时降低透明度，不打扰视线
+		hint.style.opacity = '0';
+		hint.style.transition = 'opacity 0.3s';
+		if (hideTimer) clearTimeout(hideTimer);
 	};
-	document.addEventListener("mousedown", hideHint);
-	document.addEventListener("touchstart", hideHint);
-	document.addEventListener("wheel", hideHint);
+
+	const restoreHint = () => {
+		// 松手 2 秒后恢复显示
+		hideTimer = setTimeout(() => {
+			hint.style.opacity = ''; // 恢复 CSS 类控制
+			hint.classList.add("in");
+		}, 2000);
+	};
+
+	// 监听交互事件
+	document.addEventListener("mousedown", dimHint);
+	document.addEventListener("touchstart", dimHint, { passive: true });
+	document.addEventListener("wheel", dimHint, { passive: true }); // 滚轮也算交互
+
+	document.addEventListener("mouseup", restoreHint);
+	document.addEventListener("touchend", restoreHint);
+	// 滚轮结束比较难判定，简单起见，滚轮也会触发 dim，然后依靠下一个交互或刷新恢复，
+	// 或者我们可以给 wheel 加个防抖来 restore，但这里简单处理即可，
+	// 实际上 wheel 事件连续触发，restoreHint 需要防抖。
+
+	let wheelTimer;
+	document.addEventListener("wheel", () => {
+		dimHint();
+		clearTimeout(wheelTimer);
+		wheelTimer = setTimeout(restoreHint, 500);
+	}, { passive: true });
 };
 
 function loadMain() {

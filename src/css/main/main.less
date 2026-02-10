@@ -324,46 +324,107 @@
         animation: hintBreathe 4s infinite ease-in-out 1.5s;
     }
 
-    .hand-icon {
-        margin-bottom: 28px; // 增加间距，分离视觉
-        width: 140px; // 加宽滑动范围
-        height: 40px;
+
+
+    .hand-icon-pc {
+        margin-bottom: 24px;
+        color: rgba(255, 255, 255, 0.9);
         display: flex;
         justify-content: center;
         align-items: center;
         position: relative;
+        width: 100%;
+        height: 40px;
 
-        // 两个指尖：before 和 after
-        &::before,
-        &::after {
-            content: "";
-            position: absolute;
-            width: 14px; // 增大光点
-            height: 14px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4); // 增强光晕
+        svg {
+            // 标准尺寸
+            width: 36px;
+            height: 36px;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+            position: absolute; // 让两者重叠交替
             opacity: 0;
+            top: 0;
+            left: 50%;
+            margin-left: -18px;
         }
 
-        // 动画编排：总时长 6s (加速)
-        // 0s-3s: 单指滑动 (只用 after)
-        // 3s-6s: 双指缩放 (before 和 after 配合)
-
-        &::after {
-            animation: gestureSequenceAfter 6s infinite ease-in-out;
+        .icon-pointer {
+            animation: pcPointerAnim 4s infinite ease-in-out;
         }
 
-        &::before {
-            animation: gestureSequenceBefore 6s infinite ease-in-out;
-        }
+        .icon-mouse {
+            animation: pcMouseAnim 4s infinite ease-in-out;
 
-        .icon {
-            display: none;
+            .wheel {
+                transform-origin: center;
+                animation: pcWheelAnim 4s infinite ease-in-out;
+            }
         }
     }
 
-    span {
+    .hand-icon-mobile {
+        display: none; // PC 隐藏
+        width: 140px;
+        height: 60px;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+
+        .finger {
+            width: 18px; // 放大
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            // 强力光晕
+            box-shadow: 0 0 25px rgba(255, 255, 255, 1);
+            position: absolute;
+            opacity: 0;
+        }
+
+        // 2s 极速风暴
+        .finger-1 {
+            animation: mobileGesture1 2s infinite ease-in-out;
+        }
+
+        .finger-2 {
+            animation: mobileGesture2 2s infinite ease-in-out;
+        }
+
+        // 新增：紧贴图标下方的动态提示
+        .mobile-gesture-text {
+            position: absolute;
+            bottom: -22px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+
+            span {
+                position: absolute;
+                font-family: "MiSans", system-ui, sans-serif;
+                font-size: 0.75rem;
+                color: rgba(255, 255, 255, 0.6);
+                letter-spacing: 1px;
+                opacity: 0;
+                white-space: nowrap;
+            }
+
+            .text-swipe {
+                animation: textSwipeAnim 2s infinite ease-in-out;
+            }
+
+            .text-pinch {
+                animation: textPinchAnim 2s infinite ease-in-out;
+            }
+        }
+    }
+
+    // 底部通用文案 (PC/Mobile 共有)
+    .main-hint-text {
         // 优先使用细黑体，营造现代优雅感
         font-family: "Megrim", "MiSans", "PingFang SC", "Heiti SC", "Microsoft YaHei", sans-serif;
         color: rgba(255, 255, 255, 0.85);
@@ -371,30 +432,51 @@
         font-weight: 300;
         letter-spacing: 0.25em;
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        display: block;
+        text-align: center;
+    }
+
+    .hint-text-mobile {
+        display: none; // PC 隐藏
+        position: relative;
+        width: 100%;
+        height: 24px; // 占位防止跳动
+        justify-content: center;
+
+        span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0; // 默认隐藏，动画控制显示
+        }
+
+        // 2s 极速循环：文字与手势同步
+        .text-swipe {
+            animation: textSwipeAnim 2s infinite ease-in-out;
+        }
+
+        .text-pinch {
+            animation: textPinchAnim 2s infinite ease-in-out;
+        }
     }
 
     @media screen and (max-width: 540px) {
-        height: 140px;
         padding-bottom: 30px;
+        height: 160px;
 
-        .hand-icon .icon {
-            font-size: 1.6rem;
+        .hand-icon-pc {
+            display: none;
         }
 
-        .hand-icon {
-            margin-bottom: 16px; // 移动端稍微紧凑一点
-            width: 100px;
-
-            &::before,
-            &::after {
-                width: 10px;
-                height: 10px;
-            }
+        .hand-icon-mobile {
+            display: flex;
         }
 
-        span {
+        .main-hint-text {
             font-size: 0.9rem;
             letter-spacing: 2px;
+            margin-top: 25px; // 增加间距
         }
     }
 }
@@ -411,100 +493,239 @@
     }
 }
 
-// 动画序列 - 右侧指尖 (主手指)
-@keyframes gestureSequenceAfter {
+// PC 动画序列
+// PC 动画序列
+@keyframes pcPointerAnim {
 
-    // --- 阶段1: 单指滑动 (0-50%) ---加大滑动幅度
+    // 0-45%: 指尖左右拖拽
     0% {
-        transform: translateX(-35px) scale(0.8);
         opacity: 0;
+        transform: translateX(0);
     }
 
-    5% {
-        transform: translateX(-35px) scale(1.2);
+    10% {
         opacity: 1;
+        transform: translateX(0);
     }
 
-    // 按下
-    25% {
-        transform: translateX(35px) scale(1.1);
-        opacity: 1;
-    }
-
-    // 拖动
     30% {
-        transform: translateX(35px) scale(0.8);
-        opacity: 0;
+        opacity: 1;
+        transform: translateX(-25px);
     }
 
-    // 抬起
+    40% {
+        opacity: 1;
+        transform: translateX(25px);
+    }
 
-    // --- 阶段2: 双指缩放 (50-100%) ---加大缩放幅度
     50% {
-        transform: translateX(-10px) scale(0.8);
         opacity: 0;
+        transform: translateX(0);
     }
 
-    55% {
-        transform: translateX(-10px) scale(1.2);
-        opacity: 1;
-    }
-
-    // 按下(中心)
-    75% {
-        transform: translateX(45px) scale(1.1);
-        opacity: 1;
-    }
-
-    // 向右张开
-    80% {
-        transform: translateX(45px) scale(0.8);
-        opacity: 0;
-    }
-
-    // 抬起
+    // 消失
     100% {
         opacity: 0;
     }
 }
 
-// 动画序列 - 左侧指尖 (副手指，只在缩放阶段出现)
-@keyframes gestureSequenceBefore {
+@keyframes pcMouseAnim {
 
-    // --- 阶段1: 隐藏 (0-50%) ---
+    // 50-100%: 鼠标滚轮演示
     0%,
     49% {
         opacity: 0;
     }
 
-    // --- 阶段2: 双指缩放 (50-100%) ---加大缩放幅度
     50% {
-        transform: translateX(10px) scale(0.8);
         opacity: 0;
+        transform: translateY(0);
     }
 
     55% {
-        transform: translateX(10px) scale(1.2);
         opacity: 1;
+        transform: translateY(0);
     }
 
-    // 按下(中心)
-    75% {
-        transform: translateX(-45px) scale(1.1);
+    95% {
         opacity: 1;
+        transform: translateY(0);
     }
 
-    // 向左张开
-    80% {
-        transform: translateX(-45px) scale(0.8);
-        opacity: 0;
-    }
-
-    // 抬起
     100% {
         opacity: 0;
     }
 }
+
+@keyframes pcWheelAnim {
+
+    // 仅在鼠标出现时滚动
+    0%,
+    50% {
+        transform: translateY(0);
+    }
+
+    60% {
+        transform: translateY(-3px);
+    }
+
+    70% {
+        transform: translateY(3px);
+    }
+
+    80% {
+        transform: translateY(-3px);
+    }
+
+    90% {
+        transform: translateY(0);
+    }
+}
+
+// Mobile 动画序列 (2s 极速)
+@keyframes mobileGesture1 {
+
+    // --- 0-50%: 单指 Swipe ---
+    0% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateX(-40px);
+    }
+
+    // Swipe
+    45% {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+
+    // --- 50-100%: 双指 Pinch (Left) ---
+    50% {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+
+    55% {
+        opacity: 1;
+        transform: translateX(-40px);
+    }
+
+    85% {
+        opacity: 1;
+        transform: translateX(-10px);
+    }
+
+    // Pinch in
+    95% {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes mobileGesture2 {
+
+    // --- 0-50%: 隐藏 ---
+    0%,
+    49% {
+        opacity: 0;
+    }
+
+    // --- 50-100%: 双指 Pinch (Right) ---
+    50% {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    55% {
+        opacity: 1;
+        transform: translateX(40px);
+    }
+
+    85% {
+        opacity: 1;
+        transform: translateX(10px);
+    }
+
+    // Pinch in
+    95% {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+// 文案交替动画 (2s) - 适配左对齐布局，移除 translateX
+@keyframes textSwipeAnim {
+
+    // 0-45%: 显示 "单指旋转"
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    10% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes textPinchAnim {
+
+    // 50-100%: 显示 "双指缩放"
+    0%,
+    49% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    90% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
 
 @keyframes hintFloat {
 
