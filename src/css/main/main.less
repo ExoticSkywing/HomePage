@@ -635,6 +635,9 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            // 修复：强制整个输入区域 LTR 方向
+            direction: ltr;
+            unicode-bidi: bidi-override;
 
             .prefix {
                 display: none;
@@ -647,6 +650,10 @@
                 text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 50px rgba(255, 255, 255, 0.6);
                 letter-spacing: 4px;
                 text-transform: uppercase;
+                // 修复：强制 LTR 方向，解决移动端某些浏览器因 letter-spacing 导致的文本逆序渲染
+                direction: ltr !important;
+                unicode-bidi: bidi-override !important;
+                text-align: left;
 
                 &.success {
                     color: #aaffdd;
@@ -680,11 +687,33 @@
             font-size: 0.75rem;
             font-weight: 300;
             letter-spacing: 3px;
-            // 优化：提升可见性
-            color: rgba(255, 255, 255, 0.7); // 0.3 -> 0.7
+            // 优化：方案 B - 提升亮度
+            color: rgba(255, 255, 255, 0.9);
             text-transform: uppercase;
-            // 优化：增加微弱发光
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+
+            // 方案 B：星流托底结构
+            position: relative;
+            padding-bottom: 2px; // 给文字一点呼吸空间
+
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: -8px; // 在文字下方
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px; // 初始宽度
+                height: 1px;
+                // 经典科幻光效：两头透明，中间高亮青色
+                background: linear-gradient(90deg,
+                        rgba(0, 0, 0, 0) 0%,
+                        rgba(100, 255, 218, 0.8) 50%,
+                        rgba(0, 0, 0, 0) 100%);
+                // 柔和的光晕
+                box-shadow: 0 1px 4px rgba(100, 255, 218, 0.6);
+                // 呼吸动画
+                animation: nebulaBreathe 3s infinite ease-in-out;
+            }
         }
 
         input#launch-code {
@@ -692,6 +721,9 @@
             opacity: 0;
             width: 1px;
             height: 1px;
+            // 修复：隐藏输入框也强制 LTR，防止浏览器从 input 继承错误方向
+            direction: ltr !important;
+            unicode-bidi: bidi-override !important;
         }
 
         // --- v2.2 新增：点击引导提示 ---
@@ -785,5 +817,21 @@
     40%,
     80% {
         transform: translateX(4px);
+    }
+}
+
+// 方案 B 核心动画：星流呼吸
+@keyframes nebulaBreathe {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: translateX(-50%) scaleX(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) scaleX(1.3);
+        //        box-shadow: 0 0 15px rgba(100, 255, 218, 0.8);
     }
 }

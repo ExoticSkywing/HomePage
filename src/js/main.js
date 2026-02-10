@@ -288,25 +288,58 @@ function loadIntro() {
 
 function switchPage() {
 	if (switchPage.switched) return;
-	const DOM = { intro: $(".content-intro"), path: $(".shape-wrap path"), shape: $("svg.shape") };
-	DOM.shape.style.transformOrigin = "50% 0%";
-	anime({ targets: DOM.intro, duration: 1100, easing: "easeInOutSine", translateY: "-200vh" });
-	const flash = $("#flash-overlay");
-	if (flash) flash.classList.add("bang");
-	anime({
-		targets: DOM.shape,
-		scaleY: [
-			{ value: [0.8, 1.8], duration: 550, easing: "easeInQuad" },
-			{ value: 1, duration: 550, easing: "easeOutQuad" },
-		],
+
+	const DOM = {
+		intro: $(".content-intro"),
+		title: $(".content-title"),
+		subtitle: $(".content-subtitle"),
+		enter: $(".enter"),
+		arrow: $(".arrow")
+	};
+
+	// 创建时间轴：星尘消散效果
+	const tl = anime.timeline({
+		easing: 'easeOutExpo',
+		complete: () => {
+			// 动画结束后完全隐藏 intro 层，防止遮挡
+			DOM.intro.style.display = 'none';
+		}
 	});
-	anime({
-		targets: DOM.path,
-		duration: 1100,
-		easing: "easeOutQuad",
-		d: DOM.path.getAttribute("pathdata:id"),
-		complete: function (anim) { },
-	});
+
+	tl
+		// 1. 杂项元素（按钮、箭头）先下沉消失
+		.add({
+			targets: [DOM.enter, DOM.arrow],
+			opacity: 0,
+			translateY: 20,
+			duration: 600,
+			easing: 'easeOutQuad'
+		})
+		// 2. 文字元素上浮 + 模糊 + 淡出（交错）
+		.add({
+			targets: [DOM.subtitle, DOM.title],
+			opacity: 0,
+			translateY: -50,
+			filter: 'blur(10px)',
+			duration: 1000,
+			delay: anime.stagger(100), // 标题和副标题错开
+		}, '-=400')
+		// 3. 整体容器放大 + 深度模糊 + 彻底消失
+		.add({
+			targets: DOM.intro,
+			opacity: 0,
+			scale: 1.1, // 轻微放大，营造穿过星云的感觉
+			filter: 'blur(20px)',
+			duration: 1200,
+			easing: 'easeInOutSine'
+		}, '-=800');
+
+	// 闪光衔接：在文字消失时启动闪光
+	setTimeout(() => {
+		const flash = $("#flash-overlay");
+		if (flash) flash.classList.add("bang");
+	}, 400);
+
 	switchPage.switched = true;
 	showInteractionHint();
 }
@@ -352,11 +385,31 @@ window.visibilityChangeEvent = hiddenProperty.replace(/hidden/i, "visibilitychan
 window.addEventListener(visibilityChangeEvent, loadIntro);
 window.addEventListener("DOMContentLoaded", loadIntro);
 
-// Stargate Terminal Logic (v2.3: Placeholder Mode)
-const LAUNCH_CODES = { "pxkjvip": "https://mobile-landing-1zi.pages.dev" };
+// Stargate Terminal Logic (v3.1: Hybrid Input Strategy)
+// 桌面端用 keydown，移动端用 input 事件 + 逆序检测
+const LAUNCH_CODES = {
+	"pxkjvip": "https://mobile-landing-1zi.pages.dev",
+	"yzq": "https://appstore.1yo.cc/app"
+};
+
+// 辅助函数：检测输入是否可能被逆序
+function detectAndFixReversed(input, knownCodes) {
+	const normalizedInput = input.toLowerCase().trim();
+	// 如果输入本身就是有效口令，直接返回
+	if (knownCodes[normalizedInput]) return input;
+	// 尝试逆序
+	const reversed = normalizedInput.split('').reverse().join('');
+	if (knownCodes[reversed]) {
+		console.log('[Stargate] BiDi bug detected, auto-correcting:', input, '->', reversed);
+		return reversed;
+	}
+	return input; // 无法匹配，返回原值
+}
 
 const Stargate = {
 	isOpen: false,
+	inputBuffer: '', // 手动管理的输入字符串
+	usingKeydown: false, // 标记是否使用 keydown 捕获（桌面端）
 	dom: {
 		terminal: null,
 		input: null,
@@ -372,28 +425,84 @@ const Stargate = {
 
 		if (!this.dom.terminal) return;
 
-		// Input Handling
-		this.dom.input.addEventListener('input', (e) => {
-			this.handleInput(e);
-			// 输入时隐藏引导文案，给用户纯净视野
-			this.dom.status.style.opacity = '0';
-		});
+		// 修复：强制 LTR 方向
+		if (this.dom.display) this.dom.display.setAttribute('dir', 'ltr');
+		if (this.dom.input) this.dom.input.setAttribute('dir', 'ltr');
 
+		// ====== 桌面端：使用 keydown 直接捕获输入 ======
 		this.dom.input.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter') this.checkCode();
-			if (e.key === 'Escape') this.close();
+			// 功能键处理（所有端都生效）
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				this.checkCode();
+				return;
+			}
+			if (e.key === 'Escape') {
+				this.close();
+				return;
+			}
+
+			// 以下逻辑仅在非移动端生效
+			if (window.isPhone) return;
+
+			// 删除键处理
+			if (e.key === 'Backspace') {
+				e.preventDefault();
+				this.usingKeydown = true;
+				if (this.inputBuffer.length > 0) {
+					this.inputBuffer = this.inputBuffer.slice(0, -1);
+					this.updateDisplay();
+				}
+				return;
+			}
+
+			// 忽略功能键和组合键
+			if (e.ctrlKey || e.metaKey || e.altKey) return;
+			if (e.key.length !== 1) return;
+
+			// 字符输入处理
+			e.preventDefault();
+			this.usingKeydown = true;
+			const char = e.key.toUpperCase();
+			if (/^[A-Z0-9]$/.test(char)) {
+				this.inputBuffer += char;
+				this.updateDisplay();
+			}
 		});
 
+		// ====== 移动端：使用 input 事件 ======
+		this.dom.input.addEventListener('input', (e) => {
+			// 桌面端如果已经在用 keydown 捕获，忽略 input 事件
+			if (!window.isPhone && this.usingKeydown) return;
 
-		// Focus Management for Placeholder Effect
-		this.dom.input.addEventListener('focus', () => {
-			// 聚焦时不隐藏引导，允许光标和引导共存
-			// this.dom.status.style.opacity = '0';
+			// 移动端/桌面端后备：直接从 input.value 读取
+			const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+			this.inputBuffer = val;
+			this.dom.display.textContent = val;
+
+			// 同步 input.value（去除非法字符后的版本）
+			if (e.target.value !== val) {
+				e.target.value = val;
+			}
+
+			// 引导文案显隐控制
+			if (val === '') {
+				this.dom.status.style.opacity = '1';
+			} else {
+				this.dom.status.style.opacity = '0';
+			}
+
+			// Reset error state
+			if (this.dom.display.classList.contains('error')) {
+				this.dom.display.classList.remove('error');
+				this.dom.status.textContent = this.getPrompt();
+				this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+			}
 		});
 
+		// Focus Management
 		this.dom.input.addEventListener('blur', () => {
-			// 失焦且无内容时，恢复显示引导
-			if (this.dom.input.value.trim() === '') {
+			if (this.inputBuffer === '') {
 				this.dom.status.style.opacity = '1';
 			}
 		});
@@ -406,6 +515,32 @@ const Stargate = {
 				this.dom.input.focus();
 			}
 		});
+
+		// BFCache Restore Handling
+		window.addEventListener('pageshow', () => {
+			this.resetInput();
+		});
+	},
+
+	// 新增：统一更新显示
+	updateDisplay() {
+		this.dom.display.textContent = this.inputBuffer;
+		// 同步 input.value（用于表单提交等场景，虽然我们不依赖它）
+		this.dom.input.value = this.inputBuffer;
+
+		// 引导文案显隐控制
+		if (this.inputBuffer === '') {
+			this.dom.status.style.opacity = '1';
+		} else {
+			this.dom.status.style.opacity = '0';
+		}
+
+		// Reset error state on input
+		if (this.dom.display.classList.contains('error')) {
+			this.dom.display.classList.remove('error');
+			this.dom.status.textContent = this.getPrompt();
+			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+		}
 	},
 
 	// 辅助方法：获取端侧差异化文案
@@ -420,6 +555,9 @@ const Stargate = {
 		void this.dom.terminal.offsetWidth;
 		this.dom.terminal.classList.add('open');
 
+		// 核心修复：重置状态
+		this.inputBuffer = '';
+		this.usingKeydown = false;
 		this.dom.input.value = '';
 		this.dom.display.textContent = '';
 		this.dom.display.className = 'code-display';
@@ -429,10 +567,20 @@ const Stargate = {
 		this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 		this.dom.status.style.opacity = '1';
 
-		// 仅在 PC 端自动聚焦，移动端等待用户点击以展示引导
-		if (!window.isPhone) {
-			setTimeout(() => this.dom.input.focus(), 100);
-		}
+		setTimeout(() => this.dom.input.focus(), 100);
+	},
+
+	// 核心优化：后退/重载时的状态重置
+	resetInput() {
+		if (!this.dom.input) return;
+		this.inputBuffer = '';
+		this.usingKeydown = false;
+		this.dom.input.value = '';
+		this.dom.display.textContent = '';
+		this.dom.display.classList.remove('error');
+		this.dom.status.textContent = this.getPrompt();
+		this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+		this.dom.status.style.opacity = '1';
 	},
 
 	close() {
@@ -444,20 +592,13 @@ const Stargate = {
 		}, 400);
 	},
 
-	handleInput(e) {
-		const val = e.target.value.toUpperCase();
-		this.dom.display.textContent = val;
-
-		// Reset error state on input
-		if (this.dom.display.classList.contains('error')) {
-			this.dom.display.classList.remove('error');
-			this.dom.status.textContent = this.getPrompt();
-			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
-		}
-	},
-
 	checkCode() {
-		const code = this.dom.input.value.toLowerCase().trim();
+		// 核心修复：使用 inputBuffer，并检测逆序
+		let code = this.inputBuffer.toLowerCase().trim();
+
+		// 尝试检测并修正 BiDi bug 导致的逆序
+		code = detectAndFixReversed(code, LAUNCH_CODES);
+
 		const targetUrl = LAUNCH_CODES[code];
 
 		// 提交时强制显示结果状态
@@ -494,11 +635,12 @@ const Stargate = {
 
 		setTimeout(() => {
 			this.dom.display.classList.remove('error');
+			// 核心修复：重置 inputBuffer
+			this.inputBuffer = '';
 			this.dom.input.value = '';
 			this.dom.display.textContent = '';
 			this.dom.status.textContent = this.getPrompt();
 			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
-			// 恢复引导显示
 			this.dom.status.style.opacity = '1';
 		}, 1000);
 	}
@@ -508,10 +650,17 @@ window.addEventListener('DOMContentLoaded', () => {
 	Stargate.init();
 	const secondEntryLink = document.querySelector('a[data-entry="second"]');
 	if (secondEntryLink) {
-		secondEntryLink.addEventListener('click', (e) => {
+		// 修复：同时绑定 click 和 touchend，解决部分安卓 WebView 点击无响应问题
+		let handled = false;
+		const handler = (e) => {
+			if (handled) return; // 防止 touchend + click 双重触发
+			handled = true;
 			e.preventDefault();
 			Stargate.open();
-		});
+			setTimeout(() => { handled = false; }, 300); // 300ms 后重置
+		};
+		secondEntryLink.addEventListener('click', handler);
+		secondEntryLink.addEventListener('touchend', handler);
 		secondEntryLink.setAttribute('href', 'javascript:void(0)');
 	}
 });

@@ -4,17 +4,11 @@
 }
 
 .shape {
-	height: 100vh;
-	width: 100%;
-	display: block;
-	background: transparent;
+	// 已移除黑色流体过渡动画，不再需要此 SVG 的视觉呈现
+	display: none;
 
 	&-wrap {
-		position: relative;
-		z-index: 0;
-		margin: -5px 0 0 0;
-		will-change: scroll-position;
-		background: transparent;
+		display: none;
 	}
 
 	path {

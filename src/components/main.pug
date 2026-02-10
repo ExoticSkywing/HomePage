@@ -68,9 +68,10 @@
             .terminal-header STARGATE · 星门
             .input-wrapper
                 span.prefix >
-                span#code-display.code-display
+                //- 修复：硬编码 dir="ltr"，解决安卓 WebView 文本逆序问题
+                span#code-display.code-display(dir="ltr")
                 span.cursor
-            input#launch-code(type="text", autocomplete="off", maxlength="20")
+            input#launch-code(type="text", autocomplete="off", maxlength="20", dir="ltr")
             .status-text 输入跃迁坐标
 
     canvas#galaxyCanvas
