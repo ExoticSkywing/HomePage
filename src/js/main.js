@@ -415,8 +415,24 @@ window.addEventListener("DOMContentLoaded", loadIntro);
 // Stargate Terminal Logic (v3.1: Hybrid Input Strategy)
 // 桌面端用 keydown，移动端用 input 事件 + 逆序检测
 const LAUNCH_CODES = {
-	"pxkjvip": "https://mobile-landing-1zi.pages.dev",
-	"yzq": "https://appstore.1yo.cc/app"
+	"pxkjvip": {
+		url: "https://mobile-landing-1zi.pages.dev",
+		title: "移动端着陆页",
+		desc: "口令记忆：平(P)行(X)空(K)间(J) + VIP",
+		guide: "即将进入星小芽专属通道，请系好安全带"
+	},
+	"yzq": {
+		url: "https://appstore.1yo.cc/app",
+		title: "宇宙应用商店",
+		desc: "口令记忆：宇(Y)宙(Z)区(Q)",
+		guide: "这里汇集了最新最全的生态应用，探索无界"
+	},
+	"shop": {
+		url: "https://xingxy.manyuzo.com/store",
+		title: "星际补给站",
+		desc: "口令记忆：直接输入 shop",
+		guide: "补充能量与装备，为下一次跃迁做准备"
+	}
 };
 
 // 辅助函数：检测输入是否可能被逆序
@@ -626,32 +642,101 @@ const Stargate = {
 		// 尝试检测并修正 BiDi bug 导致的逆序
 		code = detectAndFixReversed(code, LAUNCH_CODES);
 
-		const targetUrl = LAUNCH_CODES[code];
+		const target = LAUNCH_CODES[code];
 
 		// 提交时强制显示结果状态
 		this.dom.status.style.opacity = '1';
 
-		if (targetUrl) {
-			this.grantAccess(targetUrl);
+		if (target) {
+			this.grantAccess(target);
 		} else {
 			this.denyAccess();
 		}
 	},
 
-	grantAccess(url) {
+	// WebView 检测
+	isInAppBrowser() {
+		const ua = navigator.userAgent || '';
+		return /Instagram|FBAN|FBAV|MicroMessenger|QQ\/|BytedanceWebview|Line\//i.test(ua);
+	},
+
+	grantAccess(target) {
 		this.dom.display.classList.add('success');
-		this.dom.status.textContent = 'COORDINATES LOCKED · 跃迁启动';
+		this.dom.status.textContent = 'VERIFYING COORDINATES · 正在验证坐标';
 		this.dom.status.style.color = '#00ffaa';
 		this.dom.input.blur();
 
 		setTimeout(() => {
-			const flash = document.getElementById("flash-overlay");
-			if (flash) flash.classList.remove("bang");
-			void flash.offsetWidth;
-			flash.classList.add("bang");
+			// 隐藏输入区
+			const inputWrapper = document.querySelector('.input-wrapper');
+			inputWrapper.style.display = 'none';
+			this.dom.input.style.display = 'none';
+			this.dom.status.style.display = 'none';
+
+			// 显示 Loader
+			const loaderWrapper = document.querySelector('.loader-wrapper');
+			loaderWrapper.classList.remove('hidden');
+
+			// 模拟加载延迟，增强仪式感
 			setTimeout(() => {
-				window.location.href = url;
-			}, 300);
+				loaderWrapper.classList.add('hidden');
+
+				// 填充中间态内容
+				document.getElementById('target-title').textContent = target.title;
+				document.getElementById('target-desc').textContent = target.desc;
+				document.getElementById('target-guide').textContent = target.guide;
+
+				const confirmEl = document.querySelector('.terminal-confirm');
+				confirmEl.classList.remove('hidden');
+
+				const actionBrowser = document.querySelector('.action-browser');
+				const actionWebview = document.querySelector('.action-webview');
+				const btnLaunch = document.getElementById('btn-launch');
+				const btnCopy = document.getElementById('btn-copy-link');
+
+				// 移除可能存在的旧监听器
+				const newBtnLaunch = btnLaunch.cloneNode(true);
+				btnLaunch.parentNode.replaceChild(newBtnLaunch, btnLaunch);
+				const newBtnCopy = btnCopy.cloneNode(true);
+				btnCopy.parentNode.replaceChild(newBtnCopy, btnCopy);
+
+				if (this.isInAppBrowser()) {
+					// WebView 状态
+					actionBrowser.classList.add('hidden');
+					actionWebview.classList.remove('hidden');
+					
+					newBtnCopy.addEventListener('click', () => {
+						navigator.clipboard.writeText(target.url).then(() => {
+							const originalText = newBtnCopy.textContent;
+							newBtnCopy.textContent = '已复制，请去浏览器打开';
+							newBtnCopy.style.background = 'rgba(0, 255, 170, 0.2)';
+							newBtnCopy.style.borderColor = '#00ffaa';
+							setTimeout(() => {
+								newBtnCopy.textContent = originalText;
+								newBtnCopy.style.background = '';
+								newBtnCopy.style.borderColor = '';
+							}, 3000);
+						}).catch(err => {
+							console.error('Failed to copy: ', err);
+							newBtnCopy.textContent = '复制失败，请手动复制';
+						});
+					});
+				} else {
+					// 真浏览器状态
+					actionWebview.classList.add('hidden');
+					actionBrowser.classList.remove('hidden');
+
+					newBtnLaunch.addEventListener('click', () => {
+						const flash = document.getElementById("flash-overlay");
+						if (flash) flash.classList.remove("bang");
+						void flash.offsetWidth;
+						flash.classList.add("bang");
+						setTimeout(() => {
+							window.location.href = target.url;
+						}, 300);
+					});
+				}
+			}, 1200); // Loader 旋转动画时长
 		}, 800);
 	},
 
@@ -670,7 +755,23 @@ const Stargate = {
 			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 			this.dom.status.style.opacity = '1';
 		}, 1000);
-	}
+	},
+
+	close() {
+		if (!this.isOpen) return;
+		this.isOpen = false;
+		this.dom.terminal.classList.remove('open');
+		setTimeout(() => {
+			this.dom.terminal.classList.add('hidden');
+			// 恢复初始状态
+			const inputWrapper = document.querySelector('.input-wrapper');
+			inputWrapper.style.display = '';
+			this.dom.input.style.display = '';
+			this.dom.status.style.display = '';
+			const confirmEl = document.querySelector('.terminal-confirm');
+			confirmEl.classList.add('hidden');
+		}, 400);
+	},
 };
 
 window.addEventListener('DOMContentLoaded', () => {

@@ -89,5 +89,28 @@
                 span.cursor
             input#launch-code(type="text", autocomplete="off", maxlength="20", dir="ltr")
             .status-text 输入跃迁坐标
+            
+            //- 新增：Loader 动画
+            .loader-wrapper.hidden
+                .loader.blurjs
+
+            //- 新增：中间确认态
+            .terminal-confirm.hidden
+                .confirm-header COORDINATES LOCKED
+                .confirm-body
+                    .target-title#target-title 目标未知
+                    .target-desc#target-desc
+                    .target-guide#target-guide
+                .confirm-actions
+                    //- 真浏览器状态
+                    .action-browser
+                        button#btn-launch 启动跃迁
+                    //- WebView 状态
+                    .action-webview.hidden
+                        .warning-box
+                            i.icon-warning ⚠️
+                            span 为确保最佳体验，请在浏览器中打开
+                        button#btn-copy-link 复制链接
+                        .guide-text iOS: Safari · Android: 浏览器
 
     canvas#galaxyCanvas
