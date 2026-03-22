@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { FontLoader } from "jsm/loaders/FontLoader.js";
 import { TextGeometry } from "jsm/geometries/TextGeometry.js";
-import { RoomEnvironment } from "jsm/environments/RoomEnvironment.js";
+
 
 // Expose init function
 export function initTorusGlass(canvasSelector, textStr) {
@@ -21,6 +21,8 @@ camera.position.z = 5;
 const renderer = new THREE.WebGLRenderer({
 canvas: canvas,
 antialias: true,
+		powerPreference: "high-performance",
+		preserveDrawingBuffer: true,
 alpha: true
 });
 renderer.setClearColor(0x000000, 1); // Solid black for mix-blend-mode screen
@@ -54,14 +56,15 @@ scene.add(text);
 
 const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 100, 60);
 const torusMaterial = new THREE.MeshPhysicalMaterial({
-metalness: 0,
-roughness: 0,
-iridescence: 1,
-iridescenceIOR: 1.5,
-iridescenceThicknessRange: [100, 324],
-transmission: 1,
-ior: 1.2,
-thickness: 0.8
+    metalness: 0.1,
+    roughness: 0.2,
+    transmission: 1, // glass effect
+    ior: 1.5,
+    thickness: 0.5,
+    transparent: true,
+    opacity: 1,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.1
 });
 const torus = new THREE.Mesh(torusGeometry, torusMaterial);
 torus.position.z = 1;
@@ -109,6 +112,6 @@ return () => {
 window.removeEventListener("resize", resizeHandler);
 cancelAnimationFrame(animationId);
 renderer.dispose();
-        pmremGenerator.dispose();
+
 };
 }
