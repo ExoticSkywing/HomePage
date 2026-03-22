@@ -206,25 +206,9 @@
     height: 100%;
     z-index: 1; // 位于 background (0) 之上，wrap(文字等内容) 之下或之中
     pointer-events: none; // 不拦截点击事件
+    mix-blend-mode: screen; // 让黑色背景透明，保留 Torus 的光效和折射
 }
 
 .content-intro .wrap {
-    position: absolute;
-    top: 75%; /* Move down to clear the 3D torus (which ends around 65%) */
-    left: 0;
-    width: 100%;
-    z-index: 2;
-    text-align: center;
-    pointer-events: none;
-}
-
-.content-intro .wrap > * {
-    pointer-events: auto; /* 恢复子元素的交互 */
-}
-
-.content-subtitle {
-    // ... existing styles ...
-    margin-bottom: 2em;
-    // 移除 margin-top 避免位置不可控
-    margin-top: 0;
+    z-index: 2; // 确保其他 UI 元素（如进入按钮、副标题）在最上层
 }
