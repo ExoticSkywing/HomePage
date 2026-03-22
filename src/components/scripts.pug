@@ -56,3 +56,30 @@ if intro.supportAuthor
 
 //- Chatway Widget
 script(id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=i5GVIcMxReNp")
+
+//- Torus Glass Intro Animation Module
+script(type="module").
+	import { initTorusGlass } from './assets/js/torus-glass.js';
+	
+	// 等待 DOMContentLoaded，确保 canvas 和 config 已经就绪
+	document.addEventListener('DOMContentLoaded', () => {
+	    // 从 pug 的 intro 对象或现有的 DOM 中获取文字，这里假设是 "ManYuZO"
+	    const brandText = "ManYuZO"; 
+	    
+	    // 只有在 Intro 阶段才初始化并渲染，减少性能开销
+	    let cleanup = null;
+	    if (document.querySelector('.content-intro')) {
+	        cleanup = initTorusGlass('#intro-torus-canvas', brandText);
+	    }
+
+	    // 当用户点击进入主宇宙时，清理 Torus Glass 以释放 WebGL 资源
+	    const enterEl = document.querySelector(".enter");
+	    if (enterEl && cleanup) {
+	        enterEl.addEventListener('click', () => {
+	            cleanup();
+	            // 隐藏 canvas 避免遮挡
+	            const canvas = document.getElementById('intro-torus-canvas');
+	            if(canvas) canvas.style.display = 'none';
+	        }, { once: true });
+	    }
+	});
