@@ -1,97 +1,100 @@
 import * as THREE from "three";
 import { FontLoader } from "jsm/loaders/FontLoader.js";
 import { TextGeometry } from "jsm/geometries/TextGeometry.js";
+import { RoomEnvironment } from "jsm/environments/RoomEnvironment.js";
 
 // Expose init function
 export function initTorusGlass(canvasSelector, textStr) {
-const canvas = document.querySelector(canvasSelector);
-if (!canvas) return;
+	const canvas = document.querySelector(canvasSelector);
+	if (!canvas) return;
 
-const scene = new THREE.Scene();
+	const scene = new THREE.Scene();
+	
+	const camera = new THREE.PerspectiveCamera(
+		75,
+		window.innerWidth / window.innerHeight,
+		0.1,
+		1000
+	);
+	camera.position.z = 5;
 
-// We need a responsive camera that fits the text
-const camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth / window.innerHeight,
-0.1,
-1000
-);
-camera.position.z = 5;
-
-const renderer = new THREE.WebGLRenderer({
-canvas: canvas,
-antialias: true,
-alpha: true // Make background transparent
-});
-renderer.setClearColor(0x000000, 0); // Transparent
-renderer.setSize(window.innerWidth, window.innerHeight);
+	const renderer = new THREE.WebGLRenderer({
+		canvas: canvas,
+		antialias: true,
+		alpha: true
+	});
+	renderer.setClearColor(0x000000, 0);
+	renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-// fonts
-const fontLoader = new FontLoader();
-fontLoader.load(
-"./assets/fonts/helvetiker_regular.typeface.json",
-(font) => {
-const textGeometry = new TextGeometry(textStr, {
-font,
-size: 1.2,
-depth: 0,
-curveSegments: 5,
-bevelEnabled: true,
-bevelThickness: 0.05,
-bevelSize: 0.02,
-bevelOffset: 0,
-bevelSegments: 4,
-});
-textGeometry.computeBoundingBox();
-textGeometry.center();
+    // Restore Environment for realistic reflections (Critical for Glass look)
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
-const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const text = new THREE.Mesh(textGeometry, textMaterial);
-scene.add(text);
-}
-);
+	// fonts
+	const fontLoader = new FontLoader();
+	fontLoader.load(
+		"./assets/fonts/helvetiker_regular.typeface.json",
+		(font) => {
+			const textGeometry = new TextGeometry(textStr, {
+				font,
+				size: 1.2,
+				depth: 0.1,
+				curveSegments: 12,
+				bevelEnabled: true,
+				bevelThickness: 0.03,
+				bevelSize: 0.02,
+				bevelOffset: 0,
+				bevelSegments: 5,
+			});
+			textGeometry.computeBoundingBox();
+			textGeometry.center();
 
-const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 100, 60);
-const torusMaterial = new THREE.MeshPhysicalMaterial({
-metalness: 0,
-roughness: 0,
-iridescence: 1,
-iridescenceIOR: 1.5,
-iridescenceThicknessRange: [100, 324],
-transmission: 1,
-ior: 1.2,
-thickness: 0.8
-});
-const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-torus.position.z = 1;
-scene.add(torus);
+			const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			const text = new THREE.Mesh(textGeometry, textMaterial);
+			scene.add(text);
+		}
+	);
 
-// lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 2);
-scene.add(ambientLight);
+	const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 100, 60);
+	const torusMaterial = new THREE.MeshPhysicalMaterial({
+		color: 0xffffff,
+		metalness: 0,
+		roughness: 0,
+        transmission: 1, // Enable transmission for refraction
+        thickness: 0.8,
+        ior: 1.5, // Glass IOR
+        clearcoat: 1,
+        clearcoatRoughness: 0,
+        iridescence: 1,
+        iridescenceIOR: 1.5,
+        iridescenceThicknessRange: [100, 324],
+        transparent: true,
+        side: THREE.DoubleSide
+	});
+	const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+	torus.position.z = 1;
+	scene.add(torus);
 
-const pointLight = new THREE.PointLight(0xffffff, 5);
-pointLight.position.set(-1, 2, 0);
-scene.add(pointLight);
+	// lights
+	const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+	scene.add(ambientLight);
 
-const pointLight2 = new THREE.PointLight(0xffffff, 5);
-pointLight2.position.set(-1, -2, 0);
-scene.add(pointLight2);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 3);
+    dirLight.position.set(5, 5, 5);
+    scene.add(dirLight);
 
-const pointLight3 = new THREE.PointLight(0xffffff, 5);
-pointLight3.position.set(1, -2, 0);
-scene.add(pointLight3);
+    const pointLight = new THREE.PointLight(0xffffff, 5);
+    pointLight.position.set(-1, 2, 0);
+    scene.add(pointLight);
 
-const pointLight4 = new THREE.PointLight(0xffffff, 5);
-pointLight4.position.set(1, 2, 0);
-scene.add(pointLight4);
+    const pointLight2 = new THREE.PointLight(0xffffff, 5);
+    pointLight2.position.set(-1, -2, 0);
+    scene.add(pointLight2);
 
-const clock = new THREE.Clock();
-let animationId;
-const tick = () => {
-const elapsedTime = clock.getElapsedTime();
-renderer.render(scene, camera);
+    const pointLight3 = new THREE.PointLight(0xffffff, 5);
+    pointLight3.position.set(1, -2, 0);
+    scene.add(pointLight3);
 torus.rotation.x = elapsedTime * 0.5;
 torus.rotation.y = elapsedTime * 0.1;
 animationId = requestAnimationFrame(tick);
@@ -105,10 +108,10 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 };
 window.addEventListener("resize", resizeHandler);
 
-// Cleanup function if needed
 return () => {
 window.removeEventListener("resize", resizeHandler);
 cancelAnimationFrame(animationId);
 renderer.dispose();
+// pmremGenerator.dispose();
 };
 }

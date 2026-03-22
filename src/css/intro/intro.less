@@ -209,5 +209,22 @@
 }
 
 .content-intro .wrap {
-    z-index: 2; // 确保其他 UI 元素（如进入按钮、副标题）在最上层
+    position: absolute;
+    top: 75%; /* Move down to clear the 3D torus (which ends around 65%) */
+    left: 0;
+    width: 100%;
+    z-index: 2;
+    text-align: center;
+    pointer-events: none;
+}
+
+.content-intro .wrap > * {
+    pointer-events: auto; /* 恢复子元素的交互 */
+}
+
+.content-subtitle {
+    // ... existing styles ...
+    margin-bottom: 2em;
+    // 移除 margin-top 避免位置不可控
+    margin-top: 0;
 }
