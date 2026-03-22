@@ -60,8 +60,8 @@ const torusMaterial = new THREE.MeshPhysicalMaterial({
     metalness: 0,
     roughness: 0, // completely smooth glass
     transmission: 1, // glass effect
-    ior: 1.2, // lower index of refraction for clearer look
-    thickness: 0.8,
+    ior: 1.1, // lower index of refraction for clearer look
+    thickness: 0.2, // reduced thickness for less distortion/blur
     transparent: true,
     opacity: 1,
     clearcoat: 1.0,
@@ -69,6 +69,10 @@ const torusMaterial = new THREE.MeshPhysicalMaterial({
 });
 const torus = new THREE.Mesh(torusGeometry, torusMaterial);
 torus.position.z = 1;
+// Initial scale check
+if (window.innerWidth < 800) {
+    torus.scale.set(2, 2, 2);
+}
 scene.add(torus);
 
 // lights
@@ -94,19 +98,27 @@ scene.add(pointLight4);
 const clock = new THREE.Clock();
 let animationId;
 const tick = () => {
-const elapsedTime = clock.getElapsedTime();
-renderer.render(scene, camera);
-torus.rotation.x = elapsedTime * 0.5;
-torus.rotation.y = elapsedTime * 0.1;
-animationId = requestAnimationFrame(tick);
+    const elapsedTime = clock.getElapsedTime();
+    const speed = 1.5; // 1.5x speed
+    renderer.render(scene, camera);
+    torus.rotation.x = elapsedTime * 0.5 * speed;
+    torus.rotation.y = elapsedTime * 0.1 * speed;
+    animationId = requestAnimationFrame(tick);
 };
 tick();
 
 const resizeHandler = () => {
-camera.aspect = window.innerWidth / window.innerHeight;
-camera.position.z = getCameraZ();
-camera.updateProjectionMatrix();
-renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.position.z = getCameraZ();
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    // Dynamic scale update
+    if (window.innerWidth < 800) {
+        torus.scale.set(2, 2, 2);
+    } else {
+        torus.scale.set(1, 1, 1);
+    }
 };
 window.addEventListener("resize", resizeHandler);
 
