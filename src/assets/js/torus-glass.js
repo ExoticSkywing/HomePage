@@ -60,8 +60,8 @@ const torusMaterial = new THREE.MeshPhysicalMaterial({
     metalness: 0,
     roughness: 0, // completely smooth glass
     transmission: 1, // glass effect
-    ior: 1.1, // lower index of refraction for clearer look
-    thickness: 0.2, // reduced thickness for less distortion/blur
+    ior: 1.2, // lower index of refraction for clearer look
+    thickness: 0.8,
     transparent: true,
     opacity: 1,
     clearcoat: 1.0,
