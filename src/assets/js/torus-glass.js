@@ -60,8 +60,8 @@ const torusMaterial = new THREE.MeshPhysicalMaterial({
     metalness: 0,
     roughness: 0, // completely smooth glass
     transmission: 1, // glass effect
-    ior: 1.2, // lower index of refraction for clearer look
-    thickness: 0.8,
+    ior: 1.4, // lower index of refraction for clearer look
+    thickness: 1.9,
     transparent: true,
     opacity: 1,
     clearcoat: 1.0,
@@ -71,7 +71,7 @@ const torus = new THREE.Mesh(torusGeometry, torusMaterial);
 torus.position.z = 1;
 // Initial scale check
 if (window.innerWidth < 800) {
-    torus.scale.set(2, 2, 2);
+    torus.scale.set(1.8, 1.8, 1.8);
 }
 scene.add(torus);
 
@@ -115,7 +115,7 @@ const resizeHandler = () => {
     
     // Dynamic scale update
     if (window.innerWidth < 800) {
-        torus.scale.set(2, 2, 2);
+        torus.scale.set(1.8, 1.8, 1.8);
     } else {
         torus.scale.set(1, 1, 1);
     }
