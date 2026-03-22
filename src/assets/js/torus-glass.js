@@ -16,7 +16,8 @@ window.innerWidth / window.innerHeight,
 0.1,
 1000
 );
-camera.position.z = 5;
+const getCameraZ = () => Math.max(5, 5 * (800 / window.innerWidth));
+camera.position.z = getCameraZ();
 
 const renderer = new THREE.WebGLRenderer({
 canvas: canvas,
@@ -56,15 +57,15 @@ scene.add(text);
 
 const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 100, 60);
 const torusMaterial = new THREE.MeshPhysicalMaterial({
-    metalness: 0.1,
-    roughness: 0.2,
+    metalness: 0,
+    roughness: 0, // completely smooth glass
     transmission: 1, // glass effect
-    ior: 1.5,
-    thickness: 0.5,
+    ior: 1.2, // lower index of refraction for clearer look
+    thickness: 0.8,
     transparent: true,
     opacity: 1,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.1
+    clearcoatRoughness: 0
 });
 const torus = new THREE.Mesh(torusGeometry, torusMaterial);
 torus.position.z = 1;
@@ -103,6 +104,7 @@ tick();
 
 const resizeHandler = () => {
 camera.aspect = window.innerWidth / window.innerHeight;
+camera.position.z = getCameraZ();
 camera.updateProjectionMatrix();
 renderer.setSize(window.innerWidth, window.innerHeight);
 };
