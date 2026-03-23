@@ -14,6 +14,25 @@ document.addEventListener("DOMContentLoaded", () => {
     let count = 1;
     let checked = false;
 
+    // 搞笑且可爱的语句数组：用于小熊被惹怒时的吐槽
+    const funnyMessages = [
+        "入口真的不在这里啦！笨蛋！",
+        "别戳我肚皮，好痒哦 (ﾉ>ω<)ﾉ",
+        "我是超级凶的暴力熊，嗷呜~",
+        "你再乱摸我真的要生气了哦！",
+        "找入口？去滑动屏幕呀大笨蛋！",
+        "哎呀！我只是一只打工熊...",
+        "你是不是迷路啦？略略略~",
+        "点我没用，真的没用！",
+        "再点...再点我就咬你哦！",
+        "（假装死机中，请勿打扰）...",
+        "信不信我顺着网线过去亲你一口！",
+        "#@$%*! (骂骂咧咧)",
+        "我生气起来可是连自己都害怕的！",
+        "坏人！又关我的灯！",
+        "呜呜，我的小鱼干被你按掉了..."
+    ];
+
     // 起源防护装甲
     gsap.set([bearRef, armWrapRef, pawRef], { autoAlpha: 0 });
 
@@ -214,8 +233,12 @@ document.addEventListener("DOMContentLoaded", () => {
             isAnimating = false; 
         };
 
-        if (Math.random() > 0.5 && count > angerLimit) {
-            mainTL.set(swearRef, { display: 'block' }, checkboxDuration)
+        // 极高频触发搞笑对话：只要小熊探头（出过手后），就有 80% 概率说话
+        if (Math.random() > 0.2 && count > armLimit) {
+            mainTL.call(() => {
+                swearRef.textContent = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+                gsap.set(swearRef, { display: 'block', autoAlpha: 1 });
+            }, [], checkboxDuration)
                   .call(() => safePlay('GROAN'), [], checkboxDuration);
         }
 
