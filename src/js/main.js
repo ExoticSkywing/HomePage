@@ -277,6 +277,18 @@ function getMoveDirection(startx, starty, endx, endy) {
 
 function loadIntro() {
 	if (document[hiddenProperty] || loadIntro.loaded) return;
+	
+	// Hide Global Preloader smoothly
+	const preloader = document.getElementById('global-loader');
+	if (preloader) {
+		preloader.style.pointerEvents = 'none'; // Immediate interaction unlock
+		preloader.style.opacity = '0';
+		preloader.style.visibility = 'hidden'; 
+		setTimeout(() => {
+			preloader.style.display = 'none';
+		}, 600);
+	}
+
 	setTimeout(() => {
 		$(".wrap").classList.add("in");
 		setTimeout(() => {

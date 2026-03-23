@@ -3,6 +3,59 @@ html(lang="en")
 	include components/head
 
 body
+	//- Global Preloader (Reusing Stargate Loader Style)
+	style.
+		#global-loader {
+			position: fixed;
+			top: 0; left: 0; width: 100%; height: 100%;
+			background-color: #111;
+			z-index: 10001; /* Above everything including flash-overlay */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			transition: opacity 0.6s ease-out, visibility 0.6s;
+		}
+		
+		/* Reused Animations */
+		@keyframes rotAnim {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+		@keyframes colorRot {
+			0% { filter: hue-rotate(0deg); }
+			100% { filter: hue-rotate(360deg); }
+		}
+
+		.loader-inner {
+			position: relative;
+			width: 100px;
+			height: 100px;
+			animation: rotAnim 750ms ease-in-out infinite, colorRot 5000ms linear infinite;
+		}
+
+		.loader-inner::before,
+		.loader-inner::after {
+			content: "";
+			position: absolute;
+			width: 25px; /* 25% of 100px */
+			height: 25px;
+			top: 0;
+			left: 0;
+			border-radius: 50%;
+			background-color: #ffffff;
+			box-shadow: 0 0 40px #7aa8ff, 0 0 10px #7aa8ff;
+		}
+
+		.loader-inner::after {
+			top: unset;
+			left: unset;
+			bottom: 0;
+			right: 0;
+		}
+	
+	div#global-loader
+		div.loader-inner
+
 	main
 		include components/intro.pug
 		include components/main.pug
