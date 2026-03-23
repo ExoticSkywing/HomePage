@@ -250,6 +250,14 @@
     z-index: 2; // 确保其他 UI 元素（如进入按钮、副标题）在最上层
 }
 
+// 移除手机端恶心的点击高亮方块
+.impossible-switch-box, 
+.impossible-switch-box *, 
+.bear-checkbox__input, 
+.bear-checkbox__track {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
 // ==========================================
 // Impossible Bear Switch 彩蛋按钮 UI 样式
 // ==========================================
