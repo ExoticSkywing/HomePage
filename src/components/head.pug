@@ -11,16 +11,14 @@ head
         meta(name="msapplication-navbutton-color" content="#222325")
 
         // 非关键字体：使用 preload + onload，避免阻塞；无 JS 时回退
-        link(rel="preload" as="style" href="https://npm.elemecdn.com/@simonaking/font/font.min.css" onload="this.onload=null;this.rel='stylesheet'")
-        link(rel="preload" as="style" href="https://npm.elemecdn.com/lxgw-wenkai-lite-webfont@1.1.0/style.css" onload="this.onload=null;this.rel='stylesheet'")
+        link(rel="preload" as="style" href="https://cdn.jsdmirror.com/npm/@simonaking/font/font.min.css" onerror="this.onerror=null;this.href='assets/vendor/font.min.css'" onload="this.onload=null;this.rel='stylesheet'")
         noscript
-                link(rel="stylesheet" href="https://npm.elemecdn.com/@simonaking/font/font.min.css")
-                link(rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-lite-webfont@1.1.0/style.css")
+                link(rel="stylesheet" href="https://cdn.jsdmirror.com/npm/@simonaking/font/font.min.css")
         link(rel="stylesheet" href='css/style.css' )
 
         meta(http-equiv="x-dns-prefetch-control" content="on")
-        link(rel="dns-prefetch" href="https://npm.elemecdn.com")
-        link(rel="preconnect" href="https://npm.elemecdn.com" crossorigin)
+        link(rel="dns-prefetch" href="https://cdn.jsdmirror.com")
+        link(rel="preconnect" href="https://cdn.jsdmirror.com" crossorigin)
         link(rel="dns-prefetch" href="https://cdnjs.cloudflare.com")
         link(rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin)
 
@@ -34,8 +32,8 @@ head
         script(type="importmap").
                 {
                         "imports": {
-                                "three": "./assets/vendor/three.module.js",
-                                "jsm/": "./assets/vendor/jsm/"
+                                "three": "https://cdn.jsdmirror.com/npm/three@0.128.0/build/three.module.js",
+                                "jsm/": "https://cdn.jsdmirror.com/npm/three@0.128.0/examples/jsm/"
                         }
                 }
 

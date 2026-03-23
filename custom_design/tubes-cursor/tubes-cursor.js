@@ -2,7 +2,7 @@
 // Attribution — You must give appropriate credit.
 // Non Commercial — You may not use the material for commercial purposes.
 
-import TubesCursor from "https://npm.elemecdn.com/threejs-components@0.0.19/build/cursors/tubes1.min.js"
+import TubesCursor from "https://cdn.jsdmirror.com/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js"
 
 const app = TubesCursor(document.getElementById('canvas'), {
     tubes: {
