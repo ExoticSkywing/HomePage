@@ -139,6 +139,11 @@
 	transform-origin: 50% 50%;
 	transform: translate3d(-50%, 0%, 0);
 
+	@media screen and (max-width: 500px) {
+		margin-top: -10vh; // 专为治愈移动端底栏吃屏设计，拔高箭头活动领域
+	}
+
+
 	&-1 {
 		animation: arrow-movement 2s ease-in-out infinite;
 	}
@@ -243,4 +248,170 @@
 
 .content-intro .wrap {
     z-index: 2; // 确保其他 UI 元素（如进入按钮、副标题）在最上层
+}
+
+// ==========================================
+// Impossible Bear Switch 彩蛋按钮 UI 样式
+// ==========================================
+.content-intro .wrap .impossible-switch-box {
+    position: absolute;
+    bottom: 12vh; 
+    left: 50%;
+    transform: translateX(-50%) scale(0.65);
+    z-index: 1000;
+    width: 200px;
+    height: 100px;
+    transition: all 0.3s ease;
+
+    @media screen and (max-width: 500px) {
+        bottom: 22vh; 
+        transform: translateX(-50%) scale(0.55);
+    }
+
+	.bear__swear {
+        display: none; 
+        position: absolute;
+        left: 105%;
+        top: 0;
+        background: #fff;
+        color: #111;
+        font-weight: bolder;
+        padding: 10px;
+        border-radius: 8px;
+        white-space: nowrap;
+
+        &::before {
+            content: '';
+            background: #fff;
+            position: absolute;
+            top: 90%;
+            right: 70%;
+            height: 30px;
+            width: 30px;
+            clip-path: polygon(0 100%, 100% 0, 50% 0);
+        }
+    }
+
+    // 这些核心躯干和配件现在是平级直插关系并在最外框架外拥有自由空间越界外溢渲染权！
+    .bear__wrap {
+        width: 100px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-15%, -50%) rotate(5deg) translateY(-85%);
+        background: transparent;
+
+        .bear {
+            width: 100%;
+            display: block;
+            transform: translateY(100%); 
+        }
+    }
+
+    // ====== 解禁区域：让爪子与手臂不遭受任何结界的半空斩断拦截 =======
+    .bear__arm-wrap {
+        position: absolute;
+        height: 30px;
+        width: 90px;
+        z-index: 4; // 深锁于壳盘盖面之下暗流涌伸
+        top: 50%;
+        left: 50%;
+        transform: translate(0, -50%);
+
+        .bear__arm {
+            transform-origin: left;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-35%, -50%) scaleX(1);
+        }
+    }
+
+    .bear__paw {
+        background: #160920;
+        border-radius: 100%;
+        position: absolute;
+        height: 30px;
+        width: 30px;
+        z-index: 10; // 王之层级优先级！牢牢贴盖在主操控盘的钢化表皮正外沿发力阻挠！
+        top: 50%;
+        left: 50%;
+        transform-origin: right;
+        transform: translate(80px, -15px) scaleX(0);
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #947cb0; 
+            border-radius: 50%;
+            top: 5px;
+            right: 5px;
+        }
+    }
+
+    // ============================================
+    .bear-checkbox {
+        border-radius: 50px;
+        height: 100px;
+        width: 200px;
+        box-shadow: inset 0 -4px 10px rgba(0,0,0,0.5), inset 0 4px 10px rgba(255,255,255,0.1), 0 5px 25px rgba(0,0,0,0.8);
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 5;
+        
+        .bear-checkbox__input {
+            cursor: pointer;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            z-index: 10;
+            margin: 0;
+        }
+
+        .bear-checkbox__track {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .bear-checkbox__bg {
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(12px); // 纯正玻璃滤镜
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .bear-checkbox__indicator {
+            height: 100%;
+            width: 50%;
+            border-radius: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            &::after {
+                content: '';
+                border-radius: 100%;
+                height: 85%;
+                width: 85%;
+                background: #fff;
+                box-shadow: 0 0 15px rgba(255,255,255,0.8); // 诱人的发光点核
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+    }
 }
