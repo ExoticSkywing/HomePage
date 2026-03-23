@@ -3,31 +3,6 @@ html(lang="en")
 	include components/head
 
 body
-	//- 纯 CSS 轻量级 Preloader，在所有脚本执行前立即渲染
-	style.
-		#global-preloader {
-			position: fixed;
-			top: 0; left: 0; width: 100%; height: 100%;
-			background: #111;
-			z-index: 99999;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			transition: opacity 0.6s ease-out;
-		}
-		.loader-spinner {
-			width: 40px;
-			height: 40px;
-			border: 4px solid rgba(255,255,255,0.1);
-			border-left-color: #8a2be2;
-			border-radius: 50%;
-			animation: spin 1s linear infinite;
-		}
-		@keyframes spin { 100% { transform: rotate(360deg); } }
-	
-	div#global-preloader
-		div.loader-spinner
-
 	main
 		include components/intro.pug
 		include components/main.pug
