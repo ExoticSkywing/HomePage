@@ -32,10 +32,15 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 800
 
 // fonts
 const fontLoader = new FontLoader();
+let textGeometry = null;
+let textMesh = null;
+let torusGeometry = null;
+let torusMaterial = null;
+
 fontLoader.load(
 "./assets/fonts/helvetiker_regular.typeface.json",
 (font) => {
-const textGeometry = new TextGeometry(textStr, {
+textGeometry = new TextGeometry(textStr, {
 font,
 size: 1.2,
 depth: 0,
@@ -50,22 +55,23 @@ textGeometry.computeBoundingBox();
 textGeometry.center();
 
 const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const text = new THREE.Mesh(textGeometry, textMaterial);
-scene.add(text);
+textMesh = new THREE.Mesh(textGeometry, textMaterial);
+scene.add(textMesh);
 }
 );
 
-const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 64, 32); // 去除累赘多边形 100x60 -> 64x32 毫不拖泥带水
-const torusMaterial = new THREE.MeshPhysicalMaterial({
-    metalness: 0,
-    roughness: 0.05, // 允许轻微漫反射，避免玻璃过假
-    transmission: 1, // glass effect
-    ior: 1.5, // 典型玻璃折射率
-    thickness: 2.5, // 增加光线穿透厚度感
-    transparent: true,
-    opacity: 1,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.1 // 清漆糙度，增加高光分散
+// 性能优化：移动端降低几何体面数 (64x32 -> 48x24)
+const isMobile = window.innerWidth < 800;
+torusGeometry = new THREE.TorusGeometry(0.8, 0.35, isMobile ? 48 : 64, isMobile ? 24 : 32); 
+torusMaterial = new THREE.MeshPhysicalMaterial({
+metalness: 0,
+roughness: 0.05, 
+transmission: 1, 
+ior: 1.5, 
+thickness: 2.5, 
+transparent: true,
+clearcoat: 1.0,
+clearcoatRoughness: 0.1 
 });
 const torus = new THREE.Mesh(torusGeometry, torusMaterial);
 torus.position.z = 1;
@@ -144,6 +150,15 @@ return () => {
 window.removeEventListener("resize", resizeHandler);
 document.removeEventListener("visibilitychange", handleVisibilityChange);
 if (animationId) cancelAnimationFrame(animationId);
+
+// Dispose resources
+if (textGeometry) textGeometry.dispose();
+if (torusGeometry) torusGeometry.dispose();
+if (torusMaterial) torusMaterial.dispose();
+if (textMesh) {
+    if (textMesh.material) textMesh.material.dispose();
+}
+
 renderer.dispose();
 
 };

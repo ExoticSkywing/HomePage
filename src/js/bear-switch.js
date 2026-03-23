@@ -167,6 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top;
 
+        const fragment = document.createDocumentFragment();
+        const particles = [];
+
         for (let i = 0; i < 9; i++) {
             const particle = document.createElement('div');
             particle.innerText = emojis[Math.floor(Math.random() * emojis.length)];
@@ -177,8 +180,14 @@ document.addEventListener("DOMContentLoaded", () => {
             particle.style.pointerEvents = 'none';
             particle.style.zIndex = '9999';
             particle.style.transform = 'translate(-50%, -50%)';
-            document.body.appendChild(particle);
+            
+            fragment.appendChild(particle);
+            particles.push(particle);
+        }
+        
+        document.body.appendChild(fragment);
 
+        particles.forEach(particle => {
             const angle = Math.random() * Math.PI * 2;
             const velocity = Math.random() * 200 + 80;
             const duration = Math.random() * 1.5 + 1.2;
@@ -195,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ease: "power2.out",
                 onComplete: () => particle.remove()
             });
-        }
+        });
     };
 
     const armLimit = gsap.utils.random(0, 3);
