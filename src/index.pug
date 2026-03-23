@@ -3,10 +3,6 @@ html(lang="en")
 	include components/head
 
 body
-	#global-preloader(style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#06000c;z-index:99999;display:flex;justify-content:center;align-items:center;transition:opacity 0.8s ease-out;")
-		div(style="width:2px;height:2px;border-radius:50%;background:rgba(255,255,255,0.8);box-shadow:0 0 20px 4px #fff;animation: preloaderPulse 1.5s infinite ease-in-out;")
-		style.
-			@keyframes preloaderPulse { 0%, 100% { transform: scale(0.5); opacity: 0.2; } 50% { transform: scale(2.5); opacity: 1; } }
 	main
 		include components/intro.pug
 		include components/main.pug

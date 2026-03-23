@@ -23,12 +23,12 @@ const renderer = new THREE.WebGLRenderer({
 canvas: canvas,
 antialias: true,
 		powerPreference: "high-performance",
-		preserveDrawingBuffer: true,
 alpha: true
 });
 renderer.setClearColor(0x000000, 1); // Solid black for mix-blend-mode screen
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// 适配移动设备计算性能：低于 800px 的屏幕最多允许 1.5 倍精细度以求换取稳定的 60FPS，PC 原样输出高清 2x 玻璃抗锯齿
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 800 ? 1.5 : 2));
 
 // fonts
 const fontLoader = new FontLoader();
@@ -39,12 +39,12 @@ const textGeometry = new TextGeometry(textStr, {
 font,
 size: 1.2,
 depth: 0,
-curveSegments: 5,
+curveSegments: 3,
 bevelEnabled: true,
 bevelThickness: 0.05,
 bevelSize: 0.02,
 bevelOffset: 0,
-bevelSegments: 4,
+bevelSegments: 1,
 });
 textGeometry.computeBoundingBox();
 textGeometry.center();
@@ -55,7 +55,7 @@ scene.add(text);
 }
 );
 
-const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 100, 60);
+const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 64, 32); // 去除累赘多边形 100x60 -> 64x32 毫不拖泥带水
 const torusMaterial = new THREE.MeshPhysicalMaterial({
     metalness: 0,
     roughness: 0.05, // 允许轻微漫反射，避免玻璃过假
@@ -97,7 +97,8 @@ pointLight4.position.set(1.5, 2, 0);
 scene.add(pointLight4);
 
 const clock = new THREE.Clock();
-let animationId;
+let animationId = null;
+
 const tick = () => {
     const elapsedTime = clock.getElapsedTime();
     const speed = 1.5; // 1.5x speed
@@ -106,6 +107,22 @@ const tick = () => {
     torus.rotation.y = elapsedTime * 0.1 * speed;
     animationId = requestAnimationFrame(tick);
 };
+
+// 增加后台休眠防跑电处理：切换出页面时关停一切管线调度渲染
+const handleVisibilityChange = () => {
+    if (document.hidden) {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+    } else {
+        if (!animationId) {
+            tick();
+        }
+    }
+};
+document.addEventListener("visibilitychange", handleVisibilityChange);
+
 tick();
 
 const resizeHandler = () => {
@@ -125,7 +142,8 @@ window.addEventListener("resize", resizeHandler);
 
 return () => {
 window.removeEventListener("resize", resizeHandler);
-cancelAnimationFrame(animationId);
+document.removeEventListener("visibilitychange", handleVisibilityChange);
+if (animationId) cancelAnimationFrame(animationId);
 renderer.dispose();
 
 };

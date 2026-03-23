@@ -802,10 +802,3 @@ if (!isPhone) {
 	$(".arrow").addEventListener("mouseenter", loadAll);
 }
 
-window.addEventListener('load', () => {
-	const preloader = document.getElementById('global-preloader');
-	if (preloader) {
-		preloader.style.opacity = '0';
-		setTimeout(() => { preloader.remove(); }, 800);
-	}
-});
