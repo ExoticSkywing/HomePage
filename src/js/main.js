@@ -299,7 +299,7 @@ function switchPage() {
 
 	// 创建时间轴：星尘消散效果
 	const tl = anime.timeline({
-		easing: 'easeOutExpo',
+		easing: 'easeInOutSine', // 使用更加平缓的全局过渡曲线
 		complete: () => {
 			// 动画结束后完全隐藏 intro 层，防止遮挡
 			DOM.intro.style.display = 'none';
@@ -312,8 +312,8 @@ function switchPage() {
 			targets: [DOM.enter, DOM.arrow],
 			opacity: 0,
 			translateY: 20,
-			duration: 600,
-			easing: 'easeOutQuad'
+			duration: 800, // 延长消失时间
+			easing: 'easeInOutQuad' // 更平滑的曲线
 		})
 		// 2. 文字元素上浮 + 模糊 + 淡出（交错）
 		.add({
@@ -321,18 +321,18 @@ function switchPage() {
 			opacity: 0,
 			translateY: -50,
 			filter: 'blur(10px)',
-			duration: 1000,
-			delay: anime.stagger(100), // 标题和副标题错开
+			duration: 1200, // 增加持续时间
+			delay: anime.stagger(150), // 增加错开时长，增加视觉停留层次
 		}, '-=400')
 		// 3. 整体容器放大 + 深度模糊 + 彻底消失
 		.add({
 			targets: DOM.intro,
 			opacity: 0,
-			scale: 1.1, // 轻微放大，营造穿过星云的感觉
+			scale: 1.15, // 放大更多一点以增强穿梭感
 			filter: 'blur(20px)',
-			duration: 1200,
+			duration: 1500, // 明显放慢背景层消散
 			easing: 'easeInOutSine'
-		}, '-=800');
+		}, '-=1000'); // 提早开始，让文本还未完全消失时就开始整体放大
 
 	// 闪光衔接：在文字消失时启动闪光
 	setTimeout(() => {
@@ -801,3 +801,11 @@ if (!isPhone) {
 	document.body.addEventListener("mousewheel", loadAll, { passive: true });
 	$(".arrow").addEventListener("mouseenter", loadAll);
 }
+
+window.addEventListener('load', () => {
+	const preloader = document.getElementById('global-preloader');
+	if (preloader) {
+		preloader.style.opacity = '0';
+		setTimeout(() => { preloader.remove(); }, 800);
+	}
+});

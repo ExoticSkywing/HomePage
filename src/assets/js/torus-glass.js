@@ -58,14 +58,14 @@ scene.add(text);
 const torusGeometry = new THREE.TorusGeometry(0.8, 0.35, 100, 60);
 const torusMaterial = new THREE.MeshPhysicalMaterial({
     metalness: 0,
-    roughness: 0, // completely smooth glass
+    roughness: 0.05, // 允许轻微漫反射，避免玻璃过假
     transmission: 1, // glass effect
-    ior: 1.4, // lower index of refraction for clearer look
-    thickness: 1.9,
+    ior: 1.5, // 典型玻璃折射率
+    thickness: 2.5, // 增加光线穿透厚度感
     transparent: true,
     opacity: 1,
     clearcoat: 1.0,
-    clearcoatRoughness: 0
+    clearcoatRoughness: 0.1 // 清漆糙度，增加高光分散
 });
 const torus = new THREE.Mesh(torusGeometry, torusMaterial);
 torus.position.z = 1;
@@ -76,23 +76,24 @@ if (window.innerWidth < 800) {
 scene.add(torus);
 
 // lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 10);
+const ambientLight = new THREE.AmbientLight(0xffffff, 8); // 稍微调暗一点环境白光以凸显点光
 scene.add(ambientLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 10);
-pointLight.position.set(-1, 2, 0);
+// 分配冷暖对比的环境光以营造真实玻璃色散折射效果
+const pointLight = new THREE.PointLight(0x00f0ff, 15); // 青蓝色主光源
+pointLight.position.set(-1.5, 2, 1);
 scene.add(pointLight);
 
-const pointLight2 = new THREE.PointLight(0xffffff, 10);
-pointLight2.position.set(-1, -2, 0);
+const pointLight2 = new THREE.PointLight(0xff007f, 15); // 粉紫色侧底光
+pointLight2.position.set(-1.5, -2, 1);
 scene.add(pointLight2);
 
-const pointLight3 = new THREE.PointLight(0xffffff, 10);
-pointLight3.position.set(1, -2, 0);
+const pointLight3 = new THREE.PointLight(0xffffff, 8); // 底部白补光
+pointLight3.position.set(1.5, -2, 0);
 scene.add(pointLight3);
 
-const pointLight4 = new THREE.PointLight(0xffffff, 10);
-pointLight4.position.set(1, 2, 0);
+const pointLight4 = new THREE.PointLight(0xffffff, 8); // 顶部白补光
+pointLight4.position.set(1.5, 2, 0);
 scene.add(pointLight4);
 
 const clock = new THREE.Clock();

@@ -40,6 +40,7 @@
         position: relative;
         z-index: 2;
         color: #f0f0f2;
+        font-family: "LXGW WenKai Lite", sans-serif;
         width: clamp(600px, 50vmin, 1020px);
         aspect-ratio: 1 / 1;
         overflow: hidden;
@@ -81,9 +82,8 @@
         @media screen and (max-width: 540px) {
             padding: clamp(32px, 6vw, 48px) clamp(36px, 7vw, 44px);
             width: clamp(600px, 85vw, 900px);
-            // 优化：更通透的玻璃质感
-            background: rgba(255, 255, 255, 0.05); // 降低不透明度 (0.1 -> 0.05)
-            backdrop-filter: blur(2.4px) saturate(120%) brightness(1.1); // 减小模糊 (4.8px -> 2.4px)，减少厚重感
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(2.4px) saturate(120%) brightness(1.1);
             -webkit-backdrop-filter: blur(2.4px) saturate(120%) brightness(1.1);
             border: 1px solid rgba(255, 255, 255, 0.15); // 边框更淡
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -280,6 +280,7 @@
                     &:hover {
                         color: #ffffff;
                         text-shadow: 0 0 4px #ffffff, 0 0 10px rgba(122, 64, 196, 0.4);
+                        transform: scale(1.08); // 新增：鼠标触碰时的平滑膨胀，提供强烈交互确认
                     }
                 }
             }

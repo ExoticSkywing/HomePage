@@ -12,8 +12,10 @@ head
 
         // 非关键字体：使用 preload + onload，避免阻塞；无 JS 时回退
         link(rel="preload" as="style" href="https://npm.elemecdn.com/@simonaking/font/font.min.css" onload="this.onload=null;this.rel='stylesheet'")
+        link(rel="preload" as="style" href="https://npm.elemecdn.com/lxgw-wenkai-lite-webfont@1.1.0/style.css" onload="this.onload=null;this.rel='stylesheet'")
         noscript
                 link(rel="stylesheet" href="https://npm.elemecdn.com/@simonaking/font/font.min.css")
+                link(rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-lite-webfont@1.1.0/style.css")
         link(rel="stylesheet" href='css/style.css' )
 
         meta(http-equiv="x-dns-prefetch-control" content="on")
