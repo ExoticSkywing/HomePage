@@ -1,14 +1,17 @@
 //- 本地优先加载，失败时回退 CDN
 script(
   src="assets/vendor/anime.min.js"
+  defer
   onerror="(function(){var s=document.createElement('script');s.src='https://npm.elemecdn.com/animejs@3.2.1/lib/anime.min.js';document.head.appendChild(s)})()"
 )
 script(
   src="assets/vendor/three.min.js"
-  onerror="(function(){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';document.head.appendChild(s)})()"
+  defer
+  onerror="(function(){var s=document.createElement('script');s.src='https://npm.elemecdn.com/three@0.128.0/build/three.min.js';document.head.appendChild(s)})()"
 )
 script(
   src="assets/vendor/OrbitControls.min.js"
+  defer
   onerror="(function(){var s=document.createElement('script');s.src='https://npm.elemecdn.com/three@0.128.0/examples/js/controls/OrbitControls.min.js';document.head.appendChild(s)})()"
 )
 
@@ -46,15 +49,15 @@ script.
 		SUNRAYS_WEIGHT: 1.0,
 	}
 
-script(src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js')
-script(src='js/main.js')
-script(src='js/bear-switch.js')
+script(src='https://npm.elemecdn.com/gsap@3.12.2/dist/gsap.min.js' defer)
+script(src='js/main.js' defer)
+script(src='js/bear-switch.js' defer)
 
 if intro.background
-	script(src='js/background.js')
+	script(src='js/background.js' defer)
 
 if intro.supportAuthor
-	script(src="https://npm.elemecdn.com/@simonaking/js/log.min.js")
+	script(src="https://npm.elemecdn.com/@simonaking/js/log.min.js" defer)
 
 //- Chatway Widget
 script(id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=i5GVIcMxReNp")

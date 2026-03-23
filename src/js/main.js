@@ -277,6 +277,16 @@ function getMoveDirection(startx, starty, endx, endy) {
 
 function loadIntro() {
 	if (document[hiddenProperty] || loadIntro.loaded) return;
+	
+	// 隐藏全局 Preloader
+	const preloader = document.getElementById('global-preloader');
+	if (preloader) {
+		preloader.style.opacity = '0';
+		setTimeout(() => {
+			preloader.style.display = 'none';
+		}, 600);
+	}
+
 	setTimeout(() => {
 		$(".wrap").classList.add("in");
 		setTimeout(() => {
