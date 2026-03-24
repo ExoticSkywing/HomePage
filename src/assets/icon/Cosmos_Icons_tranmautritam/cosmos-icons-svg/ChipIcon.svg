@@ -1,0 +1,41 @@
+<svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" data-fg-cbuq0="25.110:25.5586:/src/app/components/ChipIcon.tsx:3:5:76:5502:e:svg:etxtetetete:1" style="overflow: visible;"><style data-fg-cbuq1="25.110:25.5586:/src/app/components/ChipIcon.tsx:11:7:255:1308:e:style:s">
+        @keyframes chipPulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.01); }
+        }
+        @keyframes corePulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.8; }
+        }
+        @keyframes pinFlow {
+          0% { stroke-dashoffset: 4; }
+          100% { stroke-dashoffset: 0; }
+        }
+        @keyframes cStarTwinkle1 {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 1; }
+        }
+        @keyframes cStarTwinkle2 {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 0; }
+        }
+        @keyframes cStarTwinkle3 {
+          0%, 100% { opacity: 0.3; }
+          40% { opacity: 1; }
+          80% { opacity: 0; }
+        }
+        .chip-group {
+          animation: chipPulse 3s ease-in-out infinite;
+          transform-origin: 10px 10px;
+        }
+        .core-glow {
+          animation: corePulse 2s ease-in-out infinite;
+        }
+        .pin-anim {
+          animation: pinFlow 1.5s linear infinite;
+          stroke-dasharray: 2 2;
+        }
+        .c-star1 { animation: cStarTwinkle1 3.2s ease-in-out infinite 0.2s; }
+        .c-star2 { animation: cStarTwinkle2 2.8s ease-in-out infinite 0.8s; }
+        .c-star3 { animation: cStarTwinkle3 2.4s ease-in-out infinite 1.4s; }
+      </style><circle class="c-star1" cx="2" cy="2.5" r="0.45" fill="#6366f1" opacity="0" data-fg-cbuq4="25.110:25.5586:/src/app/components/ChipIcon.tsx:54:7:1596:82:e:circle"></circle><circle class="c-star2" cx="17.5" cy="3.5" r="0.4" fill="#6366f1" opacity="0" data-fg-cbuq5="25.110:25.5586:/src/app/components/ChipIcon.tsx:55:7:1685:84:e:circle"></circle><circle class="c-star3" cx="3" cy="17" r="0.35" fill="#a5b4fc" opacity="0" data-fg-cbuq6="25.110:25.5586:/src/app/components/ChipIcon.tsx:56:7:1776:81:e:circle"></circle><g class="chip-group" data-fg-cbuq7="25.110:25.5586:/src/app/components/ChipIcon.tsx:58:7:1865:3702:e:g:xtetxtetxtetxtetxtetetxtetetxtetetetxtetetetxtetetetxtetetetxtetetete"><rect x="5" y="5" width="10" height="10" rx="1.5" stroke="#6366f1" stroke-width="1.2" fill="none" data-fg-cbuq9="25.110:25.5586:/src/app/components/ChipIcon.tsx:60:9:1948:187:e:rect"></rect><rect x="5" y="5" width="10" height="10" rx="1.5" fill="#c7d2fe" opacity="0.2" data-fg-cbuq11="25.110:25.5586:/src/app/components/ChipIcon.tsx:71:9:2170:159:e:rect"></rect><rect x="7.5" y="7.5" width="5" height="5" rx="0.8" stroke="#6366f1" stroke-width="1" fill="none" data-fg-cbuq13="25.110:25.5586:/src/app/components/ChipIcon.tsx:82:9:2382:187:e:rect"></rect><rect class="core-glow" x="7.5" y="7.5" width="5" height="5" rx="0.8" fill="#f97316" opacity="0.15" data-fg-cbuq15="25.110:25.5586:/src/app/components/ChipIcon.tsx:93:9:2609:194:e:rect"></rect><path d="M8.5 10L9.5 10L9.5 8.5" stroke="#a5b4fc" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6" data-fg-cbuq17="25.110:25.5586:/src/app/components/ChipIcon.tsx:105:9:2862:219:e:path"></path><path d="M11.5 10L10.5 10L10.5 11.5" stroke="#a5b4fc" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6" data-fg-cbuq18="25.110:25.5586:/src/app/components/ChipIcon.tsx:114:9:3090:223:e:path"></path><circle cx="10" cy="10" r="0.6" stroke="#f97316" stroke-width="0.7" fill="none" opacity="0.7" data-fg-cbuq20="25.110:25.5586:/src/app/components/ChipIcon.tsx:125:9:3362:95:e:circle"></circle><circle class="core-glow" cx="10" cy="10" r="0.3" fill="#facc15" opacity="0.6" data-fg-cbuq21="25.110:25.5586:/src/app/components/ChipIcon.tsx:126:9:3466:85:e:circle"></circle><line class="pin-anim" x1="7.5" y1="5" x2="7.5" y2="2.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq23="25.110:25.5586:/src/app/components/ChipIcon.tsx:129:9:3588:118:e:line"></line><line class="pin-anim" x1="10" y1="5" x2="10" y2="2.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq24="25.110:25.5586:/src/app/components/ChipIcon.tsx:130:9:3715:116:e:line"></line><line class="pin-anim" x1="12.5" y1="5" x2="12.5" y2="2.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq25="25.110:25.5586:/src/app/components/ChipIcon.tsx:131:9:3840:120:e:line"></line><line class="pin-anim" x1="7.5" y1="15" x2="7.5" y2="17.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq27="25.110:25.5586:/src/app/components/ChipIcon.tsx:134:9:4000:120:e:line"></line><line class="pin-anim" x1="10" y1="15" x2="10" y2="17.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq28="25.110:25.5586:/src/app/components/ChipIcon.tsx:135:9:4129:118:e:line"></line><line class="pin-anim" x1="12.5" y1="15" x2="12.5" y2="17.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq29="25.110:25.5586:/src/app/components/ChipIcon.tsx:136:9:4256:122:e:line"></line><line class="pin-anim" x1="5" y1="7.5" x2="2.5" y2="7.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq31="25.110:25.5586:/src/app/components/ChipIcon.tsx:139:9:4416:118:e:line"></line><line class="pin-anim" x1="5" y1="10" x2="2.5" y2="10" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq32="25.110:25.5586:/src/app/components/ChipIcon.tsx:140:9:4543:116:e:line"></line><line class="pin-anim" x1="5" y1="12.5" x2="2.5" y2="12.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq33="25.110:25.5586:/src/app/components/ChipIcon.tsx:141:9:4668:120:e:line"></line><line class="pin-anim" x1="15" y1="7.5" x2="17.5" y2="7.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq35="25.110:25.5586:/src/app/components/ChipIcon.tsx:144:9:4827:120:e:line"></line><line class="pin-anim" x1="15" y1="10" x2="17.5" y2="10" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq36="25.110:25.5586:/src/app/components/ChipIcon.tsx:145:9:4956:118:e:line"></line><line class="pin-anim" x1="15" y1="12.5" x2="17.5" y2="12.5" stroke="#a5b4fc" stroke-width="1" stroke-linecap="round" data-fg-cbuq37="25.110:25.5586:/src/app/components/ChipIcon.tsx:146:9:5083:122:e:line"></line><circle cx="7.5" cy="2.5" r="0.4" fill="#f97316" opacity="0.5" data-fg-cbuq39="25.110:25.5586:/src/app/components/ChipIcon.tsx:149:9:5265:65:e:circle"></circle><circle cx="12.5" cy="2.5" r="0.4" fill="#f97316" opacity="0.5" data-fg-cbuq40="25.110:25.5586:/src/app/components/ChipIcon.tsx:150:9:5339:66:e:circle"></circle><circle cx="7.5" cy="17.5" r="0.4" fill="#f97316" opacity="0.5" data-fg-cbuq41="25.110:25.5586:/src/app/components/ChipIcon.tsx:151:9:5414:66:e:circle"></circle><circle cx="12.5" cy="17.5" r="0.4" fill="#f97316" opacity="0.5" data-fg-cbuq42="25.110:25.5586:/src/app/components/ChipIcon.tsx:152:9:5489:67:e:circle"></circle></g></svg>

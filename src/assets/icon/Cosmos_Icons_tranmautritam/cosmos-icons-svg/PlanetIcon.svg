@@ -1,0 +1,46 @@
+<svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" data-fg-cc220="25.111:25.5903:/src/app/components/PlanetIcon.tsx:3:5:78:5818:e:svg:etxtetetetxtetxtetxtetxtetxte:1" style="overflow: visible;"><style data-fg-cc221="25.111:25.5903:/src/app/components/PlanetIcon.tsx:11:7:257:1547:e:style:s">
+        @keyframes planetSpin {
+          0% { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: -30; }
+        }
+        @keyframes planetPulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.015); }
+        }
+        @keyframes ringOrbit {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(2deg); }
+        }
+        @keyframes pStarTwinkle1 {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 1; }
+        }
+        @keyframes pStarTwinkle2 {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 0; }
+        }
+        @keyframes pStarTwinkle3 {
+          0%, 100% { opacity: 0.3; }
+          40% { opacity: 1; }
+          80% { opacity: 0; }
+        }
+        @keyframes glowPulse {
+          0%, 100% { opacity: 0.7; }
+          50% { opacity: 1; }
+        }
+        .planet-group {
+          animation: planetPulse 3s ease-in-out infinite;
+          transform-origin: 10px 10px;
+        }
+        .planet-ring-group {
+          animation: ringOrbit 4s ease-in-out infinite;
+          transform-origin: 10px 10px;
+        }
+        .planet-surface-line {
+          animation: planetSpin 6s linear infinite;
+        }
+        .p-star1 { animation: pStarTwinkle1 3.2s ease-in-out infinite 0.3s; }
+        .p-star2 { animation: pStarTwinkle2 2.8s ease-in-out infinite 1s; }
+        .p-star3 { animation: pStarTwinkle3 2.2s ease-in-out infinite 1.8s; }
+        .planet-glow { animation: glowPulse 2.5s ease-in-out infinite; }
+      </style><circle class="p-star1" cx="2" cy="4" r="0.45" fill="#6366f1" opacity="0" data-fg-cc224="25.111:25.5903:/src/app/components/PlanetIcon.tsx:59:7:1832:80:e:circle"></circle><circle class="p-star2" cx="17.5" cy="3" r="0.4" fill="#6366f1" opacity="0" data-fg-cc225="25.111:25.5903:/src/app/components/PlanetIcon.tsx:60:7:1919:82:e:circle"></circle><circle class="p-star3" cx="3.5" cy="16" r="0.35" fill="#a5b4fc" opacity="0" data-fg-cc226="25.111:25.5903:/src/app/components/PlanetIcon.tsx:61:7:2008:83:e:circle"></circle><g class="planet-ring-group" data-fg-cc228="25.111:25.5903:/src/app/components/PlanetIcon.tsx:64:7:2132:297:e:g:e"><ellipse cx="10" cy="10.8" rx="8.5" ry="2.8" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round" fill="none" clip-path="url(#ringClipBack)" data-fg-cc229="25.111:25.5903:/src/app/components/PlanetIcon.tsx:65:9:2174:244:e:ellipse"></ellipse></g><g class="planet-group" data-fg-cc2211="25.111:25.5903:/src/app/components/PlanetIcon.tsx:79:7:2463:2345:e:g:xtetxtetxtetxtetxte"><circle cx="10" cy="10" r="5" stroke="#6366f1" stroke-width="1.2" fill="none" data-fg-cc2213="25.111:25.5903:/src/app/components/PlanetIcon.tsx:81:9:2547:147:e:circle"></circle><circle cx="10" cy="10" r="5" fill="#c7d2fe" opacity="0.3" data-fg-cc2215="25.111:25.5903:/src/app/components/PlanetIcon.tsx:90:9:2732:119:e:circle"></circle><g clip-path="url(#planetClip)" data-fg-cc2217="25.111:25.5903:/src/app/components/PlanetIcon.tsx:99:9:2930:1020:e:g:etetxtete"><path class="planet-surface-line" d="M5.5 8.2C6.5 7.8 8 8.5 10 8.2C12 7.9 13.2 7.2 14.5 7.8" stroke="#a5b4fc" stroke-width="0.8" stroke-linecap="round" fill="none" stroke-dasharray="2 2" data-fg-cc2218="25.111:25.5903:/src/app/components/PlanetIcon.tsx:100:11:2972:284:e:path"></path><path d="M6 11.5C7.5 12.2 9 11 10.5 11.3C12 11.6 13.5 12.5 14.2 12" stroke="#a5b4fc" stroke-width="0.7" stroke-linecap="round" fill="none" opacity="0.5" data-fg-cc2219="25.111:25.5903:/src/app/components/PlanetIcon.tsx:109:11:3267:235:e:path"></path><circle cx="11.5" cy="9.5" r="1" stroke="#a5b4fc" stroke-width="0.7" fill="none" opacity="0.4" data-fg-cc2221="25.111:25.5903:/src/app/components/PlanetIcon.tsx:118:11:3545:190:e:circle"></circle><circle cx="8" cy="11.2" r="0.6" stroke="#a5b4fc" stroke-width="0.6" fill="none" opacity="0.35" data-fg-cc2222="25.111:25.5903:/src/app/components/PlanetIcon.tsx:127:11:3746:191:e:circle"></circle></g><path d="M7.5 6.8C8.3 6 9.2 5.5 10.2 5.2" stroke="#a5b4fc" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.5" data-fg-cc2224="25.111:25.5903:/src/app/components/PlanetIcon.tsx:139:9:4005:195:e:path"></path><g class="planet-glow" clip-path="url(#planetClip)" data-fg-cc2226="25.111:25.5903:/src/app/components/PlanetIcon.tsx:149:9:4279:518:e:g:ete"><path d="M14.8 7.5C15.2 8.8 15.2 10.2 14.8 11.5" stroke="#f97316" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.6" data-fg-cc2227="25.111:25.5903:/src/app/components/PlanetIcon.tsx:150:11:4345:214:e:path"></path><path d="M14.2 8.5C14.5 9.3 14.5 10.3 14.2 11" stroke="#facc15" stroke-width="0.7" stroke-linecap="round" fill="none" opacity="0.5" data-fg-cc2228="25.111:25.5903:/src/app/components/PlanetIcon.tsx:158:11:4570:214:e:path"></path></g></g><g class="planet-group" data-fg-cc2230="25.111:25.5903:/src/app/components/PlanetIcon.tsx:170:7:4878:285:e:g:e"><path class="planet-glow" d="M14.5 6.5C15.8 8.2 15.8 11.8 14.5 13.5" stroke="#f97316" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.45" data-fg-cc2231="25.111:25.5903:/src/app/components/PlanetIcon.tsx:171:9:4915:237:e:path"></path></g><g class="planet-ring-group" data-fg-cc2233="25.111:25.5903:/src/app/components/PlanetIcon.tsx:183:7:5209:298:e:g:e"><ellipse cx="10" cy="10.8" rx="8.5" ry="2.8" stroke="#6366f1" stroke-width="1.2" stroke-linecap="round" fill="none" clip-path="url(#ringClipFront)" data-fg-cc2234="25.111:25.5903:/src/app/components/PlanetIcon.tsx:184:9:5251:245:e:ellipse"></ellipse></g><defs data-fg-cc2236="25.111:25.5903:/src/app/components/PlanetIcon.tsx:198:7:5540:345:e:defs:etete"><clipPath id="planetClip" data-fg-cc2237="25.111:25.5903:/src/app/components/PlanetIcon.tsx:199:9:5555:89:e:clipPath:e"><circle cx="10" cy="10" r="5" data-fg-cc2238="25.111:25.5903:/src/app/components/PlanetIcon.tsx:200:11:5592:32:e:circle"></circle></clipPath><clipPath id="ringClipFront" data-fg-cc2239="25.111:25.5903:/src/app/components/PlanetIcon.tsx:202:9:5653:105:e:clipPath:e"><rect x="0" y="12.5" width="20" height="8" data-fg-cc2240="25.111:25.5903:/src/app/components/PlanetIcon.tsx:203:11:5693:45:e:rect"></rect></clipPath><clipPath id="ringClipBack" data-fg-cc2241="25.111:25.5903:/src/app/components/PlanetIcon.tsx:205:9:5767:104:e:clipPath:e"><rect x="0" y="0" width="20" height="12.5" data-fg-cc2242="25.111:25.5903:/src/app/components/PlanetIcon.tsx:206:11:5806:45:e:rect"></rect></clipPath></defs></svg>

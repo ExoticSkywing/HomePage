@@ -693,16 +693,31 @@ const Stargate = {
 			setTimeout(() => {
 				loaderWrapper.classList.add('hidden');
 
-				// 填充中间态内容
-				document.getElementById('target-title').textContent = target.title;
-				document.getElementById('target-desc').textContent = target.desc;
-				document.getElementById('target-guide').textContent = target.guide;
+				// 替换 Bloom 页面内动态内容
+				const targetTitle = document.getElementById('target-title');
+				if (targetTitle) {
+					targetTitle.textContent = target.title;
+				}
+				
+				const targetDesc = document.getElementById('target-desc');
+				if (targetDesc) {
+					targetDesc.textContent = target.desc;
+				}
+				
+				const targetGuide = document.getElementById('target-guide');
+				if (targetGuide) {
+					targetGuide.textContent = target.guide;
+				}
 
-				const confirmEl = document.querySelector('.terminal-confirm');
-				confirmEl.classList.remove('hidden');
+				// 显示 Bloom 页面
+				const bloomOverlay = document.getElementById('bloom-landing-overlay');
+				if (bloomOverlay) {
+					bloomOverlay.classList.remove('hidden');
+				}
 
-				const actionBrowser = document.querySelector('.action-browser');
-				const actionWebview = document.querySelector('.action-webview');
+				// 查找 Bloom 内按钮控制结构
+				const actionBrowser = bloomOverlay.querySelector('.action-browser');
+				const actionWebview = bloomOverlay.querySelector('.action-webview');
 				const btnLaunch = document.getElementById('btn-launch');
 				const btnCopy = document.getElementById('btn-copy-link');
 
@@ -714,29 +729,31 @@ const Stargate = {
 
 				if (this.isInAppBrowser()) {
 					// WebView 状态
-					actionBrowser.classList.add('hidden');
-					actionWebview.classList.remove('hidden');
+					if (actionBrowser) actionBrowser.classList.add('hidden');
+					if (actionWebview) actionWebview.classList.remove('hidden');
 					
 					newBtnCopy.addEventListener('click', () => {
 						navigator.clipboard.writeText(target.url).then(() => {
-							const originalText = newBtnCopy.textContent;
-							newBtnCopy.textContent = '已复制，请去浏览器打开';
+							const spanTxt = newBtnCopy.querySelector('span');
+							const originalText = spanTxt ? spanTxt.textContent : '复制链接';
+							if(spanTxt) spanTxt.textContent = '已复制，请去浏览器打开';
 							newBtnCopy.style.background = 'rgba(0, 255, 170, 0.2)';
 							newBtnCopy.style.borderColor = '#00ffaa';
 							setTimeout(() => {
-								newBtnCopy.textContent = originalText;
+								if(spanTxt) spanTxt.textContent = originalText;
 								newBtnCopy.style.background = '';
 								newBtnCopy.style.borderColor = '';
 							}, 3000);
 						}).catch(err => {
 							console.error('Failed to copy: ', err);
-							newBtnCopy.textContent = '复制失败，请手动复制';
+							const spanTxt = newBtnCopy.querySelector('span');
+							if(spanTxt) spanTxt.textContent = '复制失败，请手动复制';
 						});
 					});
 				} else {
 					// 真浏览器状态
-					actionWebview.classList.add('hidden');
-					actionBrowser.classList.remove('hidden');
+					if (actionWebview) actionWebview.classList.add('hidden');
+					if (actionBrowser) actionBrowser.classList.remove('hidden');
 
 					newBtnLaunch.addEventListener('click', () => {
 						const flash = document.getElementById("flash-overlay");
@@ -780,8 +797,10 @@ const Stargate = {
 			inputWrapper.style.display = '';
 			this.dom.input.style.display = '';
 			this.dom.status.style.display = '';
-			const confirmEl = document.querySelector('.terminal-confirm');
-			confirmEl.classList.add('hidden');
+			const bloomOverlay = document.getElementById('bloom-landing-overlay');
+			if (bloomOverlay) {
+				bloomOverlay.classList.add('hidden');
+			}
 		}, 400);
 	},
 };

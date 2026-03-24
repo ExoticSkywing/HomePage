@@ -1,0 +1,40 @@
+<svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" data-fg-gcl0="25.108:25.5315:/src/app/components/AstronautIcon.tsx:3:5:81:5226:e:svg:etxtetetete:1" style="overflow: visible;"><style data-fg-gcl1="25.108:25.5315:/src/app/components/AstronautIcon.tsx:11:7:260:1316:e:style:s">
+        @keyframes astroFloat {
+          0%, 100% { transform: translate(0px, 0px); }
+          50% { transform: translate(0px, -0.6px); }
+        }
+        @keyframes visorShine {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.7; }
+        }
+        @keyframes visorWarmGlow {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.7; }
+        }
+        @keyframes aStarTwinkle1 {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 1; }
+        }
+        @keyframes aStarTwinkle2 {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 0; }
+        }
+        @keyframes aStarTwinkle3 {
+          0%, 100% { opacity: 0.3; }
+          40% { opacity: 1; }
+          80% { opacity: 0; }
+        }
+        .astro-body {
+          animation: astroFloat 3s ease-in-out infinite;
+          transform-origin: 10px 10px;
+        }
+        .visor-shine {
+          animation: visorShine 2.5s ease-in-out infinite;
+        }
+        .visor-warm {
+          animation: visorWarmGlow 2.5s ease-in-out infinite 0.3s;
+        }
+        .a-star1 { animation: aStarTwinkle1 3.3s ease-in-out infinite 0.5s; }
+        .a-star2 { animation: aStarTwinkle2 2.5s ease-in-out infinite 1.2s; }
+        .a-star3 { animation: aStarTwinkle3 2s ease-in-out infinite 0.1s; }
+      </style><circle class="a-star1" cx="2" cy="3" r="0.45" fill="#6366f1" opacity="0" data-fg-gcl4="25.108:25.5315:/src/app/components/AstronautIcon.tsx:53:7:1609:80:e:circle"></circle><circle class="a-star2" cx="17.5" cy="5" r="0.4" fill="#6366f1" opacity="0" data-fg-gcl5="25.108:25.5315:/src/app/components/AstronautIcon.tsx:54:7:1696:82:e:circle"></circle><circle class="a-star3" cx="3.5" cy="15" r="0.35" fill="#a5b4fc" opacity="0" data-fg-gcl6="25.108:25.5315:/src/app/components/AstronautIcon.tsx:55:7:1785:83:e:circle"></circle><g class="astro-body" data-fg-gcl7="25.108:25.5315:/src/app/components/AstronautIcon.tsx:57:7:1876:3420:e:g:xtetxtetxtetxtetxtetetxtetxtetetxtetxtetxtetxtetetxte"><path d="M5 8.5C5 5 7.2 2.5 10 2.5C12.8 2.5 15 5 15 8.5C15 10.5 14.2 12 13 12.8L13 13.5L7 13.5L7 12.8C5.8 12 5 10.5 5 8.5Z" stroke="#6366f1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" data-fg-gcl9="25.108:25.5315:/src/app/components/AstronautIcon.tsx:59:9:1951:286:e:path"></path><path d="M5 8.5C5 5 7.2 2.5 10 2.5C12.8 2.5 15 5 15 8.5C15 10.5 14.2 12 13 12.8L13 13.5L7 13.5L7 12.8C5.8 12 5 10.5 5 8.5Z" fill="#c7d2fe" opacity="0.15" data-fg-gcl11="25.108:25.5315:/src/app/components/AstronautIcon.tsx:68:9:2274:194:e:path"></path><path d="M6.8 7C6.8 5.5 8.2 4.5 10 4.5C11.8 4.5 13.2 5.5 13.2 7C13.2 9.2 12.2 11 10 11C7.8 11 6.8 9.2 6.8 7Z" stroke="#6366f1" stroke-width="1.2" stroke-linecap="round" fill="none" data-fg-gcl13="25.108:25.5315:/src/app/components/AstronautIcon.tsx:75:9:2538:239:e:path"></path><path d="M6.8 7C6.8 5.5 8.2 4.5 10 4.5C11.8 4.5 13.2 5.5 13.2 7C13.2 9.2 12.2 11 10 11C7.8 11 6.8 9.2 6.8 7Z" fill="#c7d2fe" opacity="0.3" data-fg-gcl15="25.108:25.5315:/src/app/components/AstronautIcon.tsx:83:9:2821:179:e:path"></path><path class="visor-warm" d="M8 5.8C8.8 5.3 9.8 5.2 10.8 5.5" stroke="#f97316" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.5" data-fg-gcl17="25.108:25.5315:/src/app/components/AstronautIcon.tsx:89:9:3047:228:e:path"></path><path class="visor-warm" d="M8.5 6.3C9 6 9.8 5.9 10.3 6.1" stroke="#facc15" stroke-width="0.6" stroke-linecap="round" fill="none" opacity="0.4" data-fg-gcl18="25.108:25.5315:/src/app/components/AstronautIcon.tsx:98:9:3284:226:e:path"></path><path class="visor-shine" d="M12 6.5C12.2 7.2 12 8 11.5 8.8" stroke="#a5b4fc" stroke-width="0.7" stroke-linecap="round" fill="none" opacity="0.5" data-fg-gcl20="25.108:25.5315:/src/app/components/AstronautIcon.tsx:108:9:3557:228:e:path"></path><circle cx="5.2" cy="8" r="0.9" stroke="#a5b4fc" stroke-width="1" fill="none" data-fg-gcl22="25.108:25.5315:/src/app/components/AstronautIcon.tsx:119:9:3834:79:e:circle"></circle><circle cx="14.8" cy="8" r="0.9" stroke="#a5b4fc" stroke-width="1" fill="none" data-fg-gcl23="25.108:25.5315:/src/app/components/AstronautIcon.tsx:120:9:3922:80:e:circle"></circle><path d="M6.5 13.5C6.5 13.5 5 14 4.5 15.5C4.2 16.5 4.5 17.5 5.5 17.5L14.5 17.5C15.5 17.5 15.8 16.5 15.5 15.5C15 14 13.5 13.5 13.5 13.5" stroke="#6366f1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" data-fg-gcl25="25.108:25.5315:/src/app/components/AstronautIcon.tsx:123:9:4052:298:e:path"></path><path d="M6.5 13.5C6.5 13.5 5 14 4.5 15.5C4.2 16.5 4.5 17.5 5.5 17.5L14.5 17.5C15.5 17.5 15.8 16.5 15.5 15.5C15 14 13.5 13.5 13.5 13.5" fill="#c7d2fe" opacity="0.15" data-fg-gcl27="25.108:25.5315:/src/app/components/AstronautIcon.tsx:132:9:4385:206:e:path"></path><rect x="8.5" y="14" width="3" height="2.5" rx="0.5" stroke="#a5b4fc" stroke-width="0.8" fill="none" opacity="0.6" data-fg-gcl29="25.108:25.5315:/src/app/components/AstronautIcon.tsx:139:9:4641:214:e:rect"></rect><circle cx="9.5" cy="15" r="0.35" fill="#f97316" opacity="0.6" data-fg-gcl31="25.108:25.5315:/src/app/components/AstronautIcon.tsx:151:9:4892:65:e:circle"></circle><circle cx="10.5" cy="15" r="0.35" fill="#a5b4fc" opacity="0.5" data-fg-gcl32="25.108:25.5315:/src/app/components/AstronautIcon.tsx:152:9:4966:66:e:circle"></circle><line x1="10" y1="2.5" x2="10" y2="4.5" stroke="#a5b4fc" stroke-width="0.8" stroke-linecap="round" opacity="0.5" data-fg-gcl34="25.108:25.5315:/src/app/components/AstronautIcon.tsx:155:9:5084:201:e:line"></line></g></svg>

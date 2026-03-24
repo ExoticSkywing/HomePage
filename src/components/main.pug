@@ -11,7 +11,7 @@
             if first
               li
                 a(href=`${first.href}` aria-label=`${first.text}`)
-                  if first.icon.startsWith('http')
+                  if first.icon.startsWith('http') || first.icon.includes('/') || first.icon.endsWith('.svg')
                     img.icon-img(src=`${first.icon}` alt=`${first.text}`)
                   else
                     i(class=`icon icon-${first.icon}`)
@@ -20,7 +20,7 @@
             if second
               li
                 a(href=`${second.href}` aria-label=`${second.text}` data-entry="second")
-                  if second.icon.startsWith('http')
+                  if second.icon.startsWith('http') || second.icon.includes('/') || second.icon.endsWith('.svg')
                     img.icon-img(src=`${second.icon}` alt=`${second.text}`)
                   else
                     i(class=`icon icon-${second.icon}`)
@@ -29,7 +29,7 @@
             if third
               li
                 a(href=`${third.href}` aria-label=`${third.text}` target="_blank")
-                  if third.icon.startsWith('http')
+                  if third.icon.startsWith('http') || third.icon.includes('/') || third.icon.endsWith('.svg')
                     img.icon-img(src=`${third.icon}` alt=`${third.text}`)
                   else
                     i(class=`icon icon-${third.icon}`)
@@ -112,5 +112,125 @@
                             span 为确保最佳体验，请在浏览器中打开
                         button#btn-copy-link 复制链接
                         .guide-text iOS: Safari · Android: 浏览器
+
+    //- 新增：Bloom 风格全屏着陆过渡页
+    #bloom-landing-overlay.hidden
+        video.bloom-video-bg(src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260315_073750_51473149-4350-4920-ae24-c8214286f323.mp4" autoplay loop muted playsinline)
+        .bloom-layout
+            //- Left Panel
+            .bloom-left-panel
+                .bloom-inner.liquid-glass-strong
+                    //- Nav
+                    .bloom-nav
+                        .brand
+                            img(src=`${main.avatar.link}` alt="logo")
+                            span bloom
+                        .bloom-nav-menu-btn.liquid-glass
+                            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                line(x1="3" y1="12" x2="21" y2="12")
+                                line(x1="3" y1="6" x2="21" y2="6")
+                                line(x1="3" y1="18" x2="21" y2="18")
+                    
+                    //- Hero Center
+                    .bloom-hero-center
+                        img.hero-logo(src=`${main.avatar.link}` alt="logo center" style="width: 60px; height: 60px;")
+                        
+                        h1#target-title(style="font-family: var(--bloom-font-serif); font-style: italic; font-weight: normal; margin-bottom: 0;") 目标站点
+                        
+                        .bloom-pills(style="margin-top: -0.5rem;")
+                            span#target-desc.liquid-glass(style="font-size: 0.85rem;") 加载中...
+                        
+                        .target-desc-container
+                           p#target-guide(style="font-size: 1.05rem; color: rgba(255,255,255,0.7); line-height: 1.6; max-width: 480px; margin: 0 auto 1.5rem;")
+                        
+                        .action-btn-wrapper
+                            .action-browser
+                                button#btn-launch.liquid-glass-strong.btn-interactive
+                                    span 启动跃迁
+                                    .icon-circle
+                                        svg(xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                            path(d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4")
+                                            polyline(points="7 10 12 15 17 10")
+                                            line(x1="12" y1="15" x2="12" y2="3")
+                            
+                            .action-webview.hidden
+                                .warning-box(style="font-size: 0.8rem; color: #ffeb3b; margin-bottom: 1rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;")
+                                    svg(xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                        path(d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z")
+                                        line(x1="12" y1="9" x2="12" y2="13")
+                                        line(x1="12" y1="17" x2="12.01" y2="17")
+                                    | 请在系统浏览器中打开以获得最佳体验
+                                button#btn-copy-link.liquid-glass-strong.btn-interactive
+                                    span 复制链接
+                                    .icon-circle
+                                        svg(xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                            rect(x="9" y="9" width="13" height="13" rx="2" ry="2")
+                                            path(d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1")
+
+                        a.liquid-glass.btn-interactive(href="https://lmyz.1yo.cc" target="_blank" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; border-radius: 9999px; font-size: 0.8rem; color: rgba(255,255,255,0.7); text-decoration: none;")
+                            svg(xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                path(d="M12 20h9")
+                                path(d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z")
+                            | 我也要自定义跃迁口令
+                    
+                    //- Bottom Quote
+                    .bloom-quote-box
+                        .quote-label STARGATE SYSTEM
+                        .quote-text <i>Connecting you to the boundless universe.</i>
+                        .quote-author MANYUZO NETWORKS
+
+            //- Right Panel
+            .bloom-right-panel
+                .right-top-bar
+                    .social-pill.liquid-glass
+                        a(href="#" target="_blank")
+                            svg(xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                path(d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z")
+                        a(href="#" target="_blank")
+                            svg(xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                path(d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z")
+                                rect(x="2" y="9" width="4" height="12")
+                                circle(cx="4" cy="4" r="2")
+                        a(href="#" target="_blank")
+                            svg(xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                rect(x="2" y="2" width="20" height="20" rx="5" ry="5")
+                                path(d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z")
+                                line(x1="17.5" y1="6.5" x2="17.51" y2="6.5")
+                    
+                    .account-btn.liquid-glass
+                        svg(xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                            polygon(points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2")
+                
+                .community-card.liquid-glass
+                    .title Enter our ecosystem
+                    .desc 探索无尽的创意宇宙，发现属于你的独特灵感。
+                
+                .bottom-feature-section.liquid-glass
+                    .cards-row
+                        .feature-card.liquid-glass
+                            .icon-box
+                                svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                    path(d="M21 4l-4-4")
+                                    path(d="M21 4l-4 4")
+                                    path(d="M11.5 5.5l-6 6a2.828 2.828 0 0 0 4 4l6-6")
+                                    path(d="M4.5 13.5l-2-2")
+                                    path(d="M7 16l-2-2")
+                            .title 节点就绪
+                        .feature-card.liquid-glass
+                            .icon-box
+                                svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                    path(d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z")
+                                    path(d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z")
+                            .title 加速隧道
+                    
+                    .bottom-card.liquid-glass
+                        img(src=`${main.avatar.link}` alt="thumbnail")
+                        .text-content
+                            .title Manyuzo Protocol
+                            .desc 分布式跳转节点及应用服务架构支撑
+                        .plus-btn
+                            svg(xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round")
+                                line(x1="12" y1="5" x2="12" y2="19")
+                                line(x1="5" y1="12" x2="19" y2="12")
 
     canvas#galaxyCanvas
