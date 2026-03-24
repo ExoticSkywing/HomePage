@@ -320,6 +320,8 @@
         user-select: none;
         z-index: 20;
         pointer-events: none; // 关键：禁止气泡拦截点击，防止其透明区域或本体遮挡文字
+        animation: bubble-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); // 弹性弹出动画
+        transform-origin: bottom left; // 设置缩放原点为左下角（靠近小熊嘴巴）
 
         &::before {
             content: '';
@@ -338,10 +340,37 @@
             left: 50%;
             top: -120%;
             transform: translateX(-50%);
+            transform-origin: bottom center; // 移动端原点改为底部居中
             
             &::before {
                 right: 50%;
                 transform: translateX(50%);
+            }
+            animation-name: bubble-pop-mobile;
+        }
+    }
+
+    // 气泡弹出动画
+    @keyframes bubble-pop {
+        0% {
+            opacity: 0;
+            transform: scale(0.5) translateX(-50%); // 移动端包含 translateX
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateX(-50%);
+        }
+    }
+    // 桌面端不需要 translateX
+    @media screen and (min-width: 501px) {
+        @keyframes bubble-pop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
             }
         }
     }
@@ -461,11 +490,28 @@
                 width: 85%;
                 background: #fff;
                 box-shadow: 0 0 15px rgba(255,255,255,0.8); // 诱人的发光点核
+                animation: switch-pulse 2s infinite;
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
             }
         }
+    }
+
+    @keyframes bubble-pop {
+        0% { opacity: 0; transform: scale(0.5); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes bubble-pop-mobile {
+        0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+        100% { opacity: 1; transform: translateX(-50%) scale(1); }
+    }
+
+    @keyframes switch-pulse {
+        0% { box-shadow: 0 0 15px rgba(255,255,255,0.8); transform: translate(-50%, -50%) scale(1); }
+        50% { box-shadow: 0 0 25px rgba(255,255,255,1); transform: translate(-50%, -50%) scale(1.05); }
+        100% { box-shadow: 0 0 15px rgba(255,255,255,0.8); transform: translate(-50%, -50%) scale(1); }
     }
 }
