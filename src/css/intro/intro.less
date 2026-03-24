@@ -92,40 +92,37 @@
 }
 
 .enter {
-	display: inline-block; // 确保是块级盒子，保证伪元素覆盖范围正确
-	color: @color-enter;
-	font-size: 0.8rem;
-	letter-spacing: 3px;
-	white-space: pre;
+	display: inline-block;
 	pointer-events: auto;
-	cursor: pointer; // 强制显示手型光标
-	transition: all 0.4s;
+	cursor: pointer;
 	z-index: 999;
 	position: relative;
-	background: linear-gradient(90deg, transparent, @color-accent, transparent);
-	background-size: 200% 100%;
-	background-clip: text;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	animation: shimmer 1.6s linear infinite;
-	text-shadow: 0 0 1px #fff, 0 0 10px fade(@color-accent, 100%), 0 0 22px fade(@color-accent, 65%);
+	text-decoration: none;
+	transition: transform 0.4s;
 
-	// 扩大点击热区，解决“只有字能点”的问题
-	&::after {
-		content: "";
-		position: absolute;
-		top: -20px;
-		left: -20px;
-		right: -20px;
-		bottom: -20px;
-		z-index: 1;
+	span {
+		color: @color-enter;
+		font-size: 0.8rem;
+		letter-spacing: 3px;
+		white-space: pre;
+		background: linear-gradient(90deg, transparent, @color-accent, transparent);
+		background-size: 200% 100%;
+		background-clip: text;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: shimmer 1.6s linear infinite;
+		text-shadow: 0 0 1px #fff, 0 0 10px fade(@color-accent, 100%), 0 0 22px fade(@color-accent, 65%);
+		transition: all 0.4s;
 	}
 
 	&:hover,
 	&:focus {
-		color: #fff;
-		text-shadow: 0 0 10px #fff, 0 0 16px fade(@color-accent, 100%);
-		transform: scale(1.1); // 新增：使闪烁的文字在指引处具有扩张浮推感
+		transform: scale(1.1);
+		
+		span {
+			color: #fff;
+			text-shadow: 0 0 10px #fff, 0 0 16px fade(@color-accent, 100%);
+		}
 	}
 }
 
@@ -260,7 +257,7 @@
 }
 
 .content-intro .wrap {
-    z-index: 2; // 确保其他 UI 元素（如进入按钮、副标题）在最上层
+	z-index: 2; // 确保其他 UI 元素（如进入按钮、副标题）在最上层
 }
 
 // 移除手机端恶心的点击高亮方块
@@ -268,26 +265,43 @@
 .impossible-switch-box *, 
 .bear-checkbox__input, 
 .bear-checkbox__track {
-    -webkit-tap-highlight-color: transparent !important;
+	-webkit-tap-highlight-color: transparent !important;
 }
 
 // ==========================================
 // Impossible Bear Switch 彩蛋按钮 UI 样式
 // ==========================================
 .content-intro .wrap .impossible-switch-box {
-    position: absolute;
-    bottom: 12vh; 
-    left: 50%;
-    transform: translateX(-50%) scale(0.65);
-    z-index: 1000;
-    width: 200px;
-    height: 100px;
-    transition: all 0.3s ease;
+	position: absolute;
+	bottom: 12vh; 
+	left: 50%;
+	transform: translateX(-50%) scale(0.65);
+	z-index: 1000;
+	width: 200px;
+	height: 100px;
+	transition: all 0.3s ease;
+	
+	// 关键修复：让 switch-box 容器本身不拦截点击，只让内部可见元素拦截
+	// 这样透明区域覆盖到文字时，点击会穿透下去触发文字
+	pointer-events: none;
+	
+	// 只让核心交互组件（开关）可点击，其他装饰性元素（熊、爪子、气泡）一律穿透
+	.bear-checkbox {
+		pointer-events: auto;
+	}
 
-    @media screen and (max-width: 500px) {
-        bottom: 22vh; 
-        transform: translateX(-50%) scale(0.55);
-    }
+	// 强制装饰元素不拦截点击，防止 paw（位于右侧）或气泡遮挡文字
+	.bear__wrap,
+	.bear__arm-wrap,
+	.bear__paw,
+	.bear__swear {
+		pointer-events: none !important;
+	}
+
+	@media screen and (max-width: 500px) {
+		bottom: 22vh; 
+		transform: translateX(-50%) scale(0.55);
+	}
 
 	.bear__swear {
         display: none; 
@@ -305,6 +319,7 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         user-select: none;
         z-index: 20;
+        pointer-events: none; // 关键：禁止气泡拦截点击，防止其透明区域或本体遮挡文字
 
         &::before {
             content: '';

@@ -20,7 +20,8 @@
 			h3.content-subtitle(original-content=`${intro.subtitle}`) &nbsp;
 			if intro.brand
 				h4.content-brand #{intro.brand}
-			a.enter #{intro.enter}
+			a.enter
+				span #{intro.enter}
 			.arrow.arrow-1
 			.arrow.arrow-2
 			include bear-switch.pug
