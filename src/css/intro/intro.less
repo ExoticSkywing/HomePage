@@ -92,11 +92,13 @@
 }
 
 .enter {
+	display: inline-block; // 确保是块级盒子，保证伪元素覆盖范围正确
 	color: @color-enter;
 	font-size: 0.8rem;
 	letter-spacing: 3px;
 	white-space: pre;
 	pointer-events: auto;
+	cursor: pointer; // 强制显示手型光标
 	transition: all 0.4s;
 	z-index: 999;
 	position: relative;
@@ -107,6 +109,17 @@
 	-webkit-text-fill-color: transparent;
 	animation: shimmer 1.6s linear infinite;
 	text-shadow: 0 0 1px #fff, 0 0 10px fade(@color-accent, 100%), 0 0 22px fade(@color-accent, 65%);
+
+	// 扩大点击热区，解决“只有字能点”的问题
+	&::after {
+		content: "";
+		position: absolute;
+		top: -20px;
+		left: -20px;
+		right: -20px;
+		bottom: -20px;
+		z-index: 1;
+	}
 
 	&:hover,
 	&:focus {
