@@ -251,9 +251,15 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; // 位于 background (0) 之上，wrap(文字等内容) 之下或之中
-    pointer-events: none; // 不拦截点击事件
-    mix-blend-mode: screen; // 让黑色背景透明，保留 Torus 的光效和折射
+    z-index: 1; 
+    pointer-events: none; 
+    mix-blend-mode: screen; // 必须滤！所有设备无差别开启滤黑底 
+    
+    // 核心修补：给这块布上足硬件隔离封印术，强防由于预乘 alpha 造成的合成崩溃！
+    opacity: 0.999;
+    transform: translate3d(0, 0, 0); 
+    will-change: transform;
+    isolation: isolate;
 }
 
 .content-intro .wrap {

@@ -19,16 +19,19 @@ window.innerWidth / window.innerHeight,
 const getCameraZ = () => Math.max(5, 5 * (800 / window.innerWidth));
 camera.position.z = getCameraZ();
 
+const isMobile = window.innerWidth < 800;
+
 const renderer = new THREE.WebGLRenderer({
 canvas: canvas,
 antialias: true,
-		powerPreference: "high-performance",
-alpha: true
+alpha: false, // 绝杀：不用内部透明底抗丢层，直接生成严丝合缝的黑域画面让CSS接管抠像！
+powerPreference: "default"
 });
-renderer.setClearColor(0x000000, 1); // Solid black for mix-blend-mode screen
+// 用100%全死黑来兜住高光参数的反差
+renderer.setClearColor(0x000000, 1); 
 renderer.setSize(window.innerWidth, window.innerHeight);
-// 适配移动设备计算性能：低于 800px 的屏幕最多允许 1.5 倍精细度以求换取稳定的 60FPS，PC 原样输出高清 2x 玻璃抗锯齿
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 800 ? 1.5 : 2));
+// 适配移动设备计算性能：低于 800px 的屏幕最多允许 1.5 倍精细度
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 
 // fonts
 const fontLoader = new FontLoader();
@@ -61,17 +64,18 @@ scene.add(textMesh);
 );
 
 // 性能优化：移动端降低几何体面数 (64x32 -> 48x24)
-const isMobile = window.innerWidth < 800;
 torusGeometry = new THREE.TorusGeometry(0.8, 0.35, isMobile ? 48 : 64, isMobile ? 24 : 32); 
+
+// 无差别开启极致透射折射参数以捕获满级高级光感
 torusMaterial = new THREE.MeshPhysicalMaterial({
-metalness: 0,
-roughness: 0.05, 
-transmission: 1, 
-ior: 1.5, 
-thickness: 2.5, 
-transparent: true,
-clearcoat: 1.0,
-clearcoatRoughness: 0.1 
+    metalness: 0,
+    roughness: 0.05, 
+    transmission: 1,  // 复活物理透镜！
+    ior: 1.5, 
+    thickness: 2.5, 
+    transparent: true,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.1 
 });
 const torus = new THREE.Mesh(torusGeometry, torusMaterial);
 torus.position.z = 1;
