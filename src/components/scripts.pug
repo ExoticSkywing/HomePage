@@ -66,13 +66,11 @@ script(id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=i5GVI
 script(type="module").
 	import { initTorusGlass } from './assets/js/torus-glass.js';
 	
-	// 等待 DOMContentLoaded，确保 canvas 和 config 已经就绪
-	document.addEventListener('DOMContentLoaded', () => {
-	    // 从 pug 的 intro 对象或现有的 DOM 中获取文字，这里假设是 "ManYuZO"
-	    const brandText = "ManYuZO"; 
-	    
-	    // 只有在 Intro 阶段才初始化并渲染
-	    if (document.querySelector('.content-intro')) {
-	        initTorusGlass('#intro-torus-canvas', brandText);
-	    }
-	});
+	// 绝杀 3：<script type="module">本身就在主 DOM 树解析后(deferred)运行！
+	// 如果在这里加 DOMContentLoaded，超过一半概率会因为“晚了一步”而永远等不到信号被执行导致白屏死站！
+	// 所以我们直接拿掉所有的监听外壳，顺势直接执行！
+	const brandText = "ManYuZO"; 
+	
+	if (document.querySelector('.content-intro')) {
+		initTorusGlass('#intro-torus-canvas', brandText);
+	}
