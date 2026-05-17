@@ -14,16 +14,22 @@ document.addEventListener("DOMContentLoaded", () => {
     let count = 1;
     let checked = false;
 
-    // 搞笑且可爱的语句数组：用于小熊被惹怒时的吐槽
+    // 导航提示语句：前几次点击显示，帮助不熟悉操作的用户找到入口
+    const hintMessages = [
+        "👆 点这里进入下一页哦~",
+        "👆 戳我！我带你进去~",
+        "👆 点我就能进去啦，快快~",
+    ];
+
+    // 搞笑且可爱的语句数组：用于小熊被惹怒时的吐槽（提示结束后使用）
     const funnyMessages = [
-        "入口真的不在这里啦！笨蛋！",
+        "入口真的不在开关这里啦！",
         "别戳我肚皮，好痒哦 (ﾉ>ω<)ﾉ",
         "我是超级凶的暴力熊，嗷呜~",
         "你再乱摸我真的要生气了哦！",
-        "找入口？去滑动屏幕呀大笨蛋！",
         "哎呀！我只是一只打工熊...",
         "你是不是迷路啦？略略略~",
-        "点我没用，真的没用！",
+        "点开关没用，真的没用！",
         "再点...再点我就咬你哦！",
         "（假装死机中，请勿打扰）...",
         "信不信我顺着网线过去亲你一口！",
@@ -242,10 +248,26 @@ document.addEventListener("DOMContentLoaded", () => {
             isAnimating = false; 
         };
 
-        // 极高频触发搞笑对话：只要小熊探头（出过手后），就有 80% 概率说话
-        if (Math.random() > 0.2 && count > armLimit) {
+        // 智能对话系统：前几次显示导航提示（可点击进入下一页），之后显示搞笑吐槽
+        const isHintPhase = count <= hintMessages.length;
+        const shouldSpeak = isHintPhase || (Math.random() > 0.2 && count > armLimit);
+        
+        if (shouldSpeak) {
             mainTL.call(() => {
-                swearRef.textContent = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+                if (isHintPhase) {
+                    // 提示阶段：显示导航提示，气泡可点击，高亮紫色样式
+                    swearRef.textContent = hintMessages[count - 1] || hintMessages[hintMessages.length - 1];
+                    swearRef.classList.add('bear__swear--hint');
+                    // 点击气泡直接进入下一页
+                    swearRef.onclick = () => {
+                        if (typeof loadAll === 'function') loadAll();
+                    };
+                } else {
+                    // 吐槽阶段：随机搞笑消息，气泡不可点击，恢复白色样式
+                    swearRef.textContent = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+                    swearRef.classList.remove('bear__swear--hint');
+                    swearRef.onclick = null;
+                }
                 gsap.set(swearRef, { display: 'block', autoAlpha: 1 });
             }, [], checkboxDuration)
                   .call(() => safePlay('GROAN'), [], checkboxDuration);
@@ -268,7 +290,10 @@ document.addEventListener("DOMContentLoaded", () => {
               .to(armRef, { scaleX: 0.7, duration: armDuration }, armStartTime + armDuration)
               .to(pawRef, {
                   duration: pawDuration, scaleX: 0.8, autoAlpha: 1, 
-                  onComplete: () => gsap.set(swearRef, { display: 'none' }),
+                  onComplete: () => {
+                      // 提示阶段：不隐藏气泡，让用户有时间点击
+                      if (!isHintPhase) gsap.set(swearRef, { display: 'none' });
+                  },
               }, armStartTime + armDuration * 2);
         
         const delayToOff = count > armLimit ? base + bearDuration + preDelay : base;
@@ -289,6 +314,12 @@ document.addEventListener("DOMContentLoaded", () => {
               .to(bearRef, { duration: bearDuration, y: '100%', autoAlpha: 0 }, offTime + pawDuration);
 
         const maxTime = offTime + pawDuration + Math.max(armDuration, bearDuration);
+        // 确保气泡在动画结束时隐藏（提示阶段的气泡会延迟到这里才隐藏）
+        mainTL.call(() => {
+            gsap.set(swearRef, { display: 'none' });
+            swearRef.classList.remove('bear__swear--hint');
+            swearRef.onclick = null;
+        }, [], maxTime);
         mainTL.call(onComplete, [], maxTime + 0.1);
     };
 

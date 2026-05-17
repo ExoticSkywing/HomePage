@@ -325,9 +325,10 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         user-select: none;
         z-index: 20;
-        pointer-events: none; // 关键：禁止气泡拦截点击，防止其透明区域或本体遮挡文字
+        pointer-events: none; // 默认不可点击，JS 在提示阶段会动态开启
         animation: bubble-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); // 弹性弹出动画
         transform-origin: bottom left; // 设置缩放原点为左下角（靠近小熊嘴巴）
+        transition: background 0.2s, box-shadow 0.2s;
 
         &::before {
             content: '';
@@ -338,6 +339,20 @@
             height: 30px;
             width: 30px;
             clip-path: polygon(0 100%, 100% 0, 50% 0);
+            transition: background 0.2s;
+        }
+
+        // 提示阶段：紫色高亮可点击气泡
+        &--hint {
+            background: linear-gradient(135deg, rgba(123,44,191,0.95), rgba(90,24,154,0.95)) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 20px rgba(123,44,191,0.5), 0 0 30px rgba(187,134,252,0.3) !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+
+            &::before {
+                background: rgba(90,24,154,0.95);
+            }
         }
 
         @media screen and (max-width: 500px) {

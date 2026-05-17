@@ -33,8 +33,11 @@ class GalaxyAnimation {
 		this.scene.background = new THREE.Color(0x160016);
 		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
 		this.camera.position.set(0, 4, 800);
-		this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+		const _mob = /Mobi|Android/i.test(navigator.userAgent);
+		this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: !_mob });
+		this.renderer.setPixelRatio(_mob ? 1 : Math.min(window.devicePixelRatio, 2));
 		this.renderer.setSize(this.canvas.clientWidth || window.innerWidth, this.canvas.clientHeight || window.innerHeight);
+		this._isMobile = _mob;
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.controls.enableDamping = true;
 		this.controls.enablePan = false;
@@ -90,13 +93,15 @@ class GalaxyAnimation {
 			);
 		}
 
-		const pts = new Array(50000).fill().map(p => {
+		const baseCount = this._isMobile ? 15000 : 50000;
+		const extraCount = this._isMobile ? 20000 : 100000;
+		const pts = new Array(baseCount).fill().map(p => {
 			sizes.push(Math.random() * 1.5 + 0.5);
 			pushShift();
 			return randomDirection().multiplyScalar(Math.random() * 0.5 + 9.5);
 		});
 
-		for (let i = 0; i < 100000; i++) {
+		for (let i = 0; i < extraCount; i++) {
 			let r = 10, R = 40;
 			let rand = Math.pow(Math.random(), 1.5);
 			let radius = Math.sqrt(R * R * rand + (1 - rand) * r * r);
@@ -196,10 +201,15 @@ class GalaxyAnimation {
 	}
 
 	handleResize() {
+		// 防键盘卡顿：仅宽度变化时才执行昂贵的 renderer resize
+		const newWidth = window.innerWidth;
+		if (this._lastResizeWidth && newWidth === this._lastResizeWidth) return;
+		this._lastResizeWidth = newWidth;
+
 		if (this.camera && this.renderer) {
-			this.camera.aspect = window.innerWidth / window.innerHeight;
+			this.camera.aspect = newWidth / window.innerHeight;
 			this.camera.updateProjectionMatrix();
-			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			this.renderer.setSize(newWidth, window.innerHeight);
 		}
 	}
 
@@ -207,6 +217,13 @@ class GalaxyAnimation {
 		if (!this.scene || !this.camera || !this.renderer) return;
 
 		this.animationFrame = requestAnimationFrame(() => this.animate());
+
+		// 移动端降帧：每隔一帧才渲染（60fps → 30fps），GPU 负载减半
+		if (this._isMobile) {
+			this._frameSkip = !this._frameSkip;
+			if (this._frameSkip) return;
+		}
+
 		this.controls.update();
 		const delta = this.clock.getDelta();
 		const t = this.clock.getElapsedTime() * 0.5;
@@ -216,11 +233,13 @@ class GalaxyAnimation {
 			const speed = this.initialRotationSpeed !== undefined ? this.initialRotationSpeed : 0.05;
 			this.points.rotation.y += speed * delta;
 			this.raycaster.setFromCamera(this.mouse, this.camera);
-			const target = new THREE.Vector3();
-			this.raycaster.ray.intersectPlane(this.interactionPlane, target);
-			if (target && this.gu.uMouse) {
-				this.points.worldToLocal(target);
-				this.gu.uMouse.value.lerp(target, 0.1);
+			// 复用同一个 Vector3，避免每帧 new 对象导致 GC 压力
+			if (!this._rayTarget) this._rayTarget = new THREE.Vector3();
+			this._rayTarget.set(0, 0, 0);
+			this.raycaster.ray.intersectPlane(this.interactionPlane, this._rayTarget);
+			if (this._rayTarget && this.gu.uMouse) {
+				this.points.worldToLocal(this._rayTarget);
+				this.gu.uMouse.value.lerp(this._rayTarget, 0.1);
 			}
 		}
 		this.renderer.render(this.scene, this.camera);
@@ -354,6 +373,13 @@ function switchPage() {
 
 	switchPage.switched = true;
 	showInteractionHint();
+
+	// 核心性能修复：销毁 Torus WebGL 渲染循环
+	// 不调用则 torus 以 60fps 永远在后台跑，与 Galaxy + 流体模拟三重 WebGL 叠加导致 GPU 过载
+	if (window._destroyTorus) {
+		window._destroyTorus();
+		window._destroyTorus = null;
+	}
 }
 
 const showInteractionHint = () => {
@@ -406,8 +432,8 @@ function loadMain() {
 		$(".card-inner").classList.add("in");
 		const canvas = document.getElementById("galaxyCanvas");
 		if (canvas) {
-			const galaxyAnimation = new GalaxyAnimation(canvas);
-			galaxyAnimation.init();
+			window._galaxyAnimation = new GalaxyAnimation(canvas);
+			window._galaxyAnimation.init();
 		}
 	}, 3000);
 	loadMain.loaded = true;
@@ -463,95 +489,55 @@ function detectAndFixReversed(input, knownCodes) {
 
 const Stargate = {
 	isOpen: false,
-	inputBuffer: '', // 手动管理的输入字符串
-	usingKeydown: false, // 标记是否使用 keydown 捕获（桌面端）
+	inputBuffer: '',
 	dom: {
 		terminal: null,
 		input: null,
-		display: null,
 		status: null
 	},
 
 	init() {
 		this.dom.terminal = document.getElementById('stargate-terminal');
 		this.dom.input = document.getElementById('launch-code');
-		this.dom.display = document.getElementById('code-display');
 		this.dom.status = document.querySelector('.status-text');
 
 		if (!this.dom.terminal) return;
 
-		// 修复：强制 LTR 方向
-		if (this.dom.display) this.dom.display.setAttribute('dir', 'ltr');
-		if (this.dom.input) this.dom.input.setAttribute('dir', 'ltr');
+		// ====== 极简输入处理：input 即显示，让浏览器原生处理一切 ======
+		// 只需过滤非法字符 + 管理引导文案显隐
+		this.dom.input.addEventListener('input', (e) => {
+			const raw = e.target.value;
+			const filtered = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-		// ====== 桌面端：使用 keydown 直接捕获输入 ======
-		this.dom.input.addEventListener('keydown', (e) => {
-			// 功能键处理（所有端都生效）
-			if (e.key === 'Enter') {
-				e.preventDefault();
-				this.checkCode();
-				return;
-			}
-			if (e.key === 'Escape') {
-				this.close();
-				return;
+			// 只在有非法字符时才回写（最小化干扰）
+			if (raw !== filtered) {
+				const pos = e.target.selectionStart;
+				e.target.value = filtered;
+				// 恢复光标位置（减去被过滤的字符数）
+				const newPos = Math.max(0, pos - (raw.length - filtered.length));
+				e.target.setSelectionRange(newPos, newPos);
 			}
 
-			// 以下逻辑仅在非移动端生效
-			if (window.isPhone) return;
+			this.inputBuffer = filtered;
 
-			// 删除键处理
-			if (e.key === 'Backspace') {
-				e.preventDefault();
-				this.usingKeydown = true;
-				if (this.inputBuffer.length > 0) {
-					this.inputBuffer = this.inputBuffer.slice(0, -1);
-					this.updateDisplay();
-				}
-				return;
-			}
+			// 引导文案显隐
+			this.dom.status.style.opacity = filtered === '' ? '1' : '0';
 
-			// 忽略功能键和组合键
-			if (e.ctrlKey || e.metaKey || e.altKey) return;
-			if (e.key.length !== 1) return;
-
-			// 字符输入处理
-			e.preventDefault();
-			this.usingKeydown = true;
-			const char = e.key.toUpperCase();
-			if (/^[A-Z0-9]$/.test(char)) {
-				this.inputBuffer += char;
-				this.updateDisplay();
+			// Reset error state
+			if (this.dom.input.classList.contains('error')) {
+				this.dom.input.classList.remove('error');
+				this.dom.status.textContent = this.getPrompt();
+				this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 			}
 		});
 
-		// ====== 移动端：使用 input 事件 ======
-		this.dom.input.addEventListener('input', (e) => {
-			// 桌面端如果已经在用 keydown 捕获，忽略 input 事件
-			if (!window.isPhone && this.usingKeydown) return;
-
-			// 移动端/桌面端后备：直接从 input.value 读取
-			const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-			this.inputBuffer = val;
-			this.dom.display.textContent = val;
-
-			// 同步 input.value（去除非法字符后的版本）
-			if (e.target.value !== val) {
-				e.target.value = val;
-			}
-
-			// 引导文案显隐控制
-			if (val === '') {
-				this.dom.status.style.opacity = '1';
-			} else {
-				this.dom.status.style.opacity = '0';
-			}
-
-			// Reset error state
-			if (this.dom.display.classList.contains('error')) {
-				this.dom.display.classList.remove('error');
-				this.dom.status.textContent = this.getPrompt();
-				this.dom.status.style.color = 'rgba(255,255,255,0.4)';
+		// Enter 提交 / Escape 关闭
+		this.dom.input.addEventListener('keydown', (e) => {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+				this.checkCode();
+			} else if (e.key === 'Escape') {
+				this.close();
 			}
 		});
 
@@ -577,27 +563,6 @@ const Stargate = {
 		});
 	},
 
-	// 新增：统一更新显示
-	updateDisplay() {
-		this.dom.display.textContent = this.inputBuffer;
-		// 同步 input.value（用于表单提交等场景，虽然我们不依赖它）
-		this.dom.input.value = this.inputBuffer;
-
-		// 引导文案显隐控制
-		if (this.inputBuffer === '') {
-			this.dom.status.style.opacity = '1';
-		} else {
-			this.dom.status.style.opacity = '0';
-		}
-
-		// Reset error state on input
-		if (this.dom.display.classList.contains('error')) {
-			this.dom.display.classList.remove('error');
-			this.dom.status.textContent = this.getPrompt();
-			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
-		}
-	},
-
 	// 辅助方法：获取端侧差异化文案
 	getPrompt() {
 		return window.isPhone ? '点击输入跃迁坐标' : '输入跃迁坐标';
@@ -612,10 +577,8 @@ const Stargate = {
 
 		// 核心修复：重置状态
 		this.inputBuffer = '';
-		this.usingKeydown = false;
 		this.dom.input.value = '';
-		this.dom.display.textContent = '';
-		this.dom.display.className = 'code-display';
+		this.dom.input.className = '';
 
 		// 初始状态：显示引导文案 (端侧自适应)
 		this.dom.status.textContent = this.getPrompt();
@@ -629,10 +592,8 @@ const Stargate = {
 	resetInput() {
 		if (!this.dom.input) return;
 		this.inputBuffer = '';
-		this.usingKeydown = false;
 		this.dom.input.value = '';
-		this.dom.display.textContent = '';
-		this.dom.display.classList.remove('error');
+		this.dom.input.classList.remove('error');
 		this.dom.status.textContent = this.getPrompt();
 		this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 		this.dom.status.style.opacity = '1';
@@ -673,7 +634,7 @@ const Stargate = {
 	},
 
 	grantAccess(target) {
-		this.dom.display.classList.add('success');
+		this.dom.input.classList.add('success');
 		this.dom.status.textContent = 'VERIFYING COORDINATES · 正在验证坐标';
 		this.dom.status.style.color = '#00ffaa';
 		this.dom.input.blur();
@@ -770,16 +731,14 @@ const Stargate = {
 	},
 
 	denyAccess() {
-		this.dom.display.classList.add('error');
+		this.dom.input.classList.add('error');
 		this.dom.status.textContent = 'COORDINATES INVALID · 坐标无效';
 		this.dom.status.style.color = '#ff3333';
 
 		setTimeout(() => {
-			this.dom.display.classList.remove('error');
-			// 核心修复：重置 inputBuffer
+			this.dom.input.classList.remove('error');
 			this.inputBuffer = '';
 			this.dom.input.value = '';
-			this.dom.display.textContent = '';
 			this.dom.status.textContent = this.getPrompt();
 			this.dom.status.style.color = 'rgba(255,255,255,0.4)';
 			this.dom.status.style.opacity = '1';

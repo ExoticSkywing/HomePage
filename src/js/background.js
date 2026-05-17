@@ -957,7 +957,18 @@ window.addEventListener(visibilityChangeEvent, initBackground)
 window.addEventListener('DOMContentLoaded', initBackground)
 let animationID = null
 
+let _fluidFrameSkip = false;
+const _fluidMobile = isMobile();
+
 function update(first) {
+	animationID = requestAnimationFrame(update);
+
+	// 移动端降帧：30fps（跳帧时完全不做任何 GPU 操作）
+	if (_fluidMobile && !first) {
+		_fluidFrameSkip = !_fluidFrameSkip;
+		if (_fluidFrameSkip) return;
+	}
+
 	const dt = calcDeltaTime();
 	if (resizeCanvas())
 		initFramebuffers();
@@ -966,7 +977,6 @@ function update(first) {
 	if (!config.PAUSED)
 		step(dt);
 	render(null);
-	animationID = requestAnimationFrame(update);
 }
 
 function calcDeltaTime() {
@@ -977,14 +987,21 @@ function calcDeltaTime() {
 	return dt;
 }
 
+// 防键盘卡顿：记录上次宽度，仅宽度变化时才真正 resize
+// 安卓 Chrome 拉起/收起键盘只改变高度，跳过可避免 initFramebuffers 的 GPU 资源重建风暴
+let lastCanvasWidth = 0;
 function resizeCanvas() {
 	let width = scaleByPixelRatio(canvas.clientWidth);
 	let height = scaleByPixelRatio(canvas.clientHeight);
-	if (canvas.width != width || canvas.height != height) {
+	if (lastCanvasWidth === 0) lastCanvasWidth = width; // 首次初始化
+	if (width !== lastCanvasWidth) {
+		// 宽度变化 = 真正的屏幕旋转或窗口 resize，执行完整重建
+		lastCanvasWidth = width;
 		canvas.width = width;
 		canvas.height = height;
 		return true;
 	}
+	// 仅高度变化（键盘弹出/收起），跳过昂贵的 framebuffer 重建
 	return false;
 }
 
@@ -1382,6 +1399,8 @@ function getTextureScale(texture, width, height) {
 
 function scaleByPixelRatio(input) {
 	let pixelRatio = window.devicePixelRatio || 1;
+	// 移动端限制像素比为1，避免高 DPI 屏幕放大 framebuffer 导致 GPU 过载
+	if (_fluidMobile) pixelRatio = 1;
 	return Math.floor(input * pixelRatio);
 }
 

@@ -83,11 +83,8 @@
         .terminal-content
             .terminal-header STARGATE · 星门
             .input-wrapper
-                span.prefix >
-                //- 修复：硬编码 dir="ltr"，解决安卓 WebView 文本逆序问题
-                span#code-display.code-display(dir="ltr")
-                span.cursor
-            input#launch-code(type="text", autocomplete="off", maxlength="20", dir="ltr")
+                //- 核心修复：input 直接作为可见显示元素，彻底避免 IME 同步问题
+                input#launch-code(type="text", autocomplete="off", autocorrect="off", autocapitalize="off", spellcheck="false", maxlength="20", dir="ltr", inputmode="latin", placeholder="")
             .status-text 输入跃迁坐标
             
             //- 新增：Loader 动画

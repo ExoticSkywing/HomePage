@@ -135,14 +135,21 @@ document.addEventListener("visibilitychange", handleVisibilityChange);
 
 tick();
 
+// 防键盘卡顿：记录上次宽度，仅宽度变化时才执行昂贵的 resize 操作
+// 安卓 Chrome 拉起/收起键盘只改变高度，跳过即可避免 GPU 资源重建风暴
+let lastResizeWidth = window.innerWidth;
 const resizeHandler = () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const newWidth = window.innerWidth;
+    if (newWidth === lastResizeWidth) return; // 仅高度变化（键盘），跳过
+    lastResizeWidth = newWidth;
+
+    camera.aspect = newWidth / window.innerHeight;
     camera.position.z = getCameraZ();
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(newWidth, window.innerHeight);
     
     // Dynamic scale update
-    if (window.innerWidth < 800) {
+    if (newWidth < 800) {
         torus.scale.set(1.8, 1.8, 1.8);
     } else {
         torus.scale.set(1, 1, 1);

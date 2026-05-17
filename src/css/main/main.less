@@ -848,10 +848,9 @@
         left: 0;
         width: 100%;
         height: 100%;
-        // 径向渐变：中心微亮（聚焦），四周微暗（沉浸），绝不是死黑
-        background: radial-gradient(circle at center, rgba(120, 80, 255, 0.08) 0%, rgba(10, 5, 20, 0.4) 90%);
-        // 核心优化：始终保持模糊，只做 Opacity 动画
-        backdrop-filter: blur(30px) brightness(1.1);
+        // 性能核心：不使用 backdrop-filter（安卓 Chrome 每次按键都会触发全屏 GPU 重合成）
+        // 用高不透明度径向渐变代替 blur 效果，视觉上接近磨砂玻璃
+        background: radial-gradient(circle at center, rgba(20, 12, 40, 0.93) 0%, rgba(8, 4, 16, 0.98) 80%);
         opacity: 0;
         transition: opacity 0.6s ease;
         will-change: opacity;
@@ -882,56 +881,49 @@
         }
 
         .input-wrapper {
-            font-family: 'Courier New', monospace;
-            font-size: clamp(2.5rem, 6vw, 5rem);
-            font-weight: 200;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            // 修复：强制整个输入区域 LTR 方向
             direction: ltr;
             unicode-bidi: bidi-override;
+        }
 
-            .prefix {
-                display: none;
+        // 核心修复：input 直接作为可见显示元素
+        // 彻底避免隐藏input+JS同步显示的 IME 兼容性问题
+        input#launch-code {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 200;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 50px rgba(255, 255, 255, 0.6);
+            caret-color: #fff;
+            direction: ltr !important;
+            unicode-bidi: bidi-override !important;
+            padding: 0;
+            // 防止 iOS/安卓自动缩放
+            font-size: max(16px, clamp(2.5rem, 6vw, 5rem));
+
+            &::placeholder {
+                color: transparent;
             }
 
-            .code-display {
-                min-height: 1.2em;
-                min-width: 20px;
-                // 优化：增强发光
-                text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 50px rgba(255, 255, 255, 0.6);
-                letter-spacing: 4px;
-                text-transform: uppercase;
-                // 修复：强制 LTR 方向，解决移动端某些浏览器因 letter-spacing 导致的文本逆序渲染
-                direction: ltr !important;
-                unicode-bidi: bidi-override !important;
-                text-align: left;
-
-                &.success {
-                    color: #aaffdd;
-                    text-shadow: 0 0 20px #55ffaa, 0 0 50px #55ffaa;
-                    transition: all 0.3s ease;
-                }
-
-                &.error {
-                    color: #ffaaaa;
-                    text-shadow: 0 0 20px #ff3333, 0 0 50px #ff3333;
-                    animation: shake 0.4s ease-in-out;
-                }
+            &.success {
+                color: #aaffdd;
+                text-shadow: 0 0 20px #55ffaa, 0 0 50px #55ffaa;
+                transition: all 0.3s ease;
             }
 
-            .cursor {
-                width: 2px;
-                height: 1.0em;
-                background: #fff;
-                box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-                animation: blink 1.2s ease-in-out infinite;
-                opacity: 0.8;
-                margin-top: 4px;
-                display: inline-block;
-                border: none; // 强制移除可能的边框
+            &.error {
+                color: #ffaaaa;
+                text-shadow: 0 0 20px #ff3333, 0 0 50px #ff3333;
+                animation: shake 0.4s ease-in-out;
             }
         }
 
@@ -968,16 +960,6 @@
                 // 呼吸动画
                 animation: nebulaBreathe 3s infinite ease-in-out;
             }
-        }
-
-        input#launch-code {
-            position: absolute;
-            opacity: 0;
-            width: 1px;
-            height: 1px;
-            // 修复：隐藏输入框也强制 LTR，防止浏览器从 input 继承错误方向
-            direction: ltr !important;
-            unicode-bidi: bidi-override !important;
         }
 
         .tap-hint {
@@ -1163,11 +1145,8 @@
         padding-top: 15vh; // 顶置内容，避开键盘
 
         .overlay {
-            // v2.1 视觉回调：通透感回归
-            // 降低遮罩浓度，加入紫色水晶微光
-            background: radial-gradient(circle at center, rgba(40, 20, 60, 0.4) 0%, rgba(10, 5, 20, 0.85) 90%); // 中心更透，四周暗
-            // 增强磨砂感与饱和度，让透过的星光更绚丽
-            backdrop-filter: blur(20px) saturate(180%);
+            // 移动端：略微调整渐变，更深沉
+            background: radial-gradient(circle at center, rgba(18, 10, 35, 0.95) 0%, rgba(5, 2, 12, 0.99) 80%);
         }
 
         .terminal-content {
@@ -1178,11 +1157,11 @@
                 text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); // 强光补偿
             }
 
-            .input-wrapper {
+            input#launch-code {
                 font-size: clamp(1.8rem, 8vw, 2.5rem);
                 font-weight: 400;
-                // 强力发光补偿
-                text-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(160, 100, 255, 0.5);
+                // 性能优化：移动端简化 text-shadow
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
             }
 
             .status-text {
