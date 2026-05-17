@@ -33,11 +33,8 @@ class GalaxyAnimation {
 		this.scene.background = new THREE.Color(0x160016);
 		this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
 		this.camera.position.set(0, 4, 800);
-		const _mob = /Mobi|Android/i.test(navigator.userAgent);
-		this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: !_mob });
-		this.renderer.setPixelRatio(_mob ? 1 : Math.min(window.devicePixelRatio, 2));
+		this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
 		this.renderer.setSize(this.canvas.clientWidth || window.innerWidth, this.canvas.clientHeight || window.innerHeight);
-		this._isMobile = _mob;
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 		this.controls.enableDamping = true;
 		this.controls.enablePan = false;
@@ -93,15 +90,13 @@ class GalaxyAnimation {
 			);
 		}
 
-		const baseCount = this._isMobile ? 15000 : 50000;
-		const extraCount = this._isMobile ? 20000 : 100000;
-		const pts = new Array(baseCount).fill().map(p => {
+		const pts = new Array(50000).fill().map(p => {
 			sizes.push(Math.random() * 1.5 + 0.5);
 			pushShift();
 			return randomDirection().multiplyScalar(Math.random() * 0.5 + 9.5);
 		});
 
-		for (let i = 0; i < extraCount; i++) {
+		for (let i = 0; i < 100000; i++) {
 			let r = 10, R = 40;
 			let rand = Math.pow(Math.random(), 1.5);
 			let radius = Math.sqrt(R * R * rand + (1 - rand) * r * r);
@@ -217,13 +212,6 @@ class GalaxyAnimation {
 		if (!this.scene || !this.camera || !this.renderer) return;
 
 		this.animationFrame = requestAnimationFrame(() => this.animate());
-
-		// 移动端降帧：每隔一帧才渲染（60fps → 30fps），GPU 负载减半
-		if (this._isMobile) {
-			this._frameSkip = !this._frameSkip;
-			if (this._frameSkip) return;
-		}
-
 		this.controls.update();
 		const delta = this.clock.getDelta();
 		const t = this.clock.getElapsedTime() * 0.5;
@@ -233,13 +221,13 @@ class GalaxyAnimation {
 			const speed = this.initialRotationSpeed !== undefined ? this.initialRotationSpeed : 0.05;
 			this.points.rotation.y += speed * delta;
 			this.raycaster.setFromCamera(this.mouse, this.camera);
-			// 复用同一个 Vector3，避免每帧 new 对象导致 GC 压力
+			// 复用预分配对象，避免每帧 new Vector3() 造成 GC 压力
 			if (!this._rayTarget) this._rayTarget = new THREE.Vector3();
-			this._rayTarget.set(0, 0, 0);
-			this.raycaster.ray.intersectPlane(this.interactionPlane, this._rayTarget);
-			if (this._rayTarget && this.gu.uMouse) {
-				this.points.worldToLocal(this._rayTarget);
-				this.gu.uMouse.value.lerp(this._rayTarget, 0.1);
+			const target = this._rayTarget;
+			const hit = this.raycaster.ray.intersectPlane(this.interactionPlane, target);
+			if (hit && this.gu.uMouse) {
+				this.points.worldToLocal(target);
+				this.gu.uMouse.value.lerp(target, 0.1);
 			}
 		}
 		this.renderer.render(this.scene, this.camera);
@@ -334,6 +322,11 @@ function switchPage() {
 		complete: () => {
 			// 动画结束后完全隐藏 intro 层，防止遮挡
 			DOM.intro.style.display = 'none';
+			// 核心修复：销毁 torus-glass 动画，释放 GPU（transmission 材质每帧双渲染 pass）
+			if (window._destroyTorusGlass) {
+				window._destroyTorusGlass();
+				window._destroyTorusGlass = null;
+			}
 		}
 	});
 
@@ -373,13 +366,6 @@ function switchPage() {
 
 	switchPage.switched = true;
 	showInteractionHint();
-
-	// 核心性能修复：销毁 Torus WebGL 渲染循环
-	// 不调用则 torus 以 60fps 永远在后台跑，与 Galaxy + 流体模拟三重 WebGL 叠加导致 GPU 过载
-	if (window._destroyTorus) {
-		window._destroyTorus();
-		window._destroyTorus = null;
-	}
 }
 
 const showInteractionHint = () => {

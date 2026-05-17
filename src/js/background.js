@@ -957,18 +957,7 @@ window.addEventListener(visibilityChangeEvent, initBackground)
 window.addEventListener('DOMContentLoaded', initBackground)
 let animationID = null
 
-let _fluidFrameSkip = false;
-const _fluidMobile = isMobile();
-
 function update(first) {
-	animationID = requestAnimationFrame(update);
-
-	// 移动端降帧：30fps（跳帧时完全不做任何 GPU 操作）
-	if (_fluidMobile && !first) {
-		_fluidFrameSkip = !_fluidFrameSkip;
-		if (_fluidFrameSkip) return;
-	}
-
 	const dt = calcDeltaTime();
 	if (resizeCanvas())
 		initFramebuffers();
@@ -977,6 +966,7 @@ function update(first) {
 	if (!config.PAUSED)
 		step(dt);
 	render(null);
+	animationID = requestAnimationFrame(update);
 }
 
 function calcDeltaTime() {
@@ -1399,8 +1389,6 @@ function getTextureScale(texture, width, height) {
 
 function scaleByPixelRatio(input) {
 	let pixelRatio = window.devicePixelRatio || 1;
-	// 移动端限制像素比为1，避免高 DPI 屏幕放大 framebuffer 导致 GPU 过载
-	if (_fluidMobile) pixelRatio = 1;
 	return Math.floor(input * pixelRatio);
 }
 
